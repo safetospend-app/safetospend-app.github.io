@@ -327,6 +327,8 @@ body.focus .hero-side{display:none}
   color:var(--lilac);border-radius:14px;padding:11px 15px;margin-bottom:16px}
 .demobar b{font-size:12.5px;font-weight:700;letter-spacing:.2px}
 .demobar span{font-size:11.5px;color:var(--ink2)}
+.demoage{font-size:10.5px;font-weight:600;background:var(--lilac);color:#fff;padding:2px 9px;border-radius:20px;white-space:nowrap}
+html[data-theme="dark"] .demoage{color:#141232}
 .demobar .btn{margin-left:auto;background:var(--lilac);color:#fff;box-shadow:none}
 html[data-theme="dark"] .demobar .btn{color:#141232}
 .demobar .btn.ghost{margin-left:0;background:transparent;color:var(--lilac);border-color:var(--lilac-b)}
@@ -381,8 +383,6 @@ html[data-theme="dark"] .demobar .btn{color:#141232}
 }
 @media print{.rail,.top-actions,.mobnav,.fab{display:none}main{padding:0}.card{break-inside:avoid;box-shadow:none}}
 </style>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 <div class="app">
@@ -398,7 +398,7 @@ html[data-theme="dark"] .demobar .btn{color:#141232}
 </button>
 <div id="modalRoot"></div>
 <div class="toast" id="toast"></div>
-<script>var __PWA__=true, __DEMO__=true, __BUYURL__="https://www.etsy.com/shop/SchenkZauber";</script>
+<script>var __PWA__=false, __DEMO__=true, __BUYURL__="https://www.etsy.com/shop/SchenkZauber";</script>
 <script>
 /* ============================================================
    Sicher Ausgeben — i18n (de / fr / en)
@@ -514,7 +514,13 @@ de:{
  undo:'Rückgängig',
  demoTitle:'Demo-Version', demoSub:'Alles ausprobieren — die Beispieldaten liegen nur in diesem Browser.',
  demoBuy:'Vollversion holen', demoReset:'Demo zurücksetzen',
- installNow:'Als App installieren', installed:'Installiert'
+ installNow:'Als App installieren', installed:'Installiert',
+ demoResetInfo:'Alles ausprobieren — die Demo setzt sich in {n} Tagen zurück.',
+ demoResetToday:'Alles ausprobieren — die Demo setzt sich heute zurück.',
+ demoResetInfo1:'Alles ausprobieren — die Demo setzt sich morgen zurück.',
+ demoDays:'{n}. Tag im Test', demoOnlyFull:'Nur in der Vollversion',
+ demoNoBackup:'Sicherungen gibt es in der Vollversion',
+ demoNoInstall:'Installieren geht in der Vollversion'
 },
 
 fr:{
@@ -609,7 +615,13 @@ fr:{
  undo:'Annuler',
  demoTitle:'Version démo', demoSub:'Essaie tout — les données d’exemple restent dans ce navigateur.',
  demoBuy:'Obtenir la version complète', demoReset:'Réinitialiser la démo',
- installNow:'Installer comme app', installed:'Installée'
+ installNow:'Installer comme app', installed:'Installée',
+ demoResetInfo:'Essaie tout — la démo se réinitialise dans {n} jours.',
+ demoResetToday:'Essaie tout — la démo se réinitialise aujourd’hui.',
+ demoResetInfo1:'Essaie tout — la démo se réinitialise demain.',
+ demoDays:'Jour {n} de l’essai', demoOnlyFull:'Version complète uniquement',
+ demoNoBackup:'Les sauvegardes sont dans la version complète',
+ demoNoInstall:'L’installation est dans la version complète'
 },
 
 en:{
@@ -704,7 +716,13 @@ en:{
  undo:'Undo',
  demoTitle:'Demo version', demoSub:'Try everything — the sample data lives only in this browser.',
  demoBuy:'Get the full version', demoReset:'Reset the demo',
- installNow:'Install as an app', installed:'Installed'
+ installNow:'Install as an app', installed:'Installed',
+ demoResetInfo:'Try everything — the demo resets in {n} days.',
+ demoResetToday:'Try everything — the demo resets today.',
+ demoResetInfo1:'Try everything — the demo resets tomorrow.',
+ demoDays:'Day {n} of your trial', demoOnlyFull:'Full version only',
+ demoNoBackup:'Backups come with the full version',
+ demoNoInstall:'Installing comes with the full version'
 }
 };
 
@@ -1472,9 +1490,9 @@ function vSet(){
   + '<div class="card"><div class="ch"><div class="chi" style="background:var(--lilac-s);color:var(--lilac)">'+svg('cal',14,2.2)+'</div><h3>'+t('setPay')+'</h3></div>'+payForm()+'</div>'
   + '</div><div>'
   + '<div class="card"><div class="ch"><div class="chi" style="background:var(--amber-s);color:var(--amber)">'+svg('save',14,2.2)+'</div><h3>'+t('setData')+'</h3></div>'
-  + setRow(t('setExport'), t('setExportSub'), '<button class="btn sm ghost" data-a="export">'+t('save')+'</button>')
-  + setRow(t('setImport'), '', '<button class="btn sm ghost" data-a="import">'+t('setImport')+'</button>')
-  + setRow(t('setInstall'), t('setInstallSub'), INSTALL_EVT? '<button class="btn sm" data-a="install">'+t('installNow')+'</button>':'')
+  + setRow(t('setExport'), t('setExportSub'), DEMO? lockChip() : '<button class="btn sm ghost" data-a="export">'+t('save')+'</button>')
+  + setRow(t('setImport'), '', DEMO? lockChip() : '<button class="btn sm ghost" data-a="import">'+t('setImport')+'</button>')
+  + setRow(t('setInstall'), t('setInstallSub'), DEMO? lockChip() : (INSTALL_EVT? '<button class="btn sm" data-a="install">'+t('installNow')+'</button>':''))
   + setRow(t('setReset'), t('setResetSub'), '<button class="btn sm danger" data-a="reset">'+t('del')+'</button>')
   + '</div>'
   + '<div class="card"><div class="ch"><div class="chi" style="background:var(--inset);color:var(--ink2)">'+svg('list',14,2.2)+'</div><h3>'+t('setCats')+'</h3></div>'
@@ -1485,6 +1503,9 @@ function vSet(){
   + '<div class="card"><div class="ch"><div class="chi" style="background:var(--green-s);color:var(--green)">'+svg('check',14,2.2)+'</div><h3>'+t('setAbout')+'</h3></div>'
   + '<div class="hint">'+t('setAboutSub')+'</div></div>'
   + '</div></div>';
+}
+function lockChip(){
+  return '<button class="btn sm ghost" data-a="buy" style="white-space:nowrap">'+t('demoOnlyFull')+'</button>';
 }
 function setRow(title, sub, action){
   return '<div class="setrow"><div><div class="st">'+title+'</div>'+(sub?'<div class="ss">'+sub+'</div>':'')+'</div>'
@@ -1813,6 +1834,7 @@ const ACT = {
   },
   saveBalance(){ S.balance = num(val('balV')); save(); closeModal(); render(); toast(t('tSaved')); },
   export(){
+    if(DEMO){ toast(t('demoNoBackup')); return; }
     const blob = new Blob([JSON.stringify(S,null,2)], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -1822,6 +1844,7 @@ const ACT = {
     toast(t('tBackup'));
   },
   import(){
+    if(DEMO){ toast(t('demoNoBackup')); return; }
     const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json,.json';
     inp.onchange = ()=>{
       const f = inp.files[0]; if(!f) return;
@@ -1916,6 +1939,14 @@ let INSTALL_EVT = null;
 if(PWA && 'serviceWorker' in navigator){
   window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }
+/* the demo is online-only: drop any worker/cache a previous build left behind */
+if(DEMO){
+  try{
+    if('serviceWorker' in navigator)
+      navigator.serviceWorker.getRegistrations().then(rs=> rs.forEach(r=> r.unregister())).catch(()=>{});
+    if(window.caches) caches.keys().then(ks=> ks.forEach(k=> caches.delete(k))).catch(()=>{});
+  }catch(e){}
+}
 window.addEventListener('beforeinstallprompt', e=>{
   e.preventDefault(); INSTALL_EVT = e;
   try{ render(); }catch(err){}
@@ -1929,7 +1960,23 @@ ACT.install = async ()=>{
   INSTALL_EVT = null; render();
 };
 ACT.buy = ()=>{ window.open(BUYURL, '_blank', 'noopener'); };
-ACT.demoReset = ()=>{ localStorage.removeItem(KEY); location.reload(); };
+ACT.demoReset = ()=>{ demoResetNow(); render(); toast(t('tReset')); };
+
+/* ---------- demo lifetime ---------- */
+const DEMO_TTL = 7;                       /* days before the demo wipes itself */
+function demoResetNow(){
+  const lang = S.lang, cur = S.currency, theme = S.theme;
+  S = defaults();
+  S.lang = lang; S.currency = cur; S.theme = theme;
+  demoSeed();
+  S.demoStart = today();
+  save();
+}
+function demoTick(){
+  if(!DEMO) return;
+  if(!S.demoStart){ S.demoStart = today(); save(); return; }
+  if(diffDays(S.demoStart, today()) >= DEMO_TTL) demoResetNow();
+}
 
 /* ---------- demo seed ---------- */
 const DEMO_TXT = {
@@ -1986,7 +2033,11 @@ function demoSeed(){
 }
 function demoBanner(){
   if(!DEMO) return '';
-  return '<div class="demobar"><b>'+t('demoTitle')+'</b><span>'+t('demoSub')+'</span>'
+  const used = S.demoStart ? diffDays(S.demoStart, today()) : 0;
+  const left = Math.max(0, DEMO_TTL - used);
+  return '<div class="demobar"><b>'+t('demoTitle')+'</b>'
+   + '<span>'+(left>1 ? t('demoResetInfo',{n:left}) : left===1 ? t('demoResetInfo1') : t('demoResetToday'))+'</span>'
+   + (used>=5 ? '<span class="demoage">'+t('demoDays',{n:used+1})+'</span>' : '')
    + '<button class="btn sm" data-a="buy">'+t('demoBuy')+'</button>'
    + '<button class="btn sm ghost" data-a="demoReset">'+t('demoReset')+'</button></div>';
 }
@@ -2009,6 +2060,7 @@ function boot(){
     S.currency = S.lang==='en' ? 'USD' : 'EUR';
     demoSeed();
   }
+  demoTick();
   const h = (location.hash||'').replace('#','');
   if(['dash','bills','income','goals','env','dump','debts','miles','cal','set'].includes(h)) VIEW = h;
   applyTheme();
