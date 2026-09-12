@@ -398,7 +398,7 @@ html[data-theme="dark"] .demobar .btn{color:#141232}
 </button>
 <div id="modalRoot"></div>
 <div class="toast" id="toast"></div>
-<script>var __PWA__=false, __DEMO__=true, __BUYURL__="https://www.etsy.com/shop/SchenkZauber";</script>
+<script>var __PWA__=false, __DEMO__=true, __BUYURL__="https://safetospend-app.github.io/kaufen/";</script>
 <script>
 /* ============================================================
    Sicher Ausgeben — i18n (de / fr / en)
@@ -1959,7 +1959,7 @@ ACT.install = async ()=>{
   try{ await INSTALL_EVT.userChoice; }catch(e){}
   INSTALL_EVT = null; render();
 };
-ACT.buy = ()=>{ window.open(BUYURL, '_blank', 'noopener'); };
+ACT.buy = ()=>{ const u = BUYURL + (BUYURL.indexOf('?')<0 ? '?' : '&') + 'l=' + (S.lang || 'de'); window.open(u, '_blank', 'noopener'); };
 ACT.demoReset = ()=>{ demoResetNow(); render(); toast(t('tReset')); };
 
 /* ---------- demo lifetime ---------- */
