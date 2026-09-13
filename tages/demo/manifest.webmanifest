@@ -1,0 +1,39 @@
+{
+  "name": "The Daily",
+  "short_name": "The Daily",
+  "id": "the-daily",
+  "description": "An ADHD day planner that remembers. Offline, no account, no subscription.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EDE9E1",
+  "theme_color": "#5E7052",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "productivity",
+    "lifestyle",
+    "health"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
