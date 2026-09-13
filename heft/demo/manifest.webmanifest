@@ -1,0 +1,39 @@
+{
+  "name": "Monatsheft",
+  "short_name": "Monatsheft",
+  "description": "Budget-Heft mit Monatsreitern. Eine Zahl: was heute sicher ausgegeben werden kann.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EAE3D8",
+  "theme_color": "#8A6A4B",
+  "lang": "de",
+  "dir": "ltr",
+  "categories": [
+    "finance",
+    "productivity",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "monatsheft"
+}
