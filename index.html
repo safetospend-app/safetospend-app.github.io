@@ -97,7 +97,7 @@ footer{padding:28px 0 44px;text-align:center;color:var(--muted);font-size:11.5px
     <p class="lead" data-k="lead"></p>
     <div class="cta">
       <a class="btn" href="./demo/" data-k="ctaDemo">Demo öffnen</a>
-      <a class="btn ghost" href="https://www.etsy.com/shop/SchenkZauber" data-k="ctaBuy">Vollversion holen</a>
+      <a class="btn ghost" href="https://www.etsy.com/listing/4574064447/budget-planer-adhs-digital-sicher" data-k="ctaBuy">Vollversion holen</a>
     </div>
     <div class="note" data-k="notes"></div>
     <div class="shotwrap"><img src="shot-light.png" alt="Dashboard"></div>
@@ -127,7 +127,7 @@ footer{padding:28px 0 44px;text-align:center;color:var(--muted);font-size:11.5px
       <h2 data-k="ch"></h2><p class="sub" style="margin:0 auto 22px" data-k="cs"></p>
       <div class="cta">
         <a class="btn" href="./demo/" data-k="ctaDemo2">Demo öffnen</a>
-        <a class="btn ghost" href="https://www.etsy.com/shop/SchenkZauber" data-k="ctaBuy2">Vollversion holen</a>
+        <a class="btn ghost" href="https://www.etsy.com/listing/4574064447/budget-planer-adhs-digital-sicher" data-k="ctaBuy2">Vollversion holen</a>
       </div>
       <div class="badges" id="badges"></div>
     </div>
@@ -135,6 +135,7 @@ footer{padding:28px 0 44px;text-align:center;color:var(--muted);font-size:11.5px
 
   <footer><span data-k="foot"></span></footer>
 </div>
+<script src="kaufen/links.js"></script>
 <script>
 const T = {
 de:{brand:'Safe to Spend', brandsub:'Budget-Planer', pill:'Für ADHS-Gehirne gebaut',
@@ -231,6 +232,8 @@ function paint(l){
   document.getElementById('faq').innerHTML = d.faq.map(([q,a])=>
     '<div class="qa"><h3>'+q+'</h3><p>'+a+'</p></div>').join('');
   document.getElementById('badges').innerHTML = d.badges.map(b=>'<span class="badge">'+b+'</span>').join('');
+  const L = (window.LINKS||{}), buy = (L[l]||L.en||window.SHOP||'').trim();
+  if(buy) document.querySelectorAll('[data-k^="ctaBuy"]').forEach(a=> a.setAttribute('href', buy));
   document.querySelectorAll('.langsel button').forEach(b=> b.classList.toggle('on', b.dataset.l===l));
   try{ localStorage.setItem('sts.lang', l); }catch(e){}
 }
