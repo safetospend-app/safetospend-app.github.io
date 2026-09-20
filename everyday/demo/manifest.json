@@ -1,0 +1,30 @@
+{
+  "name": "The Everyday Demo",
+  "short_name": "Everyday",
+  "description": "ADHD-friendly life planner: tasks, routines, calendar, goals, habits, budget, meals & fitness.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F6F2F8",
+  "theme_color": "#F6F2F8",
+  "id": "./demo",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

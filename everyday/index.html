@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Everyday — an ADHD-friendly life planner app</title>
+<meta name="description" content="Tasks, routines, calendar, goals, habits, budget, debt, savings, meals, grocery list and fitness — in one calm app that works offline on any device. No account, no subscription.">
+<meta name="theme-color" content="#F6F2F8">
+<meta property="og:title" content="The Everyday — ADHD-friendly life planner app">
+<meta property="og:description" content="Your whole life in one calm place. Works offline, no account, one payment.">
+<meta property="og:image" content="img/dash.jpg">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+@font-face{font-family:"Nunito";src:url(nunito.woff2) format("woff2");font-weight:200 1000;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(bricolage.woff2) format("woff2");font-weight:200 800;font-display:swap}
+:root{--bg:#F6F2F8;--surface:#fff;--line:#ECE5F1;--ink:#24213B;--ink-2:#5F5A7A;--ink-3:#9C97B5;
+ --pink:#F8CFDE;--pink-ink:#B23F6B;--pink-soft:#FDEFF4;--mint:#C6EEDD;--mint-ink:#1B7D63;--mint-soft:#EAF8F1;
+ --sun:#FCE4A0;--sun-ink:#946400;--sun-soft:#FEF6DC;--sky:#CDE0FA;--sky-ink:#2D63AE;--sky-soft:#EDF4FD;
+ --lilac:#E1D5F7;--lilac-ink:#6848B8;--lilac-soft:#F3EEFC;--peach:#FCD9C6;--peach-ink:#B0521F;
+ --shadow:0 1px 2px rgba(60,40,90,.04),0 10px 30px -12px rgba(80,50,120,.22)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Nunito",system-ui,sans-serif;color:var(--ink);background:var(--bg);
+ background-image:linear-gradient(170deg,#FBEFF4 0%,#F4F1FA 40%,#EEF5FB 100%);background-attachment:fixed;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage","Nunito",sans-serif;margin:0;letter-spacing:-.02em;line-height:1.1}
+h1{font-size:clamp(34px,5.4vw,62px);font-weight:800}
+h2{font-size:clamp(26px,3.4vw,38px);font-weight:800}
+h3{font-size:20px;font-weight:800}
+p{margin:.6em 0}
+a{color:inherit}
+img{max-width:100%;display:block;border-radius:18px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:14px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Bricolage";font-weight:800;font-size:19px}
+.brand svg{width:34px;height:34px}
+.grow{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:14px;font-weight:800;text-decoration:none;border:1.5px solid var(--line);background:var(--surface);white-space:nowrap;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.sm{height:40px;padding:0 16px;font-size:15px}
+section{padding:70px 0}
+.hero{padding:64px 0 40px;text-align:center}
+.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--ink-2);max-width:640px;margin:18px auto 26px;font-weight:600}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.note{font-size:14px;color:var(--ink-3);font-weight:700;margin-top:14px}
+.shot{box-shadow:var(--shadow);border:1px solid var(--line);margin-top:40px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:30px;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;background:var(--c);color:var(--c-ink)}
+.t-pink{--c:var(--pink);--c-ink:var(--pink-ink);--c-soft:var(--pink-soft)}
+.t-mint{--c:var(--mint);--c-ink:var(--mint-ink);--c-soft:var(--mint-soft)}
+.t-sun{--c:var(--sun);--c-ink:var(--sun-ink);--c-soft:var(--sun-soft)}
+.t-sky{--c:var(--sky);--c-ink:var(--sky-ink);--c-soft:var(--sky-soft)}
+.t-lilac{--c:var(--lilac);--c-ink:var(--lilac-ink);--c-soft:var(--lilac-soft)}
+.grid{display:grid;gap:22px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:1fr 1fr;align-items:center;gap:42px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+.card h3{margin-bottom:6px}
+.card p{margin:0;color:var(--ink-2);font-weight:600;font-size:15px}
+.feat{display:flex;gap:13px;align-items:flex-start;margin:14px 0}
+.feat i{width:30px;height:30px;border-radius:10px;background:var(--c);display:grid;place-items:center;flex:none;font-style:normal;font-size:15px}
+.feat b{display:block}
+.feat span{color:var(--ink-2);font-weight:600;font-size:15px}
+.phones{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.phones img{width:230px;border-radius:26px;border:8px solid var(--ink);box-shadow:var(--shadow)}
+.faq{max-width:760px;margin:0 auto}
+details{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:10px}
+details summary{font-weight:800;cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";float:right;color:var(--ink-3)}
+details[open] summary::after{content:"–"}
+details p{color:var(--ink-2);font-weight:600;font-size:15px;margin-bottom:0}
+.buy{background:var(--ink);color:#fff;border-radius:30px;padding:54px 30px;text-align:center}
+.buy h2{color:#fff}
+.buy p{color:#C9C3DE;max-width:520px;margin:14px auto 24px;font-weight:600}
+.buy .btn{background:var(--sun);border-color:var(--sun);color:#2a1e00}
+footer{padding:36px 0;text-align:center;color:var(--ink-3);font-weight:700;font-size:14px}
+.center{text-align:center}
+.sub{color:var(--ink-2);font-weight:600;max-width:680px;margin:14px auto 0}
+@media (max-width:860px){.g3,.g2{grid-template-columns:1fr}section{padding:48px 0}}
+@media (max-width:520px){header .wrap{gap:8px;padding:0 14px}.brand{font-size:16px}.brand svg{width:28px;height:28px}.btn.sm{height:38px;padding:0 12px;font-size:14px}.wrap{padding:0 16px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <span class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><g transform="translate(20 20)"><ellipse rx="6.4" ry="10.5" cy="-9" fill="#F2A7C2" transform="rotate(0)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#F6CD5E" transform="rotate(60)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#8FD9BC" transform="rotate(120)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#98BFF0" transform="rotate(180)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#BFA8EE" transform="rotate(240)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#F5AE88" transform="rotate(300)"/><circle r="5.6" fill="#24213B"/><circle r="2.2" fill="#FCE4A0"/></g></svg> The Everyday</span><span class="grow"></span>
+  <a class="btn sm" href="demo/" target="_blank">Try the demo</a>
+  <a class="btn sm pri" href="https://www.etsy.com/shop/ThePetalo" target="_blank" rel="noopener">Get it</a>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <span class="pill t-lilac">ADHD-friendly life planner</span>
+  <h1 style="margin-top:18px">Your whole life<br>in one calm place.</h1>
+  <p class="lead">Tasks, routines, calendar, goals, habits, budget, debt, savings, meals, groceries and fitness — one app, no subscription, works offline on your phone and your computer.</p>
+  <div class="cta">
+    <a class="btn pri" href="https://www.etsy.com/shop/ThePetalo" target="_blank" rel="noopener">Get the full app</a>
+    <a class="btn" href="demo/" target="_blank">Try the free demo →</a>
+  </div>
+  <p class="note">No account · No cloud · Your data stays on your device</p>
+  <img class="shot" src="img/dash.jpg" alt="The Everyday dashboard: today's tasks, budget, habits and wellness" width="1400">
+</div></section>
+
+<section><div class="wrap">
+  <div class="center"><h2>Three parts of life, three colors</h2><p class="sub">The dashboard shows today at a glance — what needs doing, what’s left to spend, and how you’re feeling. Everything else is one click away.</p></div>
+  <div class="grid g3" style="margin-top:36px">
+    <div class="card t-pink"><span class="pill">Organization</span>
+      <div class="feat"><i>✓</i><span><b>Tasks</b>Filter by area, priority and date. Overdue things never quietly disappear.</span></div>
+      <div class="feat"><i>↻</i><span><b>Routines</b>Set it once — daily, certain weekdays, monthly, every N days — the schedule builds itself.</span></div>
+      <div class="feat"><i>◎</i><span><b>Goals & habits</b>Big goals split into small steps, plus a month-long habit grid with streaks.</span></div></div>
+    <div class="card t-mint"><span class="pill">Finances</span>
+      <div class="feat"><i>$</i><span><b>Budget</b>Income, bills, spending by category with limits, and one honest “left to spend” number.</span></div>
+      <div class="feat"><i>↓</i><span><b>Debt payoff</b>Snowball or avalanche, extra payments, and the month you’ll be debt-free.</span></div>
+      <div class="feat"><i>★</i><span><b>Savings goals</b>Rings that fill up, and how much to put aside each month to make the date.</span></div></div>
+    <div class="card t-sun"><span class="pill">Wellness</span>
+      <div class="feat"><i>🍽</i><span><b>Meals</b>A week grid, your saved meals, and a grocery list that writes itself.</span></div>
+      <div class="feat"><i>🏃</i><span><b>Movement</b>Log workouts, see the week, track weight for up to 8 people in kg or lb.</span></div>
+      <div class="feat"><i>💧</i><span><b>Hydration</b>Tap a glass. That’s it.</span></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="grid g2">
+    <div><span class="pill t-lilac">Built for ADHD brains</span>
+      <h2 style="margin-top:16px">Not just a prettier to-do list</h2>
+      <div class="feat"><i class="t-lilac">3</i><span><b>Today’s 3</b>Pick three things. The other forty can wait — they’re still saved.</span></div>
+      <div class="feat"><i class="t-sky">✎</i><span><b>Brain dump</b>Catch a thought in two seconds, sort it later (or never).</span></div>
+      <div class="feat"><i class="t-peach" style="background:var(--peach)">⏱</i><span><b>Focus timer</b>5 to 45 minutes, with a soft chime — short sprints beat long stares.</span></div>
+      <div class="feat"><i class="t-mint">🎉</i><span><b>Wins you can see</b>Confetti, streaks and progress rings — because finishing should feel like something.</span></div>
+    </div>
+    <img class="shot" src="img/tasks.jpg" alt="Tasks grouped by overdue, today and this week" style="margin:0">
+  </div>
+</div></section>
+
+<section><div class="wrap center">
+  <h2>It fits in your pocket too</h2><p class="sub">Install it from your browser and it opens like a normal app — full screen, offline, on the home screen. Same app, same data, no sync to set up.</p>
+  <div class="phones" style="margin-top:34px">
+    <img src="img/m_dash.jpg" alt="Dashboard on a phone"><img src="img/m_budget.jpg" alt="Budget on a phone"><img src="img/m_habits.jpg" alt="Habit tracker on a phone">
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="grid g2"><img class="shot" src="img/budget.jpg" alt="Monthly budget with bills, categories and limits" style="margin:0">
+    <div><span class="pill t-mint">Money</span><h2 style="margin-top:16px">Know what’s actually left</h2>
+      <p style="color:var(--ink-2);font-weight:600">Income, bills (tick them off as they’re paid), every expense by category, and limits that turn red before the month does. Debt gets a real plan with a real date, and savings goals show what to put aside each month.</p>
+      <a class="btn sm" href="demo/" target="_blank">See it in the demo →</a></div></div>
+  <div class="grid g2" style="margin-top:56px">
+    <div><span class="pill t-sun">Food</span><h2 style="margin-top:16px">Dinner, decided</h2>
+      <p style="color:var(--ink-2);font-weight:600">Save the meals you actually cook with their ingredients. Drop them into the week — or hit “fill the empty slots” — then send the whole week to a grocery list sorted by aisle.</p></div>
+    <img class="shot" src="img/meals.jpg" alt="Weekly meal plan grid" style="margin:0">
+  </div>
+</div></section>
+
+<section><div class="wrap center">
+  <h2>What you get</h2>
+  <div class="grid g3" style="margin-top:32px;text-align:left">
+    <div class="card"><h3>The app file</h3><p>One file. Open it from your computer or put it online — it works either way, online or offline.</p></div>
+    <div class="card"><h3>A quick start guide</h3><p>A short PDF: how to install it on your phone, set it up in 5 minutes, and back up your data.</p></div>
+    <div class="card"><h3>Free updates</h3><p>Improvements land in the same download — no subscription, no account, ever.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap faq">
+  <h2 class="center" style="margin-bottom:26px">Questions</h2>
+  <details open><summary>Where is my data stored?</summary><p>On your device, in your browser — nothing is sent anywhere, and there’s no account to make. You can download a backup file anytime and restore it on another device.</p></details>
+  <details><summary>Does it work offline?</summary><p>Yes. Once it’s open, it keeps working with no internet — on a plane, on the metro, anywhere.</p></details>
+  <details><summary>Phone or computer?</summary><p>Both. It’s built for phone screens and big screens. Each device keeps its own copy, and you can move data between them with the backup file.</p></details>
+  <details><summary>Do I need to install anything?</summary><p>No app store, no install required. Open it in any modern browser; if you want it on your home screen, your browser can add it with one tap.</p></details>
+  <details><summary>Is it a subscription?</summary><p>No. One payment, yours forever.</p></details>
+  <details><summary>Can I try it first?</summary><p>Yes — the demo is the full app with sample data. Play with it as long as you like.</p></details>
+</div></section>
+
+<section><div class="wrap"><div class="buy">
+  <h2>Start with today</h2>
+  <p>Three things, one number, one calm page. The rest is there when you need it.</p>
+  <div class="cta"><a class="btn" href="https://www.etsy.com/shop/ThePetalo" target="_blank" rel="noopener">Get the full app</a><a class="btn" style="background:transparent;color:#fff;border-color:#4a4566" href="demo/" target="_blank">Try the demo first</a></div>
+</div></div></section>
+
+<footer>The Everyday · a calm life planner · made by ThePetalo</footer>
+</body></html>
