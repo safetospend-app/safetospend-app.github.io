@@ -375,13 +375,14 @@ table.tbl tr:hover td{background:var(--surface-2)}
 </div>
 <nav class="tabbar" id="tabbar" aria-label="Quick navigation"></nav>
 <button class="fab" data-a="quickAdd" aria-label="Quick add (N)" title="Quick add (N)"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-<script>window.EVERYDAY_DEMO=true;window.EVERYDAY_BUY_URL="https://www.etsy.com/shop/ThePetalo";window.EVERYDAY_VERSION="1.0.0";</script>
+<script>window.EVERYDAY_DEMO=true;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.0.0";</script>
 <script>/* ---- core.js ---- */
 /* ============ The Everyday — core ============ */
 'use strict';
 const DEMO = !!window.EVERYDAY_DEMO;
 const BUY_URL = window.EVERYDAY_BUY_URL || '#';
-const KEY = DEMO ? 'everyday.demo.v1' : 'everyday.v1';
+const SAMPLE_PRESET = !!window.EVERYDAY_SAMPLE;
+const KEY = DEMO ? 'everyday.demo.v1' : SAMPLE_PRESET ? 'everyday.preview.v1' : 'everyday.v1';
 
 /* ---------- tiny utils ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -1033,7 +1034,7 @@ let _day = today(); setInterval(() => { if (today() !== _day) { _day = today(); 
 async function boot() {
   S = load();
   if (!S) S = await idbRestore();
-  if (!S) { S = blank(); if (DEMO) { S = sampleData('Sam'); } }
+  if (!S) { S = blank(); if (DEMO || SAMPLE_PRESET) { S = sampleData('Sam'); } }
   applyTheme();
   const v = location.hash.replace('#/', ''); cur = VIEWS[v] ? v : 'dashboard';
   render();
