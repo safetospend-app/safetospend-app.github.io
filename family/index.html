@@ -1138,7 +1138,7 @@ function occursRule(it, a, b) {
 /* ============ Live calendar subscriptions ============ */
 // Google / iCloud / Outlook don't allow browsers to read their calendar feeds directly (CORS),
 // so feeds go through a tiny Cloudflare Worker (see worker.js). Set its URL here.
-const ICS_PROXY = '__ICS_PROXY__';
+const ICS_PROXY = 'https://familywall-relay.ayoub-hliyel.workers.dev';
 const SYNC_EVERY = 15 * 60 * 1000;
 const NO_CORS_HOSTS = /(google\.com|icloud\.com|outlook\.|office365\.com|live\.com|yahoo\.com)$/i;
 let syncing = false;
