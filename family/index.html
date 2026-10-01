@@ -14,17 +14,17 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#EEF2F7; --panel:#FFFFFF; --panel2:#F6F8FB; --ink:#1E2A3B; --ink2:#5B6B80; --ink3:#95A3B5;
-  --line:#E2E8F0; --accent:#2F7CF6; --accent-soft:#E4EEFE; --star:#F5B400; --danger:#E5484D;
-  --radius:18px; --shadow:0 2px 10px rgba(30,42,59,.06); --side:96px;
-  --font:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --bg:#F5F6F8; --panel:#FFFFFF; --panel2:#F5F6F8; --ink:#1F2430; --ink2:#5E6675; --ink3:#9AA2AF;
+  --line:#E8EAEE; --accent:#2D7FF9; --accent-soft:#E8F1FE; --star:#F5B400; --danger:#E5484D;
+  --radius:14px; --shadow:0 1px 3px rgba(20,24,40,.06),0 1px 2px rgba(20,24,40,.04); --side:132px;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --evink:#232733;
 }
 [data-theme="dark"]{
-  --bg:#0F1522; --panel:#18202F; --panel2:#1F2939; --ink:#EEF2F8; --ink2:#A6B3C5; --ink3:#6F7E93;
-  --line:#2A3547; --accent:#5B9BFF; --accent-soft:#1F3252; --shadow:0 2px 10px rgba(0,0,0,.3);
+  --bg:#0F1420; --panel:#171D2A; --panel2:#1E2533; --ink:#EEF1F6; --ink2:#A9B1C0; --ink3:#6E7787;
+  --line:#272F3E; --accent:#5B9BFF; --accent-soft:#1D2D48; --shadow:0 1px 3px rgba(0,0,0,.4);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px}
@@ -36,54 +36,72 @@ svg.i.sm{width:18px;height:18px}
 
 /* ---------- shell ---------- */
 #app{display:grid;grid-template-columns:var(--side) 1fr;height:100vh;height:100dvh}
-#side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:4px;overflow-y:auto}
-#side .logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#2F7CF6,#7C5CF0);display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px;margin-bottom:10px}
-.nav{width:80px;padding:9px 0 7px;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink2);font-size:12px;font-weight:700}
+#side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:stretch;padding:14px 0 10px;gap:2px;overflow-y:auto}
+.side-w{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 14px;margin:0 10px 8px;border-bottom:1px solid var(--line);color:var(--ink)}
+.side-w .e{font-size:34px;line-height:1}
+.side-w .t{font-size:15px;font-weight:700}
+.side-w .hl{font-size:11px;color:var(--ink3);font-weight:600}
+.nav{position:relative;display:flex;align-items:center;gap:10px;padding:11px 16px;color:var(--ink2);font-size:14px;font-weight:600;text-align:left}
+.nav svg.i{width:22px;height:22px;stroke:var(--ic)}
 .nav:hover{background:var(--panel2)}
-.nav.on{background:var(--accent-soft);color:var(--accent)}
+.nav.on{background:var(--accent-soft);color:var(--ink)}
+.nav.on:before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
 #side .grow{flex:1}
 #main{display:flex;flex-direction:column;min-width:0;min-height:0}
 
 /* ---------- header ---------- */
-#head{display:flex;align-items:center;gap:22px;padding:14px 24px 10px;flex-wrap:wrap}
+#head{padding:12px 20px 8px;background:var(--panel);border-bottom:1px solid var(--line)}
+.hd-top{display:flex;align-items:center;gap:14px}
+.hd-top .sp{flex:1}
+.hd-date{display:flex;align-items:center;gap:14px;font-size:24px;font-weight:700;letter-spacing:-.3px}
+.hd-date .bar{width:2px;height:24px;background:var(--ink)}
+.hd-date .tm small{font-size:13px;font-weight:600;color:var(--ink2);margin-left:3px}
+.hd-wx{display:none}
+.pills{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px;margin-top:10px}
+.ppill{display:flex;align-items:center;gap:8px;background:var(--pc);border-radius:10px;padding:5px 10px 5px 5px;color:var(--evink);font-weight:600;font-size:14px;min-width:0;transition:opacity .2s}
+.ppill .nm{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ppill .ct{font-size:12px;font-weight:600;opacity:.75}
+.ppill.off{opacity:.3}
 .clock{display:flex;align-items:baseline;gap:14px}
-.clock .t{font-size:44px;font-weight:900;letter-spacing:-1px;line-height:1}
+.clock .t{font-size:44px;font-weight:700;letter-spacing:-1px;line-height:1}
 .clock .t small{font-size:18px;font-weight:800;margin-left:4px;color:var(--ink2)}
 .clock .d{font-size:17px;font-weight:700;color:var(--ink2);line-height:1.2}
 .clock .d b{display:block;color:var(--ink);font-size:19px}
 .weather{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
 .weather .e{font-size:30px;line-height:1}
-.weather .tp{font-size:22px;font-weight:900}
+.weather .tp{font-size:22px;font-weight:700}
 .weather .hl{font-size:13px;color:var(--ink2);font-weight:700}
 .people{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap}
 .pchip{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:800;color:var(--ink2);opacity:1;transition:opacity .2s}
 .pchip.off{opacity:.35}
-.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:900;font-size:20px;flex:none;box-shadow:0 0 0 3px var(--panel)}
+.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:20px;flex:none;box-shadow:0 0 0 3px var(--panel)}
 .av.s{width:32px;height:32px;font-size:15px;box-shadow:none}
 .av.xs{width:24px;height:24px;font-size:12px;box-shadow:none}
 .pchip .badge{position:absolute;top:-4px;right:-6px;background:var(--danger);color:#fff;font-size:11px;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 5px;border:2px solid var(--bg)}
 .pchip .badge.done{background:#22B573}
-.iconbtn{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--panel);box-shadow:var(--shadow);color:var(--ink2)}
+.iconbtn{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.iconbtn.sm{width:34px;height:34px;border:0;background:none}
 .iconbtn:hover{color:var(--accent)}
 
-#view{flex:1;min-height:0;overflow:auto;padding:6px 24px 24px}
+#view{flex:1;min-height:0;overflow:auto;padding:14px 20px 20px}
 
 /* ---------- generic ---------- */
-.card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-.card h3{margin:0 0 12px;font-size:17px;font-weight:900;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card{background:var(--panel);border-radius:var(--radius);border:1px solid var(--line);padding:18px}
+.card h3{margin:0 0 12px;font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .card h3 .sp{flex:1}
 .muted{color:var(--ink3);font-weight:600}
 .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.toolbar .title{font-size:24px;font-weight:900;margin:0 6px;min-width:0}
+.toolbar .title{font-size:24px;font-weight:700;margin:0 6px;min-width:0}
 .toolbar .sp{flex:1}
-.btn{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 16px;border-radius:12px;background:var(--panel);box-shadow:var(--shadow);font-weight:800;font-size:15px;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:10px;background:var(--panel);border:1px solid var(--line);font-weight:600;font-size:14px;white-space:nowrap}
+.btn.pri{border-color:var(--accent)}
 .btn.pri{background:var(--accent);color:#fff}
 .btn.danger{color:var(--danger)}
 .btn.sm{height:34px;padding:0 12px;font-size:14px;border-radius:10px}
 .btn:disabled{opacity:.45;cursor:default}
-.seg{display:inline-flex;background:var(--panel);border-radius:12px;padding:4px;box-shadow:var(--shadow)}
-.seg button{height:34px;padding:0 14px;border-radius:9px;font-weight:800;font-size:14px;color:var(--ink2)}
-.seg button.on{background:var(--accent);color:#fff}
+.seg{display:inline-flex;background:var(--panel2);border-radius:10px;padding:3px;border:1px solid var(--line)}
+.seg button{height:32px;padding:0 14px;border-radius:8px;font-weight:600;font-size:13px;color:var(--ink2)}
+.seg button.on{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 4px;border-radius:17px;background:var(--panel);box-shadow:var(--shadow);font-weight:800;font-size:14px}
 .chip.off{opacity:.4}
@@ -100,22 +118,22 @@ svg.i.sm{width:18px;height:18px}
 .evrow .tm{font-size:13px;font-weight:800;color:var(--ink2);width:112px;flex:none}
 .evrow .tt{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .evrow .dots{display:flex;gap:3px}
-.upc .day{font-size:12px;font-weight:900;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin:10px 2px 6px}
+.upc .day{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin:10px 2px 6px}
 .mini-meal{display:grid;grid-template-columns:86px 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
 .mini-meal:last-child{border:0}
-.mini-meal .k{font-size:12px;font-weight:900;text-transform:uppercase;color:var(--ink3);letter-spacing:.5px}
+.mini-meal .k{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink3);letter-spacing:.5px}
 .mini-meal .v{font-weight:800}
 
 /* ---------- tasks / chore chart ---------- */
 .chore-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;align-items:start}
-.pcol{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.pcol .ph{display:flex;align-items:center;gap:12px;padding:14px 16px;color:#fff}
-.pcol .ph .nm{font-weight:900;font-size:19px;line-height:1.1}
+.pcol{background:var(--panel);border-radius:var(--radius);border:1px solid var(--line);overflow:hidden}
+.pcol .ph{display:flex;align-items:center;gap:12px;padding:14px 16px;color:var(--evink)}
+.pcol .ph .nm{font-weight:700;font-size:19px;line-height:1.1}
 .pcol .ph .st{font-size:13px;font-weight:800;opacity:.95}
-.pcol .ph .av{box-shadow:0 0 0 3px rgba(255,255,255,.5);background:rgba(255,255,255,.25)}
+.pcol .ph .av{box-shadow:0 0 0 3px rgba(255,255,255,.6)}
 .ring{margin-left:auto;width:48px;height:48px;position:relative}
 .ring svg{width:48px;height:48px;transform:rotate(-90deg)}
-.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:900}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700}
 .pcol .list{padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px}
 .task{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--panel2);cursor:pointer;transition:transform .12s}
 .task:active{transform:scale(.98)}
@@ -125,7 +143,7 @@ svg.i.sm{width:18px;height:18px}
 .task .tx b{display:block;font-weight:800;line-height:1.2}
 .task.done .tx b{text-decoration:line-through;color:var(--ink3)}
 .task .tx span{font-size:12px;color:var(--ink3);font-weight:700}
-.task .sv{font-size:13px;font-weight:900;color:var(--star);white-space:nowrap}
+.task .sv{font-size:13px;font-weight:700;color:var(--star);white-space:nowrap}
 .task .ed{color:var(--ink3);padding:4px}
 .pri-high{box-shadow:inset 3px 0 0 var(--danger)}
 .addtask{border:2px dashed var(--line);border-radius:14px;padding:10px;text-align:center;font-weight:800;color:var(--ink3)}
@@ -136,72 +154,101 @@ svg.i.sm{width:18px;height:18px}
 
 /* ---------- rewards ---------- */
 .bal-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}
-.bal{border-radius:var(--radius);padding:16px;color:#fff;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)}
-.bal .n{font-size:30px;font-weight:900;line-height:1}
+.bal{border-radius:var(--radius);padding:16px;color:var(--evink);display:flex;align-items:center;gap:12px}
+.bal .n{font-size:30px;font-weight:700;line-height:1}
 .bal .l{font-size:13px;font-weight:800;opacity:.95}
 .bal .adj{margin-left:auto;display:flex;flex-direction:column;gap:4px}
-.bal .adj button{width:30px;height:26px;border-radius:8px;background:rgba(255,255,255,.25);font-weight:900;color:#fff}
+.bal .adj button{width:30px;height:26px;border-radius:8px;background:rgba(255,255,255,.6);font-weight:700;color:var(--evink)}
 .rw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
 .rw{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:8px;position:relative}
 .rw .em{font-size:40px;line-height:1}
-.rw .tt{font-weight:900;font-size:17px}
-.rw .cost{font-weight:900;color:var(--star)}
+.rw .tt{font-weight:700;font-size:17px}
+.rw .cost{font-weight:700;color:var(--star)}
 .rw .who{display:flex;gap:4px}
 .rw .ed{position:absolute;top:10px;right:10px;color:var(--ink3)}
 .hist{margin-top:18px}
 .hist .r{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-weight:700}
-.hist .r .amt{margin-left:auto;font-weight:900}
+.hist .r .amt{margin-left:auto;font-weight:700}
 
 /* ---------- calendar ---------- */
-.cal-month{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:36px;grid-auto-rows:minmax(104px,1fr);background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.cal-month .wd{grid-row:auto;height:36px;display:grid;place-items:center;font-size:12px;font-weight:900;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--line)}
-.cal-month .wdrow{display:contents}
-.mc{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;min-width:0;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.calwrap{position:relative;display:flex;flex-direction:column;height:100%;min-height:520px}
+.cal-tb{margin-bottom:10px}
+.navgrp{display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2px}
+.navgrp .btn{border:0;height:34px}
+.toolbar.cal-tb .title{font-size:20px;font-weight:700}
+.fab{position:absolute;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 6px 18px rgba(45,127,249,.4);z-index:5}
+.fab svg.i{width:28px;height:28px}
+.pill{font-size:12px;font-weight:600;color:var(--evink);border-radius:6px;padding:3px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border:1px solid;border-left:3px solid var(--bl)}
+.pill i{font-style:normal;opacity:.7}
+.more{font-size:12px;font-weight:600;color:var(--ink2);padding-left:4px}
+.who{display:flex;margin-top:auto;padding-top:4px}
+.who .av{margin-right:-5px;box-shadow:0 0 0 2px rgba(255,255,255,.8)}
+.av.xxs{width:20px;height:20px;font-size:10px;box-shadow:none}
+/* time grid (day & week) */
+.tg{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.tg-head{display:grid;border-bottom:1px solid var(--line);overflow:hidden;scrollbar-gutter:stable}
+.tg-dh{display:flex;flex-direction:column;align-items:center;padding:8px 0 8px;cursor:pointer;border-left:1px solid var(--line)}
+.tg-dh .w{font-size:13px;font-weight:600;color:var(--ink2)}
+.tg-dh .n{font-size:22px;font-weight:700;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;margin-top:2px}
+.tg-dh.today .w{color:var(--accent)}
+.tg-dh.today .n{background:var(--accent);color:#fff}
+.tg.one .tg-dh{flex-direction:row;gap:10px;justify-content:flex-start;padding-left:14px}
+.tg-all{display:grid;border-bottom:1px solid var(--line);overflow:hidden;scrollbar-gutter:stable}
+.tg-all .lbl{font-size:11px;font-weight:600;color:var(--ink3);padding:8px 6px;text-align:right}
+.tg-all .cell{border-left:1px solid var(--line);padding:4px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.tg-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable}
+.tg-body{display:grid;position:relative}
+.tg-hours{position:relative}
+.tg-hours span{position:absolute;right:8px;transform:translateY(-50%);font-size:11px;font-weight:500;color:var(--ink3);white-space:nowrap}
+.tg-col{position:relative;border-left:1px solid var(--line);min-width:0}
+.tg-col.today{background:rgba(45,127,249,.03)}
+.tg-col .slot{position:absolute;left:0;right:0;height:var(--hh,64px);border-top:1px solid var(--line);cursor:pointer}
+.tg-col .slot:first-child{border-top:0}
+.tg-col .slot:hover{background:rgba(45,127,249,.05)}
+.blk{position:absolute;border:1px solid;border-radius:7px;padding:5px 7px;overflow:hidden;cursor:pointer;color:var(--evink);display:flex;flex-direction:column;gap:1px;z-index:1}
+.blk b{font-size:12px;font-weight:600;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.blk span{font-size:11px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blk.short{padding:3px 7px}
+.blk.short b{-webkit-line-clamp:1}
+.now{position:absolute;left:0;right:0;height:2px;background:var(--danger);z-index:2}
+.now:before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--danger)}
+/* month */
+.cal-month{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:34px;grid-auto-rows:minmax(100px,1fr);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.cal-month .wd{display:grid;place-items:center;font-size:12px;font-weight:600;color:var(--ink2);border-bottom:1px solid var(--line)}
+.mc{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:5px;min-width:0;cursor:pointer;display:flex;flex-direction:column;gap:3px}
 .mc:nth-child(7n){border-right:0}
 .mc.out{background:var(--panel2)}
 .mc.out .dn{color:var(--ink3)}
-.mc .dn{font-weight:900;font-size:14px;width:28px;height:28px;display:grid;place-items:center;border-radius:50%}
+.mc .dn{font-weight:600;font-size:13px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%}
 .mc.today .dn{background:var(--accent);color:#fff}
-.pill{font-size:12px;font-weight:800;color:#fff;border-radius:6px;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-.pill.soft{background:var(--panel2)!important;color:var(--ink);border-left:4px solid}
-.more{font-size:12px;font-weight:800;color:var(--ink2);padding-left:4px}
-.cal-cols{display:grid;gap:10px}
-.dcol{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:420px;min-width:0}
-.dcol .dh{padding:12px 10px 10px;text-align:center;border-bottom:1px solid var(--line);cursor:pointer}
-.dcol .dh .w{font-size:12px;font-weight:900;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px}
-.dcol .dh .n{font-size:24px;font-weight:900;width:40px;height:40px;margin:2px auto 0;display:grid;place-items:center;border-radius:50%}
-.dcol.today .dh .n{background:var(--accent);color:#fff}
+/* schedule columns */
+.cal-cols{display:grid;gap:10px;flex:1}
+.dcol{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;min-height:420px;min-width:0}
+.dcol .dh{display:flex;align-items:baseline;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.dcol .dh .w{font-size:15px;font-weight:600}
+.dcol .dh .n{font-size:15px;font-weight:700}
+.dcol.today .dh .n{background:var(--accent);color:#fff;border-radius:12px;padding:0 8px}
+.dcol .dh .c{margin-left:auto;font-size:12px;color:var(--ink3);font-weight:500}
 .dcol .body{padding:8px;display:flex;flex-direction:column;gap:6px;flex:1;cursor:pointer}
-.evc{border-radius:10px;padding:8px 10px;cursor:pointer;border-left:5px solid;background:var(--panel2);min-width:0}
-.evc b{display:block;font-size:14px;font-weight:800;line-height:1.25;overflow-wrap:anywhere}
-.evc span{font-size:12px;font-weight:800;color:var(--ink2)}
-.evc .dots{display:flex;gap:3px;margin-top:4px}
+.evc{border-radius:8px;padding:8px 10px;cursor:pointer;border:1px solid;border-left:3px solid var(--bl);min-width:0;color:var(--evink);display:flex;flex-direction:column;gap:2px}
+.evc b{font-size:14px;font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+.evc span{font-size:12px;opacity:.75}
 .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
-.dayview{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.dayview .alld{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line);min-height:46px;align-items:center}
-.dayview .alld .lbl{font-size:12px;font-weight:900;color:var(--ink3);width:62px;white-space:nowrap}
-.tgrid{position:relative;height:calc(24 * 60px)}
-.tgrid .hr{position:absolute;left:0;right:0;height:60px;border-top:1px solid var(--line);cursor:pointer}
-.tgrid .hr span{position:absolute;left:10px;top:-9px;font-size:11px;font-weight:800;color:var(--ink3);background:var(--panel);padding:0 4px}
-.tgrid .blk{position:absolute;border-radius:10px;padding:6px 10px;color:#fff;overflow:hidden;cursor:pointer;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
-.tgrid .blk b{display:block;font-weight:900}
-.tgrid .now{position:absolute;left:60px;right:0;height:2px;background:var(--danger);z-index:2}
-.tgrid .now:before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--danger)}
-.tscroll{max-height:calc(100dvh - 290px);overflow:auto}
+.evc .dots,.evrow .dots{display:flex;gap:3px}
 
 /* ---------- meals ---------- */
 .meal-grid{display:grid;grid-template-columns:110px repeat(7,minmax(120px,1fr));gap:8px;min-width:980px}
-.meal-grid .h{font-weight:900;text-align:center;padding:8px 0;font-size:14px}
+.meal-grid .h{font-weight:700;text-align:center;padding:8px 0;font-size:14px}
 .meal-grid .h small{display:block;color:var(--ink3);font-size:12px}
 .meal-grid .h.today{color:var(--accent)}
-.meal-grid .slot{display:flex;align-items:center;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);gap:6px}
+.meal-grid .slot{display:flex;align-items:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);gap:6px}
 .mcell{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);min-height:74px;padding:10px;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere}
 .mcell.empty{color:var(--ink3);font-size:22px;background:var(--panel2);box-shadow:none;border:2px dashed var(--line)}
 .mcell.has{border-top:4px solid var(--mc)}
 .recipes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
 .recipe{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;cursor:pointer}
-.recipe .tt{font-weight:900;font-size:17px}
-.recipe .tg{font-size:12px;font-weight:900;text-transform:uppercase;color:var(--ink3)}
+.recipe .tt{font-weight:700;font-size:17px}
+.recipe .tg{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink3)}
 .recipe ul{margin:8px 0 0;padding-left:18px;color:var(--ink2);font-weight:700;font-size:14px}
 
 /* ---------- lists ---------- */
@@ -249,11 +296,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .sheet{background:var(--panel);border-radius:22px;width:min(560px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:pop .18s ease-out}
 @keyframes pop{from{transform:scale(.96);opacity:0}}
 .sheet .sh{display:flex;align-items:center;padding:16px 18px 8px;gap:10px}
-.sheet .sh h2{margin:0;font-size:21px;font-weight:900;flex:1}
+.sheet .sh h2{margin:0;font-size:21px;font-weight:700;flex:1}
 .sheet .sb{padding:6px 18px 10px;overflow:auto;display:flex;flex-direction:column;gap:14px}
 .sheet .sf{display:flex;gap:10px;padding:12px 18px 18px;border-top:1px solid var(--line)}
 .sheet .sf .sp{flex:1}
-.fld>label{display:block;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:6px}
+.fld>label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:6px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
 .swatches button{width:36px;height:36px;border-radius:50%;border:3px solid transparent}
@@ -262,7 +309,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .emojis button{width:40px;height:40px;border-radius:10px;font-size:22px;background:var(--panel2)}
 .emojis button.on{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
 .daypick{display:flex;gap:6px}
-.daypick button{width:40px;height:40px;border-radius:50%;background:var(--panel2);font-weight:900;font-size:13px}
+.daypick button{width:40px;height:40px;border-radius:50%;background:var(--panel2);font-weight:700;font-size:13px}
 .daypick button.on{background:var(--accent);color:#fff}
 
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--panel);padding:12px 20px;border-radius:14px;font-weight:800;z-index:80;transition:transform .25s;max-width:90vw}
@@ -278,12 +325,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 @keyframes kb{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.14) translate(-2%,-1.5%)}}
 #saver .nophoto{position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,#3B5BDB,#1B1F3B 60%,#0B0D1C);}
 #saver .ov{position:absolute;left:0;right:0;bottom:0;padding:40px 44px 36px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55));display:flex;align-items:flex-end;gap:30px}
-#saver .ov .t{font-size:84px;font-weight:900;line-height:.9;letter-spacing:-2px}
+#saver .ov .t{font-size:84px;font-weight:700;line-height:.9;letter-spacing:-2px}
 #saver .ov .d{font-size:24px;font-weight:800;opacity:.9}
 #saver .ov .nx{margin-left:auto;text-align:right;font-weight:800;font-size:18px;opacity:.95;max-width:40%}
 #sleep{position:fixed;inset:0;background:#000;z-index:75;display:none;align-items:center;justify-content:center;flex-direction:column;color:#444;cursor:pointer}
 #sleep.open{display:flex}
-#sleep .t{font-size:96px;font-weight:900;color:#3a3a3a}
+#sleep .t{font-size:96px;font-weight:700;color:#3a3a3a}
 #sleep .d{font-size:18px;font-weight:800;color:#333}
 
 /* ---------- responsive ---------- */
@@ -295,13 +342,19 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
   :root{--side:0px}
   #app{grid-template-columns:1fr;grid-template-rows:1fr auto}
   #side{grid-row:2;flex-direction:row;border-right:0;border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));overflow-x:auto;overflow-y:hidden;gap:2px}
-  #side .logo,#side .grow{display:none}
-  .nav{width:auto;min-width:62px;padding:6px 8px;font-size:11px}
+  #side .grow,.side-w{display:none}
+  .nav{flex-direction:column;gap:3px;min-width:62px;padding:6px 8px;font-size:11px}
+  .nav.on:before{display:none}
+  .hd-wx{display:block}.hd-wx .weather{box-shadow:none;padding:4px 8px}
+  .hd-date{font-size:18px;gap:10px;white-space:nowrap}.hd-date .bar{height:18px}.hd-date .dl{display:none}
+  .pills{grid-template-columns:repeat(var(--n),minmax(132px,1fr));overflow-x:auto;padding-bottom:2px}
+  .tg-head,.tg-all,.tg-body{grid-template-columns:52px repeat(3,minmax(0,1fr))!important}
+  .tg.one .tg-head,.tg.one .tg-all,.tg.one .tg-body{grid-template-columns:52px minmax(0,1fr)!important}
+  .tg-hours span{font-size:10px;right:4px}
+  .calwrap{min-height:0}
+  .tg{min-height:520px}
   #head{padding:12px 14px 6px;gap:12px}
-  .clock .t{font-size:34px}
-  .clock .d{font-size:14px}.clock .d b{font-size:16px}
-  .people{margin-left:auto;gap:8px}
-  #head>.iconbtn{display:none}
+  #head .hd-top>.iconbtn{display:none}
   .weather{padding:6px 10px}.weather .e{font-size:24px}.weather .tp{font-size:18px}
   .pchip span:last-child{font-size:11px}
   .av{width:36px;height:36px;font-size:16px}
@@ -328,7 +381,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 }
 
 details.help{background:var(--panel2);border-radius:12px;padding:10px 14px;font-size:14px;font-weight:600;color:var(--ink2)}
-details.help summary{cursor:pointer;font-weight:900;color:var(--accent)}
+details.help summary{cursor:pointer;font-weight:700;color:var(--accent)}
 details.help p{margin:10px 0 0;line-height:1.45}
 details.help b{color:var(--ink)}
 
@@ -390,10 +443,24 @@ const ic = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24">${IC[n] |
 
 /* ============ state ============ */
 const KEY = 'familywall.v1';
-const COLORS = ['#FF6B5B', '#3D8BFD', '#22B573', '#F5A524', '#9B6BF2', '#EC5FA6', '#14B8C4', '#FF8A3D', '#6B7A8F'];
+const COLORS = ['#F6B3C6', '#F8DE95', '#D9BCF2', '#A9D6F5', '#B9E6C5', '#F9C6A2', '#A8E2DF', '#F5ABA3', '#CDD5E0'];
+const OLD_COLORS = { '#FF6B5B': '#F5ABA3', '#3D8BFD': '#A9D6F5', '#22B573': '#B9E6C5', '#F5A524': '#F8DE95', '#9B6BF2': '#D9BCF2', '#EC5FA6': '#F6B3C6', '#14B8C4': '#A8E2DF', '#FF8A3D': '#F9C6A2', '#6B7A8F': '#CDD5E0' };
+/* pastel -> strong shade of the same hue (avatars, borders, dots) */
+const deepCache = {};
+function deep(hex) {
+  if (!hex) return '#6B7A8F'; if (deepCache[hex]) return deepCache[hex];
+  let r = parseInt(hex.slice(1, 3), 16) / 255, g = parseInt(hex.slice(3, 5), 16) / 255, b = parseInt(hex.slice(5, 7), 16) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b); let h = 0, sat = 0; const l = (mx + mn) / 2;
+  if (mx !== mn) { const d = mx - mn; sat = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; }
+  const S2 = sat < .15 ? .14 : Math.min(.72, sat * .75 + .2), L2 = sat < .15 ? .42 : .5;
+  const q = L2 < .5 ? L2 * (1 + S2) : L2 + S2 - L2 * S2, pp = 2 * L2 - q;
+  const f = t => { t = (t + 1) % 1; return t < 1 / 6 ? pp + (q - pp) * 6 * t : t < .5 ? q : t < 2 / 3 ? pp + (q - pp) * (2 / 3 - t) * 6 : pp; };
+  const hx = v => Math.round(v * 255).toString(16).padStart(2, '0');
+  return deepCache[hex] = '#' + hx(f(h + 1 / 3)) + hx(f(h)) + hx(f(h - 1 / 3));
+}
 const EMOJIS = ['😀', '😎', '🦄', '🐻', '🐱', '🐶', '🦊', '🐼', '🐸', '🦁', '🐰', '🌸', '⚽', '🎨', '🎮', '🚀', '👑', '⭐', '🌈', '🍕'];
 const SLOTS = [['breakfast', 'Breakfast', '🥞'], ['lunch', 'Lunch', '🥪'], ['dinner', 'Dinner', '🍝'], ['snack', 'Snack', '🍎']];
-const FAMILY = { id: 'family', name: 'Family', color: '#6B7A8F', emoji: '🏠' };
+const FAMILY = { id: 'family', name: 'Family', color: '#CDD5E0', emoji: '🏠' };
 
 function defaults() {
   return {
@@ -435,6 +502,7 @@ function load() {
   state.settings.sleep = Object.assign(d.settings.sleep, state.settings.sleep || {});
   for (const k of ['profiles', 'events', 'subs', 'tasks', 'log', 'rewards', 'recipes', 'lists']) if (!Array.isArray(state[k])) state[k] = d[k];
   if (!state.meals || typeof state.meals !== 'object') state.meals = {};
+  state.profiles.forEach(p => { if (OLD_COLORS[p.color]) p.color = OLD_COLORS[p.color]; });
 }
 let saveT;
 function save() {
@@ -458,7 +526,7 @@ const ui = {
 function avatar(p, size = '') {
   p = p || FAMILY;
   const inner = p.emoji ? p.emoji : esc((p.name || '?')[0].toUpperCase());
-  return `<span class="av ${size}" style="background:${p.color}">${inner}</span>`;
+  return `<span class="av ${size}" style="background:${deep(p.color)}">${inner}</span>`;
 }
 
 /* ============ toast / modal ============ */
@@ -522,7 +590,7 @@ function occursOn(it, ds) {
   return false;
 }
 const REPEATS = [['none', 'Does not repeat'], ['daily', 'Every day'], ['weekdays', 'Weekdays (Mon–Fri)'], ['weekly', 'Every week'], ['biweekly', 'Every 2 weeks'], ['monthly', 'Every month'], ['yearly', 'Every year'], ['custom', 'Pick days…']];
-const repeatLabel = r => (REPEATS.find(x => x[0] === r) || REPEATS[0])[1];
+const repeatLabel = (r, days) => r === 'custom' ? (days || []).slice().sort().map(d => DAYS[d].slice(0, 3)).join(', ') || 'Custom' : (REPEATS.find(x => x[0] === r) || REPEATS[0])[1];
 
 function eventsOn(ds, useFilter = true) {
   return state.events.filter(e => occursOn(e, ds) && passFilter(e, useFilter))
@@ -535,20 +603,28 @@ function passFilter(e, useFilter) {
 }
 const evColor = e => profColor((e.profiles && e.profiles[0]) || 'family');
 const evTime = e => e.allDay ? 'All day' : fmtTime(e.start) + (e.end ? ' – ' + fmtTime(e.end) : '');
-const evDots = e => (e.profiles || []).length > 1 ? `<div class="dots">${e.profiles.map(p => `<span class="dot" style="background:${profColor(p)}"></span>`).join('')}</div>` : '';
+const evDeep = e => deep(evColor(e));
+const evDots = e => (e.profiles || []).length > 1 ? `<div class="dots">${e.profiles.map(p => `<span class="dot" style="background:${deep(profColor(p))}"></span>`).join('')}</div>` : '';
+const evWho = e => { const ps = (e.profiles && e.profiles.length ? e.profiles : ['family']).map(prof).filter(Boolean); return `<span class="who">${ps.slice(0, 4).map(p => avatar(p, 'xxs')).join('')}</span>`; };
 
 function tasksOn(ds, pid) { return state.tasks.filter(t => t.profile === pid && occursOn(t, ds)).sort((a, b) => (a.time || '99').localeCompare(b.time || '99') || (b.priority === 'high') - (a.priority === 'high')); }
 const isDone = (t, ds) => !!(t.done && t.done[ds]);
 const balance = pid => state.log.filter(l => l.pid === pid).reduce((s, l) => s + l.amt, 0);
 
 /* ============ shell ============ */
-const NAV = [['home', 'Today', 'home'], ['calendar', 'Calendar', 'calendar'], ['tasks', 'Chores', 'tasks'], ['rewards', 'Rewards', 'star'],
-  ['meals', 'Meals', 'meals'], ['lists', 'Lists', 'lists'], ['photos', 'Photos', 'photos'], ['sleep', 'Sleep', 'sleep'], ['settings', 'Settings', 'settings']];
+const NAV = [['home', 'Today', 'home', '#3D8BFD'], ['calendar', 'Calendar', 'calendar', '#3D8BFD'], ['tasks', 'Tasks', 'tasks', '#2F7CF6'], ['rewards', 'Rewards', 'star', '#F5B400'],
+  ['meals', 'Meals', 'meals', '#FF8A3D'], ['photos', 'Photos', 'photos', '#22B573'], ['lists', 'Lists', 'lists', '#14B8C4'], ['sleep', 'Sleep', 'sleep', '#F5A524'], ['settings', 'Settings', 'settings', '#6B7A8F']];
 
 function renderSide() {
-  $('#side').innerHTML = `<div class="logo">${esc((S().familyName || 'F')[0].toUpperCase())}</div>` +
-    NAV.map(([id, label, icon], i) => (i === 7 ? '<div class="grow"></div>' : '') +
-      `<button class="nav ${ui.view === id ? 'on' : ''}" data-act="nav" data-v="${id}">${ic(icon)}<span>${label}</span></button>`).join('');
+  $('#side').innerHTML = weatherSide() +
+    NAV.map(([id, label, icon, col], i) => (i === 7 ? '<div class="grow"></div>' : '') +
+      `<button class="nav ${ui.view === id ? 'on' : ''}" data-act="nav" data-v="${id}" style="--ic:${col}">${ic(icon)}<span>${label}</span></button>`).join('');
+}
+function weatherSide() {
+  const s = S();
+  if (s.lat == null) return `<button class="side-w" data-act="nav" data-v="settings" title="Set your city"><span class="e">🌤️</span><span class="t">Set city</span></button>`;
+  const w = weatherData();
+  return `<div class="side-w" title="${esc(s.city)}"><span class="e">${w ? w.emoji : '⏳'}</span><span class="t">${w ? w.temp + '°' + s.units : ''}</span>${w ? `<span class="hl">${w.hi}° / ${w.lo}°</span>` : ''}</div>`;
 }
 
 function renderHead() {
@@ -556,17 +632,15 @@ function renderHead() {
   const h = now.getHours(), m = now.getMinutes();
   const t = S().time24 ? `${pad(h)}:${pad(m)}` : `${h % 12 || 12}:${pad(m)}<small>${h < 12 ? 'AM' : 'PM'}</small>`;
   const ds = todayStr();
-  const w = weatherHTML();
   const people = state.profiles.map(p => {
-    const ts = tasksOn(ds, p.id); const left = ts.filter(x => !isDone(x, ds)).length;
-    const badge = ts.length ? `<span class="badge ${left ? '' : 'done'}">${left ? left : '✓'}</span>` : '';
-    return `<button class="pchip ${ui.filter.has(p.id) ? 'off' : ''}" data-act="headprof" data-pid="${p.id}" title="${esc(p.name)}">${avatar(p)}${badge}<span>${esc(p.name)}</span></button>`;
+    const ts = tasksOn(ds, p.id), done = ts.filter(x => isDone(x, ds)).length;
+    return `<button class="ppill ${ui.filter.has(p.id) ? 'off' : ''}" style="--pc:${p.color}" data-act="headprof" data-pid="${p.id}" title="Show / hide ${esc(p.name)}">${avatar(p, 's')}<span class="nm">${esc(p.name)}</span><span class="ct">${ts.length ? done + '/' + ts.length : ''}</span></button>`;
   }).join('');
   $('#head').innerHTML = `
-    <div class="clock"><div class="t" id="clk">${t}</div><div class="d"><b>${DAYS[now.getDay()]}</b>${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}</div></div>
-    ${w}
-    <div class="people">${people}</div>
-    <button class="iconbtn" data-act="fullscreen" title="Full screen">${ic('expand')}</button>`;
+    <div class="hd-top"><div class="hd-date"><span class="dt"><span class="dl">${DAYS[now.getDay()]}, </span>${MONTHS[now.getMonth()]} ${now.getDate()}</span><span class="bar"></span><span class="tm" id="clk">${t}</span></div>
+      <span class="sp"></span>${S().lat != null ? `<span class="hd-wx">${weatherHTML()}</span>` : ''}
+      <button class="iconbtn" data-act="fullscreen" title="Full screen">${ic('expand')}</button></div>
+    ${people ? `<div class="pills" style="--n:${state.profiles.length}">${people}</div>` : ''}`;
 }
 
 function render() {
@@ -576,7 +650,8 @@ function render() {
   const fn = { home: vHome, calendar: vCalendar, tasks: vTasks, rewards: vRewards, meals: vMeals, lists: vLists, photos: vPhotos, sleep: vSleep, settings: vSettings }[ui.view] || vHome;
   v.innerHTML = fn();
   if (ui.view === 'photos') fillPhotoGrid();
-  if (ui.view === 'calendar' && S().calView === 'day') { const sc = $('.tscroll'); if (sc && !sc.dataset.did) { sc.scrollTop = 7 * 60 - 10; sc.dataset.did = 1; } }
+  const sc = $('.tg-scroll');
+  if (sc) { const key = S().calView + ui.calDate; if (ui.tgKey !== key) { ui.tgKey = key; ui.tgTop = 7 * HH - 6; } sc.scrollTop = ui.tgTop; sc.addEventListener('scroll', () => { ui.tgTop = sc.scrollTop; }, { passive: true }); }
 }
 
 /* ============ TODAY (home dashboard) ============ */
@@ -619,35 +694,35 @@ function vHome() {
   </div>`;
 }
 function evRow(e) {
-  return `<div class="evrow" data-act="ev-edit" data-id="${e.id}"><span class="bar" style="background:${evColor(e)}"></span><span class="tm">${evTime(e)}</span><span class="tt">${esc(e.title)}</span>${evDots(e)}</div>`;
+  return `<div class="evrow" data-act="ev-edit" data-id="${e.id}"><span class="bar" style="background:${evDeep(e)}"></span><span class="tm">${evTime(e)}</span><span class="tt">${esc(e.title)}</span>${evDots(e)}</div>`;
 }
 
 /* ============ CALENDAR ============ */
+const HH = 64; // px per hour in time grids
+const narrowCal = () => window.innerWidth < 700;
 function vCalendar() {
   const s = S(), view = s.calView, d = parseYMD(ui.calDate);
   let title = '', body = '';
   if (view === 'month') { title = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`; body = calMonth(d); }
+  else if (view === 'week' && narrowCal()) { title = rangeTitle(d, addDays(d, 2)); body = timeGrid([0, 1, 2].map(i => addDays(d, i))); }
   else if (view === 'week') {
-    const st = addDays(d, -((d.getDay() - s.weekStart + 7) % 7)); const en = addDays(st, 6);
-    title = rangeTitle(st, en); body = calCols(st, 7);
+    const st = addDays(d, -((d.getDay() - s.weekStart + 7) % 7));
+    title = rangeTitle(st, addDays(st, 6)); body = timeGrid([...Array(7)].map((_, i) => addDays(st, i)));
   } else if (view === 'schedule') {
-    const en = addDays(d, s.schedDays - 1); title = rangeTitle(d, en); body = calCols(d, s.schedDays);
-  } else { title = `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`; body = calDay(d); }
-  const filt = [...state.profiles, FAMILY].map(p => `<button class="chip ${ui.filter.has(p.id) ? 'off' : ''}" data-act="filter" data-pid="${p.id}">${avatar(p, 'xs')}${esc(p.name)}</button>`).join('');
-  return `<div class="toolbar">
-      <button class="iconbtn" data-act="cal-move" data-n="-1">${ic('left')}</button>
-      <button class="btn" data-act="cal-today">Today</button>
-      <button class="iconbtn" data-act="cal-move" data-n="1">${ic('right')}</button>
+    title = rangeTitle(d, addDays(d, s.schedDays - 1)); body = calCols(d, s.schedDays);
+  } else { title = `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`; body = timeGrid([d]); }
+  return `<div class="calwrap"><div class="toolbar cal-tb">
+      <div class="navgrp"><button class="iconbtn sm" data-act="cal-move" data-n="-1" title="Previous">${ic('left')}</button><button class="btn sm" data-act="cal-today">Today</button><button class="iconbtn sm" data-act="cal-move" data-n="1" title="Next">${ic('right')}</button></div>
       <div class="title">${title}</div><span class="sp"></span>
       <div class="seg">${[['day', 'Day'], ['week', 'Week'], ['month', 'Month'], ['schedule', 'Schedule']].map(([k, l]) => `<button class="${view === k ? 'on' : ''}" data-act="cal-view" data-k="${k}">${l}</button>`).join('')}</div>
-      <button class="btn pri" data-act="ev-new" data-ds="${ui.calDate}">${ic('plus', 'sm')} Event</button>
-    </div>
-    <div class="chips" style="margin-bottom:14px">${filt}</div>${body}`;
+    </div>${body}
+    <button class="fab" data-act="ev-new" data-ds="${ui.calDate}" title="New event">${ic('plus')}</button></div>`;
 }
 function rangeTitle(a, b) {
   if (a.getMonth() === b.getMonth()) return `${MONTHS[a.getMonth()].slice(0, 3)} ${a.getDate()} – ${b.getDate()}, ${b.getFullYear()}`;
   return `${MONTHS[a.getMonth()].slice(0, 3)} ${a.getDate()} – ${MONTHS[b.getMonth()].slice(0, 3)} ${b.getDate()}, ${b.getFullYear()}`;
 }
+const evStyle = e => `background:${evColor(e)};border-color:${evDeep(e)}55;--bl:${evDeep(e)}`;
 function calMonth(d) {
   const ws = S().weekStart, first = new Date(d.getFullYear(), d.getMonth(), 1);
   const start = addDays(first, -((first.getDay() - ws + 7) % 7));
@@ -659,7 +734,7 @@ function calMonth(d) {
     const out = day.getMonth() !== d.getMonth();
     html += `<div class="mc ${out ? 'out' : ''} ${ds === td ? 'today' : ''}" data-act="ev-new" data-ds="${ds}">
       <span class="dn" data-act="cal-goday" data-ds="${ds}">${day.getDate()}</span>
-      ${evs.slice(0, 3).map(e => `<div class="pill" style="background:${evColor(e)}" data-act="ev-edit" data-id="${e.id}">${e.allDay ? '' : fmtTime(e.start) + ' '}${esc(e.title)}</div>`).join('')}
+      ${evs.slice(0, 3).map(e => `<div class="pill" style="${evStyle(e)}" data-act="ev-edit" data-id="${e.id}">${e.allDay ? '' : `<i>${fmtTime(e.start)}</i> `}${esc(e.title)}</div>`).join('')}
       ${evs.length > 3 ? `<span class="more" data-act="cal-goday" data-ds="${ds}">+${evs.length - 3} more</span>` : ''}</div>`;
   }
   return html + '</div>';
@@ -670,28 +745,39 @@ function calCols(start, n) {
   for (let i = 0; i < n; i++) {
     const day = addDays(start, i), ds = ymd(day), evs = eventsOn(ds);
     html += `<div class="dcol ${ds === td ? 'today' : ''}">
-      <div class="dh" data-act="cal-goday" data-ds="${ds}"><div class="w">${DAYS[day.getDay()].slice(0, 3)}</div><div class="n">${day.getDate()}</div></div>
-      <div class="body" data-act="ev-new" data-ds="${ds}">${evs.map(e => `<div class="evc" style="border-color:${evColor(e)}" data-act="ev-edit" data-id="${e.id}"><span>${evTime(e)}${e.src === 'sub' ? ' · 🔄' : ''}</span><b>${esc(e.title)}</b>${evDots(e)}</div>`).join('')}</div></div>`;
+      <div class="dh" data-act="cal-goday" data-ds="${ds}"><span class="w">${DAYS[day.getDay()].slice(0, 3)}</span><span class="n">${day.getDate()}</span><span class="c">${evs.length ? evs.length + (evs.length > 1 ? ' events' : ' event') : ''}</span></div>
+      <div class="body" data-act="ev-new" data-ds="${ds}">${evs.map(e => `<div class="evc" style="${evStyle(e)}" data-act="ev-edit" data-id="${e.id}"><b>${esc(e.title)}</b><span>${evTime(e)}${e.src === 'sub' ? ' · 🔄' : ''}</span>${evWho(e)}</div>`).join('')}</div></div>`;
   }
   return html + '</div>';
 }
-function calDay(d) {
-  const ds = ymd(d), evs = eventsOn(ds);
-  const all = evs.filter(e => e.allDay), timed = evs.filter(e => !e.allDay).map(e => ({ e, s: toMin(e.start), en: Math.max(toMin(e.end || fromMin(toMin(e.start) + 60)), toMin(e.start) + 30) }));
+function gridHour(h) { if (S().time24) return pad(h) + ':00'; return `${pad(h % 12 || 12)}:00 ${h < 12 ? 'AM' : 'PM'}`; }
+function layoutDay(evs) {
+  const timed = evs.filter(e => !e.allDay).map(e => { const s = toMin(e.start); return { e, s, en: Math.max(e.end ? toMin(e.end) : s + 60, s + 30) }; });
   timed.sort((a, b) => a.s - b.s || b.en - a.en);
   let group = [], gEnd = -1;
   const flush = () => { const cols = []; group.forEach(x => { let i = cols.findIndex(c => c <= x.s); if (i < 0) { i = cols.length; cols.push(0); } cols[i] = x.en; x.col = i; }); group.forEach(x => x.n = cols.length); group = []; };
   timed.forEach(x => { if (group.length && x.s >= gEnd) { flush(); gEnd = -1; } group.push(x); gEnd = Math.max(gEnd, x.en); });
   flush();
-  let hrs = '';
-  for (let h = 0; h < 24; h++) hrs += `<div class="hr" style="top:${h * 60}px" data-act="ev-new" data-ds="${ds}" data-t="${pad(h)}:00">${h ? `<span>${fmtTime(pad(h) + ':00')}</span>` : ''}</div>`;
-  const blocks = timed.map(x => {
-    const w = `calc((100% - 70px) / ${x.n})`;
-    return `<div class="blk" data-act="ev-edit" data-id="${x.e.id}" style="top:${x.s}px;height:${Math.max(x.en - x.s - 2, 26)}px;left:calc(66px + (100% - 70px) / ${x.n} * ${x.col});width:calc(${w} - 4px);background:${evColor(x.e)}"><b>${esc(x.e.title)}</b>${evTime(x.e)}</div>`;
+  return timed;
+}
+function timeGrid(days) {
+  const n = days.length, td = todayStr(), now = new Date(), cols = `64px repeat(${n},minmax(0,1fr))`;
+  const per = days.map(d => { const ds = ymd(d); return { d, ds, evs: eventsOn(ds) }; });
+  const anyAll = per.some(p => p.evs.some(e => e.allDay));
+  let head = `<div class="tg-head" style="grid-template-columns:${cols}"><div></div>` + per.map(p => `<div class="tg-dh ${p.ds === td ? 'today' : ''}" data-act="cal-goday" data-ds="${p.ds}"><span class="w">${DAYS[p.d.getDay()].slice(0, 3)}</span><span class="n">${p.d.getDate()}</span></div>`).join('') + '</div>';
+  if (anyAll) head += `<div class="tg-all" style="grid-template-columns:${cols}"><div class="lbl">All day</div>` + per.map(p => `<div class="cell">${p.evs.filter(e => e.allDay).map(e => `<div class="pill" style="${evStyle(e)}" data-act="ev-edit" data-id="${e.id}">${esc(e.title)}</div>`).join('')}</div>`).join('') + '</div>';
+  let hours = ''; for (let h = 1; h < 24; h++) hours += `<span style="top:${h * HH}px">${gridHour(h)}</span>`;
+  const body = per.map(p => {
+    let cells = ''; for (let h = 0; h < 24; h++) cells += `<div class="slot" style="top:${h * HH}px" data-act="ev-new" data-ds="${p.ds}" data-t="${pad(h)}:00"></div>`;
+    const blocks = layoutDay(p.evs).map(x => {
+      const top = x.s / 60 * HH, hgt = Math.max((x.en - x.s) / 60 * HH - 3, 24);
+      const short = hgt < 46;
+      return `<div class="blk ${short ? 'short' : ''}" data-act="ev-edit" data-id="${x.e.id}" style="top:${top + 1}px;height:${hgt}px;left:calc(${x.col} * (100% - 6px) / ${x.n} + 3px);width:calc((100% - 6px) / ${x.n} - 3px);${evStyle(x.e)}"><b>${esc(x.e.title)}</b>${short ? '' : `<span>${evTime(x.e)}</span>`}${hgt > 70 ? evWho(x.e) : ''}</div>`;
+    }).join('');
+    const nowLine = p.ds === td ? `<div class="now" style="top:${(now.getHours() * 60 + now.getMinutes()) / 60 * HH}px"></div>` : '';
+    return `<div class="tg-col ${p.ds === td ? 'today' : ''}">${cells}${blocks}${nowLine}</div>`;
   }).join('');
-  const now = new Date(); const nowLine = ds === todayStr() ? `<div class="now" style="top:${now.getHours() * 60 + now.getMinutes()}px"></div>` : '';
-  return `<div class="dayview"><div class="alld"><span class="lbl">ALL DAY</span>${all.map(e => `<div class="pill" style="background:${evColor(e)}" data-act="ev-edit" data-id="${e.id}">${esc(e.title)}</div>`).join('') || '<span class="muted">—</span>'}</div>
-    <div class="tscroll"><div class="tgrid">${hrs}${blocks}${nowLine}</div></div></div>`;
+  return `<div class="tg ${n === 1 ? 'one' : ''}">${head}<div class="tg-scroll"><div class="tg-body" style="grid-template-columns:${cols};height:${24 * HH}px"><div class="tg-hours">${hours}</div>${body}</div></div></div>`;
 }
 
 /* event modal */
@@ -739,15 +825,15 @@ function eventModal(ev, ds, t) {
 /* ============ CHORES ============ */
 function taskRow(t, ds, p) {
   const done = isDone(t, ds);
-  return `<div class="task ${done ? 'done' : ''} ${t.priority === 'high' ? 'pri-high' : ''}" style="--pc:${p.color}" data-act="task-tog" data-id="${t.id}" data-ds="${ds}">
+  return `<div class="task ${done ? 'done' : ''} ${t.priority === 'high' ? 'pri-high' : ''}" style="--pc:${deep(p.color)}" data-act="task-tog" data-id="${t.id}" data-ds="${ds}">
     <span class="ck">${done ? ic('check', 'sm') : ''}</span>
-    <span class="tx"><b>${esc(t.title)}</b><span>${[t.time ? fmtTime(t.time) : '', t.repeat && t.repeat !== 'none' ? repeatLabel(t.repeat) : ''].filter(Boolean).join(' · ')}</span></span>
+    <span class="tx"><b>${esc(t.title)}</b><span>${[t.time ? fmtTime(t.time) : '', t.repeat && t.repeat !== 'none' ? repeatLabel(t.repeat, t.days) : ''].filter(Boolean).join(' · ')}</span></span>
     <span class="sv">+${t.stars || 0}★</span>
     <button class="ed" data-act="task-edit" data-id="${t.id}">${ic('edit', 'sm')}</button></div>`;
 }
 function ring(pct, color) {
   const r = 20, c = 2 * Math.PI * r;
-  return `<div class="ring"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="${r}" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="5"/><circle cx="24" cy="24" r="${r}" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct)}"/></svg><b>${Math.round(pct * 100)}%</b></div>`;
+  return `<div class="ring"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="${r}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="5"/><circle cx="24" cy="24" r="${r}" fill="none" stroke="${deep(color)}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct)}"/></svg><b>${Math.round(pct * 100)}%</b></div>`;
 }
 function vTasks() {
   const ds = ui.taskDate, d = parseYMD(ds), td = todayStr();
@@ -1234,7 +1320,7 @@ function readOnlyEvent(ev) {
   const who = (ev.profiles || []).map(prof).filter(Boolean);
   openModal({
     title: ev.title, noFooter: true,
-    body: `<div class="evrow" style="cursor:default"><span class="bar" style="background:${evColor(ev)}"></span><span class="tt" style="white-space:normal">${evTime(ev)}${ev.repeat !== 'none' ? ' · repeats' : ''}</span></div>
+    body: `<div class="evrow" style="cursor:default"><span class="bar" style="background:${evDeep(ev)}"></span><span class="tt" style="white-space:normal">${evTime(ev)}${ev.repeat !== 'none' ? ' · repeats' : ''}</span></div>
       ${ev.notes ? `<div class="fld"><label>Where</label><div style="font-weight:700">${esc(ev.notes)}</div></div>` : ''}
       <div class="fld"><label>Who</label><div class="chips">${(who.length ? who : [FAMILY]).map(p => `<span class="chip">${avatar(p, 'xs')}${esc(p.name)}</span>`).join('')}</div></div>
       <p class="muted" style="margin:0">🔄 From <b>${esc(sub ? sub.name : 'a live calendar')}</b>. To change it, edit it in that calendar — it updates here automatically.</p>`
@@ -1477,7 +1563,7 @@ function finishOnboarding(sample) {
 }
 function seedSample() {
   S().familyName = 'The Parkers';
-  const P = [['Mom', '#FF6B5B', ''], ['Dad', '#3D8BFD', ''], ['Emma', '#9B6BF2', '🦄'], ['Leo', '#22B573', '🚀']].map(([name, color, emoji]) => ({ id: uid(), name, color, emoji }));
+  const P = [['Mom', '#F6B3C6', ''], ['Dad', '#F8DE95', ''], ['Emma', '#D9BCF2', '🦄'], ['Leo', '#A9D6F5', '🚀']].map(([name, color, emoji]) => ({ id: uid(), name, color, emoji }));
   state.profiles = P; const [mom, dad, emma, leo] = P.map(p => p.id);
   const T = todayStr(), D = n => ymd(addDays(new Date(), n)); const wd = new Date().getDay();
   const ev = (title, date, start, end, profiles, repeat = 'none', extra = {}) => state.events.push({ id: uid(), title, date: repeat === 'none' ? date : ymd(addDays(parseYMD(date), -28)), allDay: !start, start: start || '', end: end || '', profiles, repeat, days: [], notes: '', ...extra });
@@ -1527,7 +1613,7 @@ const ACT = {
   'cal-move': d => {
     const n = +d.n, v = S().calView, c = parseYMD(ui.calDate);
     if (v === 'month') { const x = new Date(c.getFullYear(), c.getMonth() + n, 1); ui.calDate = ymd(x); }
-    else ui.calDate = ymd(addDays(c, n * (v === 'week' ? 7 : v === 'schedule' ? S().schedDays : 1)));
+    else ui.calDate = ymd(addDays(c, n * (v === 'week' ? (narrowCal() ? 3 : 7) : v === 'schedule' ? S().schedDays : 1)));
     render();
   },
   'cal-today': () => { ui.calDate = todayStr(); render(); },
