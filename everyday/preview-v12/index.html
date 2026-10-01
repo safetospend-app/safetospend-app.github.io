@@ -316,6 +316,17 @@ table.tbl tr:hover td{background:var(--surface-2)}
 .cal-ev{font-size:11px;font-weight:700;padding:2px 6px;border-radius:6px;background:var(--c-soft);color:var(--c-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-left:3px solid var(--c-mid)}
 .cal-task{font-size:11px;font-weight:700;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;gap:4px;align-items:center}
 .cal-task.done{text-decoration:line-through;color:var(--ink-3)}
+.cal-bill{border-left-style:dashed}
+@media (max-width:600px){.cal-x{display:none}}
+.legend .pct{margin-right:6px}
+@media (max-width:440px){.legend .pct{display:none}}
+.cal-bill.paid{text-decoration:line-through;opacity:.55}
+.cal-filter{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 14px;align-items:center}
+.cal-tog{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;font-size:12.5px;font-weight:800;border:1.5px solid var(--c-mid);background:var(--c-soft);color:var(--c-ink)}
+.cal-tog i{width:9px;height:9px;border-radius:50%;background:var(--c-mid)}
+.cal-tog.off{background:transparent;border-color:var(--line-2);color:var(--ink-3);text-decoration:line-through}
+.cal-tog.off i{background:var(--line-2)}
+.avatar{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--c-mid);color:var(--c-ink);font-size:11px;font-weight:800;flex:none;line-height:1}
 .week-grid{display:grid;grid-template-columns:56px repeat(7,minmax(104px,1fr));min-width:760px}
 .week-grid .wh{position:sticky;top:0;background:var(--bg);z-index:2;padding:6px 4px;text-align:center;font-weight:800;font-size:12px;border-bottom:1px solid var(--line)}
 .week-grid .wh b{display:block;font-family:var(--f-head);font-size:17px}
@@ -393,7 +404,7 @@ table.tbl tr:hover td{background:var(--surface-2)}
 </div>
 <nav class="tabbar" id="tabbar" aria-label="Quick navigation"></nav>
 <button class="fab" data-a="quickAdd" aria-label="Quick add (N)" title="Quick add (N)"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-<script>window.EVERYDAY_DEMO=true;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.2.0";</script>
+<script>window.EVERYDAY_DEMO=true;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.3.0";</script>
 <script>/* ---- core.js ---- */
 /* ============ The Everyday — core ============ */
 'use strict';
@@ -519,6 +530,7 @@ function blank() {
         { id: 'groceries', name: 'Groceries', t: 'mint' }, { id: 'dining', name: 'Eating out', t: 'peach' }, { id: 'transport', name: 'Transport', t: 'sky' },
         { id: 'shopping', name: 'Shopping', t: 'pink' }, { id: 'fun', name: 'Fun', t: 'lilac' }, { id: 'health', name: 'Health & care', t: 'sun' }, { id: 'other', name: 'Other', t: 'lilac' },
       ],
+      calendars: [{ id: 'personal', name: 'Personal', t: 'lilac' }, { id: 'work', name: 'Work', t: 'sky' }, { id: 'family', name: 'Family', t: 'peach' }, { id: 'health', name: 'Health', t: 'mint' }], calHidden: [],
     },
     tasks: [], routines: [], routineDone: {}, events: [], top3: {}, inbox: [],
     goals: [], habits: [], habitLog: {},
@@ -804,7 +816,9 @@ function sampleData(name = 'Sam') {
     [d(1), '12:00', '14:00', 'Family lunch', 'peach'], [d(2), '09:30', '10:30', 'Team stand-up', 'sky'], [d(2), '15:00', '16:00', 'Project review', 'sky'],
     [d(3), '19:00', '21:00', 'Book club', 'lilac'], [d(5), '08:30', '09:00', 'Car service drop-off', 'sun'], [d(6), '17:00', '18:00', 'Therapy', 'mint'],
     [d(9), '10:00', '11:00', 'Haircut', 'pink'], [d(12), '20:00', '22:00', 'Concert', 'lilac'], [d(-2), '11:00', '12:00', 'Farmers market', 'mint'],
-  ].map(([date, start, end, title, t2]) => ({ id: id('e'), date, start, end, title, t: t2, notes: '' }));
+  ].map(([date, start, end, title, t2]) => ({ id: id('e'), date, start, end, title, t: t2, cal: { sky: 'work', pink: 'family', peach: 'family', mint: 'health' }[t2] || 'personal', notes: '' }));
+  D.events.forEach(e => { if (e.title === 'Yoga class' || e.title === 'Team stand-up') e.repeat = 'weekly'; if (e.title === 'Book club') e.repeat = 'monthly'; });
+  D.events.push({ id: id('e'), date: d(20), start: '', end: '', title: 'Mom’s birthday', t: 'peach', cal: 'family', repeat: 'yearly', notes: '' });
 
   D.inbox = [{ id: id('i'), text: 'Ask about the warranty on the vacuum?', at: t }, { id: id('i'), text: 'Gift idea for mom: a lemon tree', at: t }];
 
@@ -858,6 +872,7 @@ function sampleData(name = 'Sam') {
   D.grocery.items = [{ id: id('g'), name: 'Coffee beans', qty: '1 bag', aisle: 'Pantry', done: false }, { id: id('g'), name: 'Paper towels', qty: '', aisle: 'Household', done: false }, { id: id('g'), name: 'Dish soap', qty: '', aisle: 'Household', done: true }];
 
   D.people = [{ id: id('pp'), name: name, t: 'sun', goal: 68, height: 170 }, { id: id('pp'), name: 'Alex', t: 'sky', goal: 80, height: 182 }];
+  D.tasks.forEach((x, i) => { x.who = [D.people[0].id, D.people[1].id, D.people[0].id, ''][i % 4]; });
   const wv = [72.6, 72.3, 72.4, 71.8, 71.5, 71.6, 71.0, 70.7, 70.4, 70.1];
   wv.forEach((v, i) => D.weights.push({ id: id('w'), pid: D.people[0].id, date: d(-(wv.length - 1 - i) * 6), kg: v }));
   [84.2, 83.9, 83.1, 82.8, 82.9, 82.2].forEach((v, i, a) => D.weights.push({ id: id('w'), pid: D.people[1].id, date: d(-(a.length - 1 - i) * 9), kg: v }));
@@ -972,11 +987,14 @@ function taskForm(t, pre = {}) {
     ${fld('Priority', `<select class="inp" name="pri">${Object.entries(PRI).map(([k, v]) => opt(k, v.n, x.pri)).join('')}</select>`)}</div>
     <div class="grid2">${fld('Due date', `<input class="inp" type="date" name="due" value="${x.due || ''}">`)}
     ${fld('Status', `<select class="inp" name="status">${Object.entries(STATUS).map(([k, v]) => opt(k, v, x.status)).join('')}</select>`)}</div>
+    ${fld('Assigned to', `<select class="inp" name="who">${opt('', 'No one', x.who || '')}${(S.people.length ? S.people : [{ id: '__me', name: (S.settings.name || 'Me') + ' (me)' }]).map(p => opt(p.id, p.name, x.who || '')).join('')}</select>`)}
+    ${S.people.length < 2 ? `<div class="xs muted b" style="margin-top:-6px">Share tasks with a partner: add them in <button type="button" class="link xs b" data-a="goHousehold">Settings → Household</button>.</div>` : ''}
     ${fld('Notes (optional)', `<textarea class="inp" name="notes" rows="2" placeholder="Links, steps, anything">${esc(x.notes)}</textarea>`)}
     <div class="sheet-f">${t ? `<button type="button" class="btn danger ghost" data-a="delTask" data-id="${t.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete</button>` : ''}<button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">${t ? 'Save' : 'Add task'}</button></div></form>`);
 }
 F.task = (d, form) => {
   if (!d.title) return;
+  if (d.who === '__me') { const me = { id: uid(), name: S.settings.name || 'Me', t: 'sun', goal: 0 }; S.people.push(me); d.who = me.id; }
   const id = form.dataset.id;
   if (id) { const t = byId(S.tasks, id); const was = t.status; Object.assign(t, { ...d, due: d.due || null }); if (d.status === 'done' && was !== 'done') t.doneAt = today(); if (d.status !== 'done') t.doneAt = null; }
   else S.tasks.unshift({ id: uid(), ...d, due: d.due || null, created: today(), doneAt: d.status === 'done' ? today() : null });
@@ -991,23 +1009,54 @@ C.toggleTask = el => {
 C.toggleRoutine = el => { const k = el.dataset.id + '|' + el.dataset.d; if (el.checked) { S.routineDone[k] = true; celebrate(el); } else delete S.routineDone[k]; commit(); };
 
 /* ---------- event form ---------- */
+/* calendars (each with its own color) + repeating events */
+const calOf = id => byId(S.settings.calendars || [], id);
+const evTone = e => (calOf(e.cal) || {}).t || e.t || 'sky';
+const REPEAT = { '': 'Does not repeat', daily: 'Every day', weekly: 'Every week', monthly: 'Every month', yearly: 'Every year' };
+function evOn(e, d) {
+  if (!e.repeat) return e.date === d;
+  if (d < e.date || (e.until && d > e.until) || (e.skip || []).includes(d)) return false;
+  if (e.repeat === 'daily') return true;
+  if (e.repeat === 'weekly') return diffDays(e.date, d) % 7 === 0;
+  if (e.repeat === 'monthly') return dayIn(monthKey(d), +e.date.slice(8)) === d;
+  if (e.repeat === 'yearly') return d.slice(5, 7) === e.date.slice(5, 7) && dayIn(monthKey(d), +e.date.slice(8)) === d;
+  return false;
+}
+const calHidden = id => (S.settings.calHidden || []).includes(id);
+function eventsOn(d, all) { // all = ignore the calendar filter (dashboard)
+  return S.events.filter(e => evOn(e, d) && (all || !e.cal || !calHidden(e.cal))).map(e => e.repeat ? { ...e, occ: d } : e).sort((a, b) => (a.start || '').localeCompare(b.start || ''));
+}
+const evAttr = e => `data-a="editEvent" data-id="${e.id}" data-occ="${e.occ || ''}"`;
 A.addEvent = el => eventForm(null, el?.dataset?.date || (cur === 'calendar' && UI.cal?.day) || today(), el?.dataset?.start);
-A.editEvent = el => eventForm(byId(S.events, el.dataset.id));
-function eventForm(e, date, start) {
-  const x = e || { title: '', date, start: start || '09:00', end: start ? pad(Math.min(23, +start.slice(0, 2) + 1)) + start.slice(2) : '10:00', t: 'sky', notes: '', allDay: false };
+A.editEvent = el => eventForm(byId(S.events, el.dataset.id), null, null, el.dataset.occ);
+function eventForm(e, date, start, occ) {
+  const cals = S.settings.calendars || [];
+  const x = e || { title: '', date, start: start || '09:00', end: start ? pad(Math.min(23, +start.slice(0, 2) + 1)) + start.slice(2) : '10:00', cal: S.settings.lastCal || cals[0]?.id, notes: '', repeat: '' };
+  const cal0 = (calOf(x.cal) && x.cal) || (cals.find(c => c.t === x.t) || cals[0] || {}).id;
   sheet(sheetHead(e ? 'Edit event' : 'New event') + `<form class="form" data-f="event" data-id="${e ? e.id : ''}">
     ${fld('Title', `<input class="inp" name="title" value="${esc(x.title)}" placeholder="e.g. Doctor’s appointment" required autofocus>`)}
-    <div class="grid3">${fld('Date', `<input class="inp" type="date" name="date" value="${x.date}" required>`)}${fld('Starts', `<input class="inp" type="time" name="start" value="${x.start || ''}">`)}${fld('Ends', `<input class="inp" type="time" name="end" value="${x.end || ''}">`)}</div>
-    ${fld('Color', toneSelect('t', x.t))}
+    <div class="grid3">${fld(x.repeat ? 'First date' : 'Date', `<input class="inp" type="date" name="date" value="${x.date}" required>`)}${fld('Starts', `<input class="inp" type="time" name="start" value="${x.start || ''}">`)}${fld('Ends', `<input class="inp" type="time" name="end" value="${x.end || ''}">`)}</div>
+    <div class="xs muted b" style="margin-top:-6px">Leave the times empty for an all-day event.</div>
+    <div class="grid2">${fld('Calendar', `<select class="inp" name="cal">${cals.map(c => opt(c.id, c.name, cal0)).join('')}</select>`)}
+    ${fld('Repeats', `<select class="inp" name="repeat" data-c="evRepeat">${Object.entries(REPEAT).map(([k, l]) => opt(k, l, x.repeat || '')).join('')}</select>`)}</div>
+    <div data-rep ${x.repeat ? '' : 'hidden'}>${fld('Repeat until (optional)', `<input class="inp" type="date" name="until" value="${x.until || ''}">`)}</div>
+    ${e && e.repeat ? `<div class="xs muted b">This event repeats — changes apply to every one.${occ ? ` Opened from ${fmtD(occ, { weekday: 'short', month: 'short', day: 'numeric' })}.` : ''}</div>` : ''}
     ${fld('Notes (optional)', `<textarea class="inp" name="notes" rows="2">${esc(x.notes)}</textarea>`)}
-    <div class="sheet-f">${e ? `<button type="button" class="btn danger ghost" data-a="delEvent" data-id="${e.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete</button>` : ''}<button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">${e ? 'Save' : 'Add event'}</button></div></form>`);
+    <div class="sheet-f">${e ? (e.repeat && occ ? `<button type="button" class="btn ghost" data-a="skipEvent" data-id="${e.id}" data-d="${occ}">Skip this day</button><button type="button" class="btn danger ghost" data-a="delEvent" data-id="${e.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete all</button>` : `<button type="button" class="btn danger ghost" data-a="delEvent" data-id="${e.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete</button>`) : ''}<button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">${e ? 'Save' : 'Add event'}</button></div></form>`);
 }
+C.evRepeat = el => { const b = $('[data-rep]', el.form); if (b) b.hidden = !el.value; };
 F.event = (d, form) => {
   if (!d.title || !d.date) return; if (d.end && d.start && d.end < d.start) d.end = d.start;
-  const id = form.dataset.id; if (id) Object.assign(byId(S.events, id), d); else S.events.push({ id: uid(), ...d });
-  closeSheet(); commit(id ? 'Event saved' : 'Event added');
+  const o = { title: d.title, date: d.date, start: d.start, end: d.end, cal: d.cal, t: evTone({ cal: d.cal }), notes: d.notes, repeat: REPEAT[d.repeat] !== undefined ? d.repeat : '' };
+  if (o.repeat && d.until && d.until >= d.date) o.until = d.until;
+  S.settings.lastCal = d.cal;
+  const id = form.dataset.id;
+  if (id) { const e = byId(S.events, id); Object.assign(e, o); if (!o.until) delete e.until; if (!o.repeat) delete e.skip; }
+  else S.events.push({ id: uid(), ...o });
+  closeSheet(); commit(id ? 'Event saved' : o.repeat ? `Event added — repeats ${REPEAT[o.repeat].toLowerCase()}` : 'Event added');
 };
 A.delEvent = el => { closeSheet(); withUndo('Event deleted', () => { S.events = S.events.filter(e => e.id !== el.dataset.id); }); };
+A.skipEvent = el => { closeSheet(); withUndo(`Skipped ${fmtD(el.dataset.d)}`, () => { const e = byId(S.events, el.dataset.id); if (e) e.skip = [...(e.skip || []), el.dataset.d]; }); };
 
 /* ---------- expense form ---------- */
 A.addExpense = () => expenseForm();
@@ -1105,14 +1154,14 @@ F.onboard = (d, form, sub) => {
   const set = { name: d.name, currency: d.currency, weekStart: +d.weekStart, units: d.units };
   S.settings.weekStart = +d.weekStart;
   if (sub === 'sample') { S = sampleData(d.name || 'Sam'); }
-  Object.assign(S.settings, set, { onboarded: true, seen: '1.2' });
+  Object.assign(S.settings, set, { onboarded: true, seen: '1.3' });
   closeSheet(); commit(sub === 'sample' ? 'Sample data loaded — clear it anytime in Settings' : `Welcome${d.name ? ', ' + d.name : ''}! 🌼`);
 };
 
 function whatsNew() {
-  sheet(`${sheetHead('New in The Everyday')}<p style="margin:0 0 10px;font-weight:600;color:var(--ink-2)">Bills now work the way life does:</p>
-  <div class="list">${[['repeat', 'Add bills that repeat <b>weekly</b>, <b>every 2 weeks</b>, <b>monthly</b> or <b>once a year</b> — or a <b>one-time</b> bill on a set date.'], ['arrow', 'Didn’t get to a bill? Unpaid bills <b>roll over</b> into your next paycheck automatically.'], ['move', 'Tap the move icon on a bill to pay it from <b>another paycheck</b> — only that payment moves, next month stays the same.'], ['coins', 'Still plan paycheck by paycheck: weekly, bi-weekly, twice a month or monthly.']].map(([i, t]) => `<div class="li">${ico(i)}<span class="t" style="white-space:normal;font-weight:600">${t}</span></div>`).join('')}</div>
-  <div class="sheet-f"><button class="btn" data-a="closeSheet">Later</button><button class="btn pri" data-a="whatsNewGo">See my bills ${ico('arrow', 'sm')}</button></div>`);
+  sheet(`${sheetHead('New in The Everyday')}<p style="margin:0 0 10px;font-weight:600;color:var(--ink-2)">Made from your ideas — thank you for them:</p>
+  <div class="list">${[['repeat', 'Bills can repeat <b>weekly</b>, <b>every 2 weeks</b>, <b>monthly</b> or <b>yearly</b> — or be a <b>one-time</b> bill on a set date.'], ['move', 'Unpaid bills <b>roll over</b> to your next paycheck, and you can <b>move</b> one payment to another paycheck.'], ['calendar', 'Bills show on your <b>calendar</b>, and you can make your own <b>calendars</b> with their own colors.'], ['clock', 'Events can <b>repeat</b> every day, week, month or year.'], ['coins', 'A <b>paycheck breakdown</b> chart: bills, debt, savings and spending at a glance.'], ['heart', '<b>Assign tasks</b> to yourself or your partner.']].map(([i, t]) => `<div class="li">${ico(i)}<span class="t" style="white-space:normal;font-weight:600">${t}</span></div>`).join('')}</div>
+  <div class="sheet-f"><button class="btn" data-a="closeSheet">Later</button><button class="btn pri" data-a="whatsNewGo">Take a look ${ico('arrow', 'sm')}</button></div>`);
 }
 A.whatsNewGo = () => { closeSheet(); go('budget'); if (!S.income.length) setTimeout(() => incomeForm(), 60); };
 
@@ -1151,7 +1200,7 @@ async function boot() {
   const v = location.hash.replace('#/', ''); cur = VIEWS[v] ? v : 'dashboard';
   render();
   if (!S.settings.onboarded && !DEMO) onboarding();
-  else if (!DEMO && S.settings.seen !== '1.2') { S.settings.seen = '1.2'; whatsNew(); }
+  else if (!DEMO && S.settings.seen !== '1.3') { S.settings.seen = '1.3'; whatsNew(); }
   save();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => { });
 }
@@ -1203,6 +1252,16 @@ const whereCard = exps => { const byCat = S.settings.expCats.map(c => ({ c, v: s
   return byCat.length ? `<div class="ring-wrap">${donut(byCat.map(x => ({ v: x.v, c: `var(--${x.c.t}-mid)` })), { size: 120, w: 16, label: money0(tot), sub: 'spent' })}
     <div class="legend" style="flex:1">${byCat.slice(0, 6).map(x => `<span><i class="dot" style="background:var(--${x.c.t}-mid)"></i>${esc(x.c.name)}<b>${money0(x.v)}</b></span>`).join('')}</div></div>` : `<div class="empty small">No spending yet.</div>`; };
 
+/* where the money goes: bills · debt · savings · spending · left */
+function breakdownCard(mm, title) {
+  const segs = [['Bills', mm.bills, 'sky'], ['Debt payments', mm.debtPay, 'pink'], ['Savings', mm.saved, 'lilac'], ['Spending', mm.spent, 'peach']];
+  const out = sum(segs, x => x[1]), left = mm.inc - out, all = left > 0 ? [...segs, ['Left over', left, 'mint']] : segs, base = Math.max(mm.inc, out) || 1;
+  return `<div class="card sec t-sky"><div class="card-h">${ico('coins', 'sm')}<h3>${title}</h3><span class="grow"></span><span class="xs muted b">${money0(mm.inc)} in</span></div>
+    ${out || mm.inc ? `<div class="ring-wrap">${donut(all.filter(x => x[1] > 0).map(x => ({ v: x[1], c: `var(--${x[2]}-mid)` })), { size: 128, w: 18, label: (left < 0 ? '−' : '') + money0(Math.abs(left)), sub: left < 0 ? 'over' : 'left' })}
+      <div class="legend" style="flex:1;min-width:0">${all.map(x => `<span><i class="dot" style="background:var(--${x[2]}-mid)"></i>${x[0]}<b style="white-space:nowrap"><span class="xs muted pct">${Math.round(x[1] / base * 100)}%</span>${money0(x[1])}</b></span>`).join('')}</div></div>
+      ${left < 0 ? `<div class="xs b" style="color:var(--danger);margin-top:10px">${money0(-left)} more going out than coming in.</div>` : ''}` : `<div class="empty small">Add income, bills or expenses to see the breakdown.</div>`}</div>`;
+}
+
 /* paycheck-by-paycheck plan for a month */
 function paycheckPlan(mk) {
   const from = mk + '-01', to = monthEnd(mk), pds = paydays(from, to);
@@ -1248,6 +1307,7 @@ function budgetMonth() {
       ${incomeCard(mk + '-01', monthEnd(mk))}
     </div>
     <div>
+      ${breakdownCard(mm, 'Month breakdown')}
       <div class="card sec t-mint"><div class="card-h"><h3>Where it went</h3></div>
         <div style="margin-bottom:14px">${whereCard(exps)}</div>
         <div class="card-h"><h3>Category limits</h3><span class="grow"></span><span class="xs muted b">tap to set</span></div>
@@ -1283,6 +1343,7 @@ function budgetPaycheck() {
       ${incomeCard(p.start, p.end)}
     </div>
     <div>
+      ${breakdownCard(mm, 'Paycheck breakdown')}
       <div class="card sec t-lilac"><div class="card-h">${ico('info', 'sm')}<h3>Paycheck in one line</h3></div>
         <p class="small" style="margin:0;font-weight:600">${mm.left >= 0
           ? `You have <b>${money(mm.left)}</b> ${p.next ? `until payday on ${fmtD(p.next, { weekday: 'long', month: 'short', day: 'numeric' })}` : 'left'}${dLeft ? ` — about <b>${money0(mm.left / dLeft)}</b> a day for the ${dLeft} day${dLeft === 1 ? '' : 's'} left.` : '.'}`
@@ -1410,15 +1471,20 @@ VR.calendar = () => {
     <div class="seg"><button class="${mode === 'month' ? 'on' : ''}" data-a="calMode" data-v="month">Month</button><button class="${mode === 'week' ? 'on' : ''}" data-a="calMode" data-v="week">Week</button></div>
     <div class="row" style="gap:4px"><button class="btn icon" data-a="calNav" data-v="-1" aria-label="Previous">${ico('left')}</button><button class="btn" data-a="calNav" data-v="0">Today</button><button class="btn icon" data-a="calNav" data-v="1" aria-label="Next">${ico('right')}</button></div>
     <button class="btn pri" data-a="addEvent" data-date="${c}">${ico('plus', 'sm')} Event</button>`);
+  const tog = (id, name, t) => `<button class="cal-tog ${tone(t)} ${calHidden(id) ? 'off' : ''}" data-a="calToggle" data-v="${id}" aria-pressed="${!calHidden(id)}"><i></i>${esc(name)}</button>`;
+  h += `<div class="cal-filter">${(S.settings.calendars || []).map(k => tog(k.id, k.name, k.t)).join('')}${tog('_bills', 'Bills', 'mint')}<button class="link xs b" data-a="go" data-v="settings" style="margin-left:4px">Edit calendars</button></div>`;
   return h + (mode === 'month' ? monthView(c) : weekView(c));
 };
-function dayStuff(d) {
-  return {
-    evs: S.events.filter(e => e.date === d).sort((a, b) => (a.start || '').localeCompare(b.start || '')),
-    tasks: S.tasks.filter(t => t.due === d),
-    rts: routinesOn(d),
-  };
+A.calToggle = el => { const v = el.dataset.v, hs = S.settings.calHidden || (S.settings.calHidden = []); S.settings.calHidden = hs.includes(v) ? hs.filter(x => x !== v) : [...hs, v]; commit(); };
+function calBills(from, to) { // bills by the day they show on the calendar (rolled-over ones stay on their due date)
+  const m = {}; if (calHidden('_bills')) return m;
+  billsBetween(addDays(from, -45), addDays(to, 45)).forEach(b => { const d = b.carried ? b.due : b.date; if (d >= from && d <= to) (m[d] = m[d] || []).push(b); });
+  return m;
 }
+function dayStuff(d, bm) {
+  return { evs: eventsOn(d), tasks: S.tasks.filter(t => t.due === d), rts: routinesOn(d), bills: (bm || calBills(d, d))[d] || [] };
+}
+const billChip = (b, tag = 'span') => `<${tag} class="cal-ev cal-bill t-mint ${b.paid ? 'paid' : ''}" ${tag === 'button' ? `data-a="go" data-v="budget"` : ''} title="${esc(b.name)} ${money(b.amount)}"><span class="cal-x">${money0(b.amount)} </span>${esc(b.name)}</${tag}>`;
 function monthView(c) {
   const mk = monthKey(c), [y, m] = mk.split('-').map(Number), n = dim(y, m), t = today();
   const first = `${mk}-01`, lead = (dow(first) - S.settings.weekStart + 7) % 7;
@@ -1426,27 +1492,26 @@ function monthView(c) {
   for (let i = 0; i < lead; i++) cells.push(addDays(first, i - lead));
   for (let i = 0; i < n; i++) cells.push(addDays(first, i));
   while (cells.length % 7) cells.push(addDays(cells.at(-1), 1));
+  const bm = calBills(cells[0], cells.at(-1));
   return `<div class="card"><div class="cal-grid" style="margin-bottom:8px">${dowOrder().map(i => `<div class="cal-dow">${DOW[i]}</div>`).join('')}</div>
     <div class="cal-grid">${cells.map(d => {
-      const { evs, tasks, rts } = dayStuff(d), out = monthKey(d) !== mk;
-      const more = evs.length + tasks.length - 3;
+      const { evs, tasks, bills } = dayStuff(d, bm), out = monthKey(d) !== mk;
+      const items = [...evs.map(e => `<span class="cal-ev ${tone(evTone(e))}">${e.start ? `<span class="cal-x">${fmtTime(e.start)} </span>` : ''}${esc(e.title)}</span>`), ...bills.map(b => billChip(b)),
+        ...tasks.map(x => `<span class="cal-task ${x.status === 'done' ? 'done' : ''}"><i class="dot ${tone(cat(x.cat).t)}" style="width:6px;height:6px"></i>${esc(x.title)}</span>`)];
       return `<button class="cal-day ${out ? 'out' : ''} ${d === t ? 'today' : ''}" data-a="calDay" data-d="${d}">
-        <span class="n">${parse(d).getDate()}</span>
-        ${evs.slice(0, 2).map(e => `<span class="cal-ev ${tone(e.t)}">${e.start ? fmtTime(e.start) + ' ' : ''}${esc(e.title)}</span>`).join('')}
-        ${tasks.slice(0, Math.max(0, 3 - Math.min(2, evs.length))).map(x => `<span class="cal-task ${x.status === 'done' ? 'done' : ''}"><i class="dot ${tone(cat(x.cat).t)}" style="width:6px;height:6px"></i>${esc(x.title)}</span>`).join('')}
-        ${more > 0 ? `<span class="xs muted b">+${more} more</span>` : ''}</button>`;
+        <span class="n">${parse(d).getDate()}</span>${items.slice(0, 3).join('')}${items.length > 3 ? `<span class="xs muted b">+${items.length - 3} more</span>` : ''}</button>`;
     }).join('')}</div></div>`;
 }
 function weekView(c) {
-  const wd = weekDays(c), t = today(), H0 = 6, H1 = 23, px = 54;
+  const wd = weekDays(c), t = today(), H0 = 6, H1 = 23, px = 54, bm = calBills(wd[0], wd[6]);
   const pos = e => { const s = (+e.start.slice(0, 2)) + (+e.start.slice(3) / 60), en = e.end ? (+e.end.slice(0, 2)) + (+e.end.slice(3) / 60) : s + 1; return { top: (s - H0) * px, h: Math.max(26, (en - s) * px - 4) }; };
   return `<div class="card scroll-x"><div class="week-grid">
     <div class="wh"></div>${wd.map(d => `<div class="wh ${d === t ? 'today' : ''}">${DOW[dow(d)]}<b>${parse(d).getDate()}</b></div>`).join('')}
     <div class="hr" style="height:auto;border:0">all day</div>
-    ${wd.map(d => `<div class="week-all">${dayStuff(d).tasks.slice(0, 3).map(x => `<button class="cal-task ${x.status === 'done' ? 'done' : ''}" data-a="editTask" data-id="${x.id}"><i class="dot ${tone(cat(x.cat).t)}" style="width:6px;height:6px"></i>${esc(x.title)}</button>`).join('')}</div>`).join('')}
+    ${wd.map(d => { const ds = dayStuff(d, bm); return `<div class="week-all">${ds.evs.filter(e => !e.start).map(e => `<button class="cal-ev ${tone(evTone(e))}" ${evAttr(e)}>${esc(e.title)}</button>`).join('')}${ds.bills.map(b => billChip(b, 'button')).join('')}${ds.tasks.slice(0, 3).map(x => `<button class="cal-task ${x.status === 'done' ? 'done' : ''}" data-a="editTask" data-id="${x.id}"><i class="dot ${tone(cat(x.cat).t)}" style="width:6px;height:6px"></i>${esc(x.title)}</button>`).join('')}</div>`; }).join('')}
     ${Array.from({ length: H1 - H0 + 1 }, (_, i) => `<div class="hr">${fmtTime(pad(H0 + i) + ':00')}</div>` + (i === 0 ? wd.map((d, ci) => `<div class="week-col" style="grid-row:3 / span ${H1 - H0 + 1};grid-column:${ci + 2}">
         ${Array.from({ length: H1 - H0 + 1 }, (_, j) => `<button class="slot" data-a="addEvent" data-date="${d}" data-start="${pad(H0 + j)}:00" aria-label="Add event"></button>`).join('')}
-        ${S.events.filter(e => e.date === d && e.start).map(e => { const p = pos(e); return `<button class="week-ev ${tone(e.t)}" style="top:${p.top}px;height:${p.h}px" data-a="editEvent" data-id="${e.id}">${esc(e.title)}<div class="xs" style="font-weight:700;opacity:.8">${fmtTime(e.start)}</div></button>`; }).join('')}
+        ${eventsOn(d).filter(e => e.start).map(e => { const p = pos(e); return `<button class="week-ev ${tone(evTone(e))}" style="top:${p.top}px;height:${p.h}px" ${evAttr(e)}>${esc(e.title)}<div class="xs" style="font-weight:700;opacity:.8">${fmtTime(e.start)}${e.repeat ? ' · ' + ico('repeat', 'sm').replace('class="ico sm"', 'class="ico sm" style="width:11px;height:11px;vertical-align:-1px"') : ''}</div></button>`; }).join('')}
       </div>`).join('') : '')).join('')}
   </div></div>`;
 }
@@ -1454,10 +1519,11 @@ A.calMode = el => { UI.cal.mode = el.dataset.v; render(); };
 A.calNav = el => { const v = +el.dataset.v; UI.cal.cur = v === 0 ? today() : (UI.cal.mode === 'month' ? addMonths(monthKey(calCur()), v) + '-01' : addDays(calCur(), v * 7)); render(); };
 A.calDay = el => daySheet(el.dataset.d);
 function daySheet(d) {
-  const { evs, tasks, rts } = dayStuff(d);
+  const { evs, tasks, rts, bills } = dayStuff(d);
   sheet(sheetHead(`${DOWL[dow(d)]}, ${fmtD(d, { month: 'long', day: 'numeric' })}`) + `
     <div class="row wrap" style="margin:-8px 0 14px"><button class="btn sm" data-a="addEvent" data-date="${d}">${ico('plus', 'sm')} Event</button><button class="btn sm" data-a="addTask" data-due="${d}">${ico('plus', 'sm')} Task</button></div>
-    <div class="sec"><div class="sec-h"><h2>Schedule</h2></div><div class="list sched">${evs.length ? evs.map(e => `<div class="li ${tone(e.t)}"><span class="time">${fmtTime(e.start) || '—'}</span><button class="ev" data-a="editEvent" data-id="${e.id}" style="text-align:left">${esc(e.title)}${e.end ? ` <span class="xs muted">– ${fmtTime(e.end)}</span>` : ''}</button></div>`).join('') : '<div class="empty small">No events</div>'}</div></div>
+    <div class="sec"><div class="sec-h"><h2>Schedule</h2></div><div class="list sched">${evs.length ? evs.map(e => `<div class="li ${tone(evTone(e))}"><span class="time">${fmtTime(e.start) || 'All day'}</span><button class="ev" ${evAttr(e)} style="text-align:left">${esc(e.title)}${e.end && e.start ? ` <span class="xs muted">– ${fmtTime(e.end)}</span>` : ''}<div class="xs muted">${esc((calOf(e.cal) || {}).name || '')}${e.repeat ? ' · ' + REPEAT[e.repeat] : ''}</div></button></div>`).join('') : '<div class="empty small">No events</div>'}</div></div>
+    ${bills.length ? `<div class="sec"><div class="sec-h"><h2>Bills</h2></div><div class="list">${bills.map(b => `<div class="li"><input type="checkbox" class="ck round" style="--c:var(--mint-ink)" data-c="toggleBill" data-k="${b.key}" data-eff="${b.date}" data-carried="${b.carried ? 1 : ''}" ${b.paid ? 'checked' : ''} aria-label="Paid: ${esc(b.name)}"><span class="t">${esc(b.name)}${billNote(b)}</span><span class="amt">${money(b.amount)}</span></div>`).join('')}</div></div>` : ''}
     <div class="sec"><div class="sec-h"><h2>Tasks</h2></div><div class="list">${tasks.length ? tasks.map(x => itemRow({ k: 'task', x }, d)).join('') : '<div class="empty small">No tasks due</div>'}</div></div>
     ${rts.length ? `<div class="sec"><div class="sec-h"><h2>Routines</h2></div><div class="list">${rts.map(x => itemRow({ k: 'routine', x }, d)).join('')}</div></div>` : ''}`, { wide: true });
 }
@@ -1478,7 +1544,7 @@ function itemRow(i, d = today()) {
   if (i.k === 'task') {
     const t = i.x, c = cat(t.cat);
     return `<div class="li ${t.status === 'done' ? 'done' : ''} ${tone(c.t)}"><input type="checkbox" class="ck round" style="--c:var(--c-ink)" data-c="toggleTask" data-id="${t.id}" ${t.status === 'done' ? 'checked' : ''} aria-label="Done: ${esc(t.title)}">
-      <button class="t" data-a="editTask" data-id="${t.id}" style="text-align:left">${esc(t.title)}<small>${i.od ? `<span style="color:var(--danger)">Overdue · ${relDay(t.due)}</span>` : esc(c.name)}${t.pri === 'high' ? ' · ❗' : ''}</small></button><span class="dot"></span></div>`;
+      <button class="t" data-a="editTask" data-id="${t.id}" style="text-align:left">${esc(t.title)}<small>${i.od ? `<span style="color:var(--danger)">Overdue · ${relDay(t.due)}</span>` : esc(c.name)}${t.pri === 'high' ? ' · ❗' : ''}</small></button>${avatar(who(t.who))}<span class="dot"></span></div>`;
   }
   const r = i.x, c = cat(r.cat), dn = rDone(r, d);
   return `<div class="li ${dn ? 'done' : ''} ${tone(c.t)}"><input type="checkbox" class="ck round" style="--c:var(--c-ink)" data-c="toggleRoutine" data-id="${r.id}" data-d="${d}" ${dn ? 'checked' : ''} aria-label="Done: ${esc(r.title)}">
@@ -1501,14 +1567,14 @@ VR.dashboard = () => {
   /* ---- column: Today ---- */
   const top = (S.top3[t] || []).map(id => byId(S.tasks, id)).filter(Boolean);
   const slots = [0, 1, 2].map(i => { const x = top[i]; if (!x) return `<button class="li slot-empty" data-a="pickTop3">${ico('plus', 'sm')} Pick focus #${i + 1}</button>`; return `<div class="li ${x.status === 'done' ? 'done' : ''}"><span class="n">${i + 1}</span><input type="checkbox" class="ck big" data-c="toggleTask" data-id="${x.id}" ${x.status === 'done' ? 'checked' : ''} aria-label="Done"><button class="t" data-a="editTask" data-id="${x.id}" style="text-align:left">${esc(x.title)}</button><button class="btn icon sm ghost" data-a="unTop3" data-id="${x.id}" aria-label="Remove from focus">${ico('x', 'sm')}</button></div>`; }).join('');
-  const evs = S.events.filter(e => e.date === t).sort((a, b) => (a.start || '').localeCompare(b.start || ''));
+  const evs = eventsOn(t, true);
   const col1 = `<div class="col">
     <div class="card today-card"><div class="date-big"><span class="d">${dt.getDate()}</span><span class="m">${DOWL[dt.getDay()]}<br><span class="muted small">${MONTHS[dt.getMonth()]} ${dt.getFullYear()}</span></span></div>
       <div class="card-h" style="margin:14px 0 8px">${ico('spark', 'sm')}<h3>Today’s 3</h3><span class="grow"></span><span class="xs muted b">Just these. Promise.</span></div><div class="top3 list">${slots}</div></div>
     <div class="card"><div class="card-h"><h3>Today’s list</h3><span class="chip t-pink" style="--c:var(--pink-soft)">${doneN}/${items.length}</span><span class="grow"></span><button class="btn sm soft" data-a="addTask">${ico('plus', 'sm')} Task</button></div>
       <div class="list">${items.length ? items.slice(0, 9).map(i => itemRow(i)).join('') : `<div class="empty">${ico('leaf')}Nothing due today.</div>`}</div>${items.length > 9 ? `<button class="btn sm ghost" data-a="go" data-v="tasks" style="margin-top:6px">+${items.length - 9} more</button>` : ''}</div>
     <div class="card t-sky"><div class="card-h"><h3>Schedule</h3><span class="grow"></span><button class="link" data-a="addEvent" data-date="${t}">+ Event</button></div>
-      <div class="list sched">${evs.length ? evs.map(e => `<div class="li ${tone(e.t)}"><span class="time">${fmtTime(e.start) || 'All day'}</span><button class="ev" data-a="editEvent" data-id="${e.id}" style="text-align:left">${esc(e.title)}${e.end ? `<div class="xs muted">until ${fmtTime(e.end)}</div>` : ''}</button></div>`).join('') : `<div class="empty">No plans. Enjoy the space.</div>`}</div></div>
+      <div class="list sched">${evs.length ? evs.map(e => `<div class="li ${tone(evTone(e))}"><span class="time">${fmtTime(e.start) || 'All day'}</span><button class="ev" ${evAttr(e)} style="text-align:left">${esc(e.title)}${e.end ? `<div class="xs muted">until ${fmtTime(e.end)}</div>` : ''}</button></div>`).join('') : `<div class="empty">No plans. Enjoy the space.</div>`}</div></div>
     <div class="card t-lilac"><div class="card-h">${ico('inbox', 'sm')}<h3>Brain dump</h3><span class="grow"></span>${S.inbox.length ? `<span class="chip">${S.inbox.length}</span>` : ''}</div>
       <form data-f="brainInline" class="row"><input class="inp sm" name="text" placeholder="Get it out of your head…" aria-label="Brain dump"><button class="btn sm icon pri" aria-label="Save">${ico('plus', 'sm')}</button></form>
       <div class="list" style="margin-top:6px">${S.inbox.slice(0, 4).map(n => `<div class="li"><span class="t" style="font-weight:600;white-space:normal">${esc(n.text)}</span><span class="acts"><button class="btn icon sm ghost" data-a="inboxToTask" data-id="${n.id}" title="Make it a task">${ico('check', 'sm')}</button><button class="btn icon sm ghost" data-a="inboxDel" data-id="${n.id}" title="Done / remove">${ico('x', 'sm')}</button></span></div>`).join('')}</div></div>
@@ -1799,6 +1865,9 @@ function weightTab() {
   </div>`;
 }
 A.fitPerson = el => { UI.fit.pid = el.dataset.v; render(); };
+const who = id => id ? byId(S.people, id) : null;
+const avatar = p => p ? `<span class="avatar ${tone(p.t)}" title="${esc(p.name)}" aria-label="Assigned to ${esc(p.name)}">${esc((p.name.trim()[0] || '?').toUpperCase())}</span>` : '';
+A.goHousehold = () => { closeSheet(); go('settings'); setTimeout(() => $('#household')?.scrollIntoView({ block: 'center' }), 80); };
 A.addPerson = () => personForm();
 A.editPerson = el => personForm(byId(S.people, el.dataset.id));
 function personForm(p) {
@@ -1806,14 +1875,14 @@ function personForm(p) {
   sheet(sheetHead(p ? 'Edit person' : 'Add person') + `<form class="form" data-f="person" data-id="${p ? p.id : ''}">
     <div class="grid2">${fld('Name', `<input class="inp" name="name" value="${esc(x.name)}" required autofocus>`)}${fld(`Goal weight (${wUnit()}, optional)`, `<input class="inp" name="goal" inputmode="decimal" value="${x.goal ? wShow(x.goal) : ''}">`)}</div>
     ${fld('Color', toneSelect('t', x.t))}
-    <div class="sheet-f">${p && S.people.length > 1 ? `<button type="button" class="btn danger ghost" data-a="delPerson" data-id="${p.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete</button>` : ''}<button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">Save</button></div></form>`);
+    <div class="sheet-f">${p && (S.people.length > 1 || cur === 'settings') ? `<button type="button" class="btn danger ghost" data-a="delPerson" data-id="${p.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete</button>` : ''}<button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">Save</button></div></form>`);
 }
 F.person = (d, form) => {
   if (!d.name) return; const o = { name: d.name, goal: d.goal ? wStore(d.goal) : 0, t: d.t };
   const id = form.dataset.id; if (id) Object.assign(byId(S.people, id), o); else { const np = { id: uid(), ...o }; S.people.push(np); UI.fit.pid = np.id; }
   closeSheet(); commit('Saved');
 };
-A.delPerson = el => { closeSheet(); withUndo('Person removed', () => { S.people = S.people.filter(p => p.id !== el.dataset.id); S.weights = S.weights.filter(w => w.pid !== el.dataset.id); UI.fit.pid = S.people[0]?.id; }); };
+A.delPerson = el => { closeSheet(); withUndo('Person removed', () => { S.tasks.forEach(t => { if (t.who === el.dataset.id) t.who = ''; }); S.people = S.people.filter(p => p.id !== el.dataset.id); S.weights = S.weights.filter(w => w.pid !== el.dataset.id); UI.fit.pid = S.people[0]?.id; }); };
 A.delWeight = el => withUndo('Entry removed', () => { S.weights = S.weights.filter(w => w.id !== el.dataset.id); });
 
 function waterTab() {
@@ -2069,6 +2138,14 @@ VR.settings = () => {
       <div class="card sec"><div class="card-h">${ico('check', 'sm')}<h3>Task areas</h3><span class="grow"></span><button class="btn sm soft" data-a="addCat" data-kind="cats">${ico('plus', 'sm')} Add</button></div>
         <div class="list">${s.cats.map(c => catRow(c, 'cats')).join('')}</div></div>
 
+      <div class="card sec"><div class="card-h">${ico('calendar', 'sm')}<h3>Calendars</h3><span class="grow"></span><button class="btn sm soft" data-a="addCat" data-kind="calendars">${ico('plus', 'sm')} Add</button></div>
+        <p class="xs muted b" style="margin:-4px 0 8px">Each event goes on a calendar, and takes its color.</p>
+        <div class="list">${(s.calendars || []).map(c => catRow(c, 'calendars')).join('')}</div></div>
+
+      <div class="card sec" id="household"><div class="card-h">${ico('heart', 'sm')}<h3>Household</h3><span class="grow"></span><button class="btn sm soft" data-a="addPerson">${ico('plus', 'sm')} Add</button></div>
+        <p class="xs muted b" style="margin:-4px 0 8px">People you can assign tasks to — you, a partner, a roommate.</p>
+        <div class="list">${S.people.length ? S.people.map(p => `<div class="li ${tone(p.t)}">${avatar(p)}<button class="t" data-a="editPerson" data-id="${p.id}" style="text-align:left">${esc(p.name)}<small>${S.tasks.filter(t => t.who === p.id && t.status !== 'done').length} open tasks</small></button></div>`).join('') : `<div class="empty small">Add yourself and your partner to share tasks.</div>`}</div></div>
+
       <div class="card sec"><div class="card-h">${ico('wallet', 'sm')}<h3>Spending categories</h3><span class="grow"></span><button class="btn sm soft" data-a="addCat" data-kind="expCats">${ico('plus', 'sm')} Add</button></div>
         <div class="list">${s.expCats.map(c => catRow(c, 'expCats')).join('')}</div></div>
     </div>
@@ -2102,7 +2179,8 @@ A.addCat = el => catForm(el.dataset.kind);
 A.editCat = el => catForm(el.dataset.kind, byId(S.settings[el.dataset.kind], el.dataset.id));
 function catForm(kind, c) {
   const x = c || { name: '', t: 'lilac' };
-  sheet(sheetHead(c ? 'Edit category' : 'New category') + `<form class="form" data-f="cat" data-kind="${kind}" data-id="${c ? c.id : ''}">
+  const noun = kind === 'calendars' ? 'calendar' : 'category';
+  sheet(sheetHead(c ? `Edit ${noun}` : `New ${noun}`) + `<form class="form" data-f="cat" data-kind="${kind}" data-id="${c ? c.id : ''}">
     ${fld('Name', `<input class="inp" name="name" value="${esc(x.name)}" required autofocus>`)}${fld('Color', toneSelect('t', x.t))}
     <div class="sheet-f"><button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">Save</button></div></form>`);
 }
@@ -2114,11 +2192,12 @@ F.cat = (d, form) => {
 };
 A.delCat = el => {
   const kind = el.dataset.kind, id = el.dataset.id, list = S.settings[kind];
-  if (list.length <= 1) return toast('Keep at least one category');
-  const used = kind === 'cats' ? S.tasks.filter(t => t.cat === id).length + S.routines.filter(r => r.cat === id).length : S.expenses.filter(e => e.cat === id).length;
+  if (list.length <= 1) return toast(kind === 'calendars' ? 'Keep at least one calendar' : 'Keep at least one category');
+  const used = kind === 'calendars' ? S.events.filter(e => e.cal === id).length : kind === 'cats' ? S.tasks.filter(t => t.cat === id).length + S.routines.filter(r => r.cat === id).length : S.expenses.filter(e => e.cat === id).length;
   confirmBox(used ? `${used} item${used > 1 ? 's use' : ' uses'} this category. They’ll move to “${list.find(c => c.id !== id).name}”.` : 'Remove this category?', () => {
     const fb = list.find(c => c.id !== id).id;
-    if (kind === 'cats') { S.tasks.forEach(t => { if (t.cat === id) t.cat = fb; }); S.routines.forEach(r => { if (r.cat === id) r.cat = fb; }); S.goals.forEach(g => { if (g.area === id) g.area = fb; }); }
+    if (kind === 'calendars') { S.events.forEach(e => { if (e.cal === id) e.cal = fb; }); S.settings.calHidden = (S.settings.calHidden || []).filter(x => x !== id); }
+    else if (kind === 'cats') { S.tasks.forEach(t => { if (t.cat === id) t.cat = fb; }); S.routines.forEach(r => { if (r.cat === id) r.cat = fb; }); S.goals.forEach(g => { if (g.area === id) g.area = fb; }); }
     else { S.expenses.forEach(e => { if (e.cat === id) e.cat = fb; }); S.bills.forEach(b => { if (b.cat === id) b.cat = fb; }); delete S.limits[id]; }
     S.settings[kind] = list.filter(c => c.id !== id); commit('Category removed');
   }, 'Remove');
@@ -2151,7 +2230,7 @@ A.resetAll = () => confirmBox('Erase everything and start from a blank app? This
 
 /* ---- views/tasks.js ---- */
 /* ============ Tasks + Routines ============ */
-UI.tasks = { q: '', status: 'open', cat: 'all', sort: 'due' };
+UI.tasks = { q: '', status: 'open', cat: 'all', sort: 'due', who: 'all' };
 
 VR.tasks = () => {
   const f = UI.tasks, t = today();
@@ -2159,6 +2238,7 @@ VR.tasks = () => {
     if (f.status === 'open' && x.status === 'done') return false;
     if (f.status !== 'open' && f.status !== 'all' && x.status !== f.status) return false;
     if (f.cat !== 'all' && x.cat !== f.cat) return false;
+    if (f.who === 'none' ? x.who && who(x.who) : f.who !== 'all' && x.who !== f.who) return false;
     if (f.q && !(x.title + ' ' + (x.notes || '')).toLowerCase().includes(f.q.toLowerCase())) return false;
     return true;
   });
@@ -2183,19 +2263,20 @@ VR.tasks = () => {
   h += `<div class="toolbar"><input class="inp" style="max-width:260px" placeholder="Search tasks…" value="${esc(f.q)}" data-c="taskSearch" aria-label="Search tasks">
     <div class="seg">${[['open', 'Open'], ['todo', 'To do'], ['doing', 'In progress'], ['done', 'Done'], ['all', 'All']].map(([k, l]) => `<button class="${f.status === k ? 'on' : ''}" data-a="taskFilter" data-k="status" data-v="${k}">${l}</button>`).join('')}</div>
     <select class="inp" style="max-width:150px" data-c="taskFilterSel" data-k="cat">${opt('all', 'All areas', f.cat)}${S.settings.cats.map(c => opt(c.id, c.name, f.cat)).join('')}</select>
+    ${S.people.length ? `<select class="inp" style="max-width:150px" data-c="taskFilterSel" data-k="who" aria-label="Assigned to">${opt('all', 'Everyone', f.who)}${S.people.map(p => opt(p.id, p.name, f.who)).join('')}${opt('none', 'Unassigned', f.who)}</select>` : ''}
     <select class="inp" style="max-width:160px" data-c="taskFilterSel" data-k="sort">${opt('due', 'Sort: due date', f.sort)}${opt('pri', 'Sort: priority', f.sort)}${opt('new', 'Sort: newest', f.sort)}${opt('az', 'Sort: A–Z', f.sort)}</select></div>`;
   if (S.inbox.length) h += `<div class="card t-lilac sec" style="background:var(--lilac-soft)"><div class="card-h">${ico('inbox', 'sm')}<h3>Brain dump — sort these when you're ready</h3><span class="grow"></span><span class="chip">${S.inbox.length}</span></div>
     <div class="list">${S.inbox.map(n => `<div class="li"><span class="t" style="white-space:normal;font-weight:600">${esc(n.text)}</span><span class="acts"><button class="btn sm" data-a="inboxToTask" data-id="${n.id}">Make a task</button><button class="btn icon sm ghost" data-a="inboxDel" data-id="${n.id}" aria-label="Remove">${ico('x', 'sm')}</button></span></div>`).join('')}</div></div>`;
-  return h + (sections || `<div class="card empty">${ico('leaf')}Nothing here. ${f.q || f.cat !== 'all' ? 'Try another filter.' : 'Add your first task.'}</div>`);
+  return h + (sections || `<div class="card empty">${ico('leaf')}Nothing here. ${f.q || f.cat !== 'all' || f.who !== 'all' ? 'Try another filter.' : 'Add your first task.'}</div>`);
 };
 function taskRow(x) {
   const c = cat(x.cat), p = PRI[x.pri] || PRI.med;
   return `<div class="li ${x.status === 'done' ? 'done' : ''} ${tone(c.t)}">
     <input type="checkbox" class="ck round" style="--c:var(--c-ink)" data-c="toggleTask" data-id="${x.id}" ${x.status === 'done' ? 'checked' : ''} aria-label="Done: ${esc(x.title)}">
-    <button class="t" data-a="editTask" data-id="${x.id}" style="text-align:left">${esc(x.title)}<small>${esc(c.name)}${x.notes ? ' · ' + esc(x.notes.slice(0, 40)) : ''}</small></button>
+    <button class="t" data-a="editTask" data-id="${x.id}" style="text-align:left">${esc(x.title)}<small>${esc(c.name)}${who(x.who) ? ' · ' + esc(who(x.who).name) : ''}${x.notes ? ' · ' + esc(x.notes.slice(0, 40)) : ''}</small></button>
     ${x.status === 'doing' ? '<span class="chip t-sun">In progress</span>' : ''}
     ${x.pri === 'high' && x.status !== 'done' ? `<span class="chip t-pink">${p.n}</span>` : ''}
-    ${x.due ? `<span class="chip" style="--c:var(--surface-2);--c-ink:${x.due < today() && x.status !== 'done' ? 'var(--danger)' : 'var(--ink-2)'}">${relDay(x.due)}</span>` : ''}
+    ${x.due ? `<span class="chip" style="--c:var(--surface-2);--c-ink:${x.due < today() && x.status !== 'done' ? 'var(--danger)' : 'var(--ink-2)'}">${relDay(x.due)}</span>` : ''}${avatar(who(x.who))}
     <span class="acts"><button class="btn icon sm ghost" data-a="editTask" data-id="${x.id}" aria-label="Edit">${ico('edit', 'sm')}</button><button class="btn icon sm ghost" data-a="delTask" data-id="${x.id}" aria-label="Delete">${ico('trash', 'sm')}</button></span></div>`;
 }
 C.taskSearch = el => { UI.tasks.q = el.value; render(); setTimeout(() => { const i = $('[data-c=taskSearch]'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }, 0); };
