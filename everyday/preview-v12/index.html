@@ -318,9 +318,11 @@ table.tbl tr:hover td{background:var(--surface-2)}
 .cal-task.done{text-decoration:line-through;color:var(--ink-3)}
 .cal-bill{border-left-style:dashed}
 @media (max-width:600px){.cal-x{display:none}}
-.legend .pct{margin-right:6px}
-@media (max-width:440px){.legend .pct{display:none}}
-.cal-bill.paid{text-decoration:line-through;opacity:.55}
+.legend b .pct{display:inline;margin-right:6px}
+@media (max-width:440px){.legend b .pct{display:none}}
+.cal-bill.paid,.cal-bill.snz{text-decoration:line-through;opacity:.55}
+.li.snoozed .t{opacity:.6}
+.li.snoozed .amt{text-decoration:line-through;color:var(--ink-3)}
 .cal-filter{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 14px;align-items:center}
 .cal-tog{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;font-size:12.5px;font-weight:800;border:1.5px solid var(--c-mid);background:var(--c-soft);color:var(--c-ink)}
 .cal-tog i{width:9px;height:9px;border-radius:50%;background:var(--c-mid)}
@@ -404,7 +406,7 @@ table.tbl tr:hover td{background:var(--surface-2)}
 </div>
 <nav class="tabbar" id="tabbar" aria-label="Quick navigation"></nav>
 <button class="fab" data-a="quickAdd" aria-label="Quick add (N)" title="Quick add (N)"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-<script>window.EVERYDAY_DEMO=true;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.3.0";</script>
+<script>window.EVERYDAY_DEMO=true;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.4.0";</script>
 <script>/* ---- core.js ---- */
 /* ============ The Everyday — core ============ */
 'use strict';
@@ -530,11 +532,11 @@ function blank() {
         { id: 'groceries', name: 'Groceries', t: 'mint' }, { id: 'dining', name: 'Eating out', t: 'peach' }, { id: 'transport', name: 'Transport', t: 'sky' },
         { id: 'shopping', name: 'Shopping', t: 'pink' }, { id: 'fun', name: 'Fun', t: 'lilac' }, { id: 'health', name: 'Health & care', t: 'sun' }, { id: 'other', name: 'Other', t: 'lilac' },
       ],
-      calendars: [{ id: 'personal', name: 'Personal', t: 'lilac' }, { id: 'work', name: 'Work', t: 'sky' }, { id: 'family', name: 'Family', t: 'peach' }, { id: 'health', name: 'Health', t: 'mint' }], calHidden: [],
+      calendars: [{ id: 'personal', name: 'Personal', t: 'lilac' }, { id: 'work', name: 'Work', t: 'sky' }, { id: 'family', name: 'Family', t: 'peach' }, { id: 'health', name: 'Health', t: 'mint' }], calHidden: [], roundUp: { to: 1, goal: '', auto: true },
     },
     tasks: [], routines: [], routineDone: {}, events: [], top3: {}, inbox: [],
     goals: [], habits: [], habitLog: {},
-    income: [], extraIncome: [], bills: [], billPaid: {}, billMove: {}, expenses: [], limits: {},
+    income: [], extraIncome: [], bills: [], billPaid: {}, billMove: {}, billSkip: {}, expenses: [], limits: {},
     debts: [], debtPays: [], debtPlan: { strategy: 'snowball', extra: 0 }, savings: [],
     recipes: [], mealPlan: {}, grocery: { items: [], checked: {} },
     workouts: [], people: [], weights: [], water: {},
@@ -673,10 +675,10 @@ function billsBetween(from, to) {
   const cs = curStart(), carry = carryOn(), cf = S.settings.carryFrom || '', out = [];
   const lo = addDays(from < cs ? from : cs, -100), hi = addDays(to, 100);
   S.bills.forEach(b => billDates(b, lo, hi).forEach(due => {
-    const key = billKey(b, due), paid = !!S.billPaid[key], mv = S.billMove[key] || null;
+    const key = billKey(b, due), paid = !!S.billPaid[key], mv = S.billMove[key] || null, skipped = !!(S.billSkip || {})[key];
     let date = mv || due, carried = false;
-    if (carry && !paid && !b.auto && date < cs && due >= cf && due >= (b.created || b.start || '')) { date = cs; carried = true; }
-    if (date >= from && date <= to) out.push({ ...b, due, date, key, paid, moved: !!mv && mv !== due, carried });
+    if (carry && !paid && !skipped && !b.auto && date < cs && due >= cf && due >= (b.created || b.start || '')) { date = cs; carried = true; }
+    if (date >= from && date <= to) out.push({ ...b, due, date, key, paid, moved: !!mv && mv !== due, carried, skipped, full: b.amount, amount: skipped ? 0 : b.amount }); // snoozed = not counted
   }));
   return out.sort((a, b) => a.date.localeCompare(b.date) || a.due.localeCompare(b.due));
 }
@@ -836,7 +838,8 @@ function sampleData(name = 'Sam') {
   D.income = [{ id: id('in'), name: 'Paycheck', amount: 1650, freq: 'biweekly', next: fri }, { id: id('in'), name: 'Side gig', amount: 450, freq: 'monthly', day: 15 }];
   D.bills = [['Rent', 1150, 1, 'home'], ['Phone', 45, 12, 'other'], ['Electricity', 85, 20, 'home'], ['Internet', 60, 22, 'home'], ['Music streaming', 11.99, 24, 'fun'], ['Car insurance', 98, 26, 'transport'], ['Gym', 35, 28, 'health']]
     .map(([name, amount, day, c]) => ({ id: id('b'), name, amount, day, cat: c, auto: day === 1 }));
-  D.bills.push({ id: id('b'), name: 'Dog walker', amount: 30, freq: 'weekly', on: d(3), cat: 'other', auto: false }, { id: id('b'), name: 'Car registration', amount: 120, freq: 'once', on: d(10), cat: 'transport', auto: false }, { id: id('b'), name: 'Amazon Prime', amount: 139, freq: 'yearly', on: d(19), cat: 'shopping', auto: true }, { id: id('b'), name: 'Water bill', amount: 42, freq: 'once', on: d(-16), cat: 'home', auto: false }); // unpaid → shows the roll-over
+  D.bills.push({ id: id('b'), name: 'Dog walker', amount: 30, freq: 'weekly', on: d(3), cat: 'other', auto: false }, { id: id('b'), name: 'Car registration', amount: 120, freq: 'once', on: d(10), cat: 'transport', auto: false }, { id: id('b'), name: 'Amazon Prime', amount: 139, freq: 'yearly', on: d(19), cat: 'shopping', auto: true }, { id: id('b'), name: 'Water bill', amount: 42, freq: 'once', on: d(-16), cat: 'home', auto: false }, { id: id('b'), name: 'Meal kit', amount: 65, freq: 'weekly', on: d(2), cat: 'groceries', auto: true }); // unpaid → shows the roll-over
+  D.billSkip[D.bills.at(-1).id + '|' + d(2)] = true; // a snoozed meal-kit week
   const today_d = parse(t).getDate();
   D.bills.filter(b => !b.freq).forEach(b => { if (b.day < today_d) D.billPaid[b.id + '|' + mk] = true; D.billPaid[b.id + '|' + addMonths(mk, -1)] = true; });
   const ex = [['Grocery run', 'groceries', 86.4], ['Coffee', 'dining', 4.8], ['Metro card', 'transport', 40], ['Pharmacy', 'health', 18.25], ['Pizza night', 'dining', 32], ['Farmers market', 'groceries', 27.5],
@@ -852,6 +855,8 @@ function sampleData(name = 'Sam') {
   D.debtPlan = { strategy: 'snowball', extra: 150 };
   D.savings = [['Emergency fund', 5000, 'mint', [800, 450, 500, 400]], ['Lisbon trip', 1800, 'sky', [300, 240, 200]], ['New laptop', 1400, 'lilac', [500, 280, 200]]]
     .map(([name, target, t2, deps]) => ({ id: id('sv'), name, target, t: t2, deposits: deps.map((a, i) => ({ id: id('dp'), date: `${addMonths(svM, -(deps.length - 1 - i))}-16`, amount: a })) }));
+  D.settings.roundUp = { to: 1, goal: D.savings[0].id, auto: true };
+  D.expenses.filter(e => e.date >= d(-13) && e.date <= t).slice(0, 8).forEach(e => { const r = Math.round((Math.ceil(e.amount) - e.amount) * 100) / 100; if (r > 0) { e.ru = r; e.ruGoal = D.savings[0].id; D.savings[0].deposits.push({ id: id('dp'), amount: r, date: e.date, label: 'Roundup', exp: e.id, note: e.name }); } });
 
   const R = (name, type, ings) => ({ id: id('rc'), name, type, ingredients: ings.map(([n2, q, a]) => ({ name: n2, qty: q, aisle: a })), notes: '' });
   D.recipes = [
@@ -1061,22 +1066,35 @@ A.skipEvent = el => { closeSheet(); withUndo(`Skipped ${fmtD(el.dataset.d)}`, ()
 /* ---------- expense form ---------- */
 A.addExpense = () => expenseForm();
 A.editExpense = el => expenseForm(byId(S.expenses, el.dataset.id));
+/* round-ups: spare change from an expense goes into a savings goal */
+const ruCfg = () => { const r = S.settings.roundUp || {}; const g = byId(S.savings, r.goal); return g ? { to: +r.to || 1, goal: g, auto: r.auto !== false } : null; };
+const ruAmt = (amount, to) => { const a = Math.round(amount * 100), st = Math.round(to * 100); return a > 0 ? ((Math.ceil(a / st) * st) - a) / 100 : 0; };
+function ruHint(el) { const f = el.form || el.closest('form'), c = ruCfg(), lab = f && $('[data-ru]', f); if (!c || !lab) return; const r = ruAmt(num($('input[name=amount]', f).value), c.to); lab.textContent = r > 0 ? `Round up · +${money(r)} to ${c.goal.name}` : `Round up to the nearest ${money0(c.to)} (goes to ${c.goal.name})`; }
 function expenseForm(x) {
-  const e = x || { name: '', amount: '', cat: 'groceries', date: today() };
+  const e = x || { name: '', amount: '', cat: 'groceries', date: today() }, c = ruCfg();
+  const ruOn = x ? !!x.ru : !!(c && c.auto);
   sheet(sheetHead(x ? 'Edit expense' : 'Add expense') + `<form class="form" data-f="expense" data-id="${x ? x.id : ''}">
-    <div class="grid2">${fld('Amount', `<input class="inp" name="amount" inputmode="decimal" value="${e.amount}" placeholder="0.00" required autofocus>`)}${fld('Date', `<input class="inp" type="date" name="date" value="${e.date}" required>`)}</div>
+    <div class="grid2">${fld('Amount', `<input class="inp" name="amount" inputmode="decimal" value="${e.amount}" placeholder="0.00" required autofocus oninput="ruHint(this)">`)}${fld('Date', `<input class="inp" type="date" name="date" value="${e.date}" required>`)}</div>
     ${fld('What was it?', `<input class="inp" name="name" value="${esc(e.name)}" placeholder="e.g. Groceries">`)}
     ${fld('Category', `<div class="chips" id="ecats">${S.settings.expCats.map(c => `<button type="button" class="chip-btn ${c.id === e.cat ? 'on' : ''}" data-a="pickCat" data-v="${c.id}">${esc(c.name)}</button>`).join('')}</div><input type="hidden" name="cat" value="${e.cat}">`)}
+    ${c ? `<label class="row" style="font-weight:700"><input type="checkbox" class="ck" name="ru" ${ruOn ? 'checked' : ''}> <span data-ru>${(() => { const r = ruAmt(+e.amount || 0, c.to); return r > 0 ? `Round up · +${money(r)} to ${esc(c.goal.name)}` : `Round up to the nearest ${money0(c.to)} (goes to ${esc(c.goal.name)})`; })()}</span></label>`
+      : `<div class="xs muted b">Want spare change saved automatically? <button type="button" class="link xs b" data-a="goRoundUps">Set up round-ups</button></div>`}
     <div class="sheet-f">${x ? `<button type="button" class="btn danger ghost" data-a="delExpense" data-id="${x.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete</button>` : ''}<button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">${x ? 'Save' : 'Add expense'}</button></div></form>`);
 }
+A.goRoundUps = () => { closeSheet(); go('settings'); setTimeout(() => $('#roundups')?.scrollIntoView({ block: 'center' }), 80); };
 A.pickCat = el => { const w = el.closest('.field'); $$('.chip-btn', w).forEach(b => b.classList.toggle('on', b === el)); $('input[name=cat]', w).value = el.dataset.v; };
+function dropRoundUp(expId) { S.savings.forEach(g => { if (g.deposits) g.deposits = g.deposits.filter(d => d.exp !== expId); }); }
 F.expense = (d, form) => {
   const amount = num(d.amount); if (!amount) return toast('Enter an amount');
   const o = { name: d.name || ecat(d.cat).name, amount, cat: d.cat, date: d.date };
-  const id = form.dataset.id; if (id) Object.assign(byId(S.expenses, id), o); else S.expenses.push({ id: uid(), ...o });
-  closeSheet(); commit(id ? 'Expense saved' : `Added ${money(amount)}`);
+  const id = form.dataset.id, ex = id ? byId(S.expenses, id) : { id: uid() };
+  Object.assign(ex, o); if (!id) S.expenses.push(ex);
+  dropRoundUp(ex.id); delete ex.ru; delete ex.ruGoal;
+  const c = ruCfg(), r = c && d.ru ? ruAmt(amount, c.to) : 0;
+  if (r > 0) { ex.ru = r; ex.ruGoal = c.goal.id; c.goal.deposits = c.goal.deposits || []; c.goal.deposits.push({ id: uid(), amount: r, date: o.date, label: 'Roundup', exp: ex.id, note: o.name }); }
+  closeSheet(); commit(id ? 'Expense saved' : `Added ${money(amount)}${r > 0 ? ` · ${money(r)} rounded up to ${c.goal.name}` : ''}`);
 };
-A.delExpense = el => { closeSheet(); withUndo('Expense deleted', () => { S.expenses = S.expenses.filter(e => e.id !== el.dataset.id); }); };
+A.delExpense = el => { closeSheet(); withUndo('Expense deleted', () => { dropRoundUp(el.dataset.id); S.expenses = S.expenses.filter(e => e.id !== el.dataset.id); }); };
 
 /* ---------- workout & weight quick forms ---------- */
 const WTYPES = ['Walk', 'Run', 'Yoga', 'Strength', 'Cycling', 'Swim', 'HIIT', 'Dance', 'Stretch', 'Sport', 'Other'];
@@ -1154,13 +1172,16 @@ F.onboard = (d, form, sub) => {
   const set = { name: d.name, currency: d.currency, weekStart: +d.weekStart, units: d.units };
   S.settings.weekStart = +d.weekStart;
   if (sub === 'sample') { S = sampleData(d.name || 'Sam'); }
-  Object.assign(S.settings, set, { onboarded: true, seen: '1.3' });
+  Object.assign(S.settings, set, { onboarded: true, seen: '1.4' });
   closeSheet(); commit(sub === 'sample' ? 'Sample data loaded — clear it anytime in Settings' : `Welcome${d.name ? ', ' + d.name : ''}! 🌼`);
 };
 
-function whatsNew() {
+function whatsNew(prev) {
+  const fresh = [['pause', '<b>Snooze a bill</b> for one paycheck or month — perfect for a meal-kit week you skip. It won’t count, and the next one stays on schedule.'], ['coins', '<b>Round-ups:</b> tick “Round up” on an expense and the spare change goes into a savings goal, labeled <b>Roundup</b>. Set it up in Settings.']];
+  const older = [['repeat', 'Bills can repeat <b>weekly</b>, <b>every 2 weeks</b>, <b>monthly</b> or <b>yearly</b> — or be a <b>one-time</b> bill.'], ['move', 'Unpaid bills <b>roll over</b>, and you can <b>move</b> one payment to another paycheck.'], ['calendar', 'Bills on your <b>calendar</b>, plus your own <b>calendars</b> with their own colors.'], ['clock', 'Events can <b>repeat</b> every day, week, month or year.'], ['wallet', 'A <b>paycheck breakdown</b> chart.'], ['heart', '<b>Assign tasks</b> to yourself or your partner.']];
+  const items = (prev || '') < '1.3' ? [...fresh, ...older] : fresh;
   sheet(`${sheetHead('New in The Everyday')}<p style="margin:0 0 10px;font-weight:600;color:var(--ink-2)">Made from your ideas — thank you for them:</p>
-  <div class="list">${[['repeat', 'Bills can repeat <b>weekly</b>, <b>every 2 weeks</b>, <b>monthly</b> or <b>yearly</b> — or be a <b>one-time</b> bill on a set date.'], ['move', 'Unpaid bills <b>roll over</b> to your next paycheck, and you can <b>move</b> one payment to another paycheck.'], ['calendar', 'Bills show on your <b>calendar</b>, and you can make your own <b>calendars</b> with their own colors.'], ['clock', 'Events can <b>repeat</b> every day, week, month or year.'], ['coins', 'A <b>paycheck breakdown</b> chart: bills, debt, savings and spending at a glance.'], ['heart', '<b>Assign tasks</b> to yourself or your partner.']].map(([i, t]) => `<div class="li">${ico(i)}<span class="t" style="white-space:normal;font-weight:600">${t}</span></div>`).join('')}</div>
+  <div class="list">${items.map(([i, t]) => `<div class="li">${ico(i)}<span class="t" style="white-space:normal;font-weight:600">${t}</span></div>`).join('')}</div>
   <div class="sheet-f"><button class="btn" data-a="closeSheet">Later</button><button class="btn pri" data-a="whatsNewGo">Take a look ${ico('arrow', 'sm')}</button></div>`);
 }
 A.whatsNewGo = () => { closeSheet(); go('budget'); if (!S.income.length) setTimeout(() => incomeForm(), 60); };
@@ -1200,7 +1221,7 @@ async function boot() {
   const v = location.hash.replace('#/', ''); cur = VIEWS[v] ? v : 'dashboard';
   render();
   if (!S.settings.onboarded && !DEMO) onboarding();
-  else if (!DEMO && S.settings.seen !== '1.3') { S.settings.seen = '1.3'; whatsNew(); }
+  else if (!DEMO && S.settings.seen !== '1.4') { const prev = S.settings.seen; S.settings.seen = '1.4'; whatsNew(prev); }
   save();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => { });
 }
@@ -1225,20 +1246,21 @@ function incomeCard(from, to) {
       ${!S.income.length && !ex.length ? `<div class="empty small">Add your paycheck — weekly, every 2 weeks, twice a month or monthly — to see what’s left to spend.</div>` : ''}</div></div>`;
 }
 function billNote(b) {
+  if (b.skipped) return `<small>Snoozed · not counted${BTAG[billFreq(b)] ? ' · ' + BTAG[billFreq(b)] : ''}</small>`;
   const late = !b.paid && b.due < today();
   return `<small style="${late && !b.carried ? 'color:var(--danger)' : ''}">${b.carried ? `<span style="color:var(--danger)">Rolled over · was due ${fmtD(b.due)}</span>` : `Due ${fmtD(b.due)}${late ? ' · overdue' : ''}`}${b.moved && !b.carried ? ` · moved to ${fmtD(b.date)}` : ''}${BTAG[billFreq(b)] ? ' · ' + BTAG[billFreq(b)] : ''}${b.auto ? ' · auto-pay' : ''}</small>`;
 }
 function billsCard(bills, title) {
   return `<div class="card sec"><div class="card-h"><h3>${title}</h3><span class="grow"></span><button class="btn sm soft" data-a="addBill">${ico('plus', 'sm')} Bill</button></div>
-    <div class="list">${bills.length ? bills.map(b => `<div class="li"><input type="checkbox" class="ck round" style="--c:var(--mint-ink)" data-c="toggleBill" data-k="${b.key}" data-eff="${b.date}" data-carried="${b.carried ? 1 : ''}" ${b.paid ? 'checked' : ''} aria-label="Paid">
+    <div class="list">${bills.length ? bills.map(b => `<div class="li ${b.skipped ? 'snoozed' : ''}">${b.skipped ? `<button class="btn icon sm ghost" data-a="snoozeBill" data-k="${b.key}" aria-label="Un-snooze ${esc(b.name)}" title="Snoozed — tap to count it again">${ico('pause', 'sm')}</button>` : `<input type="checkbox" class="ck round" style="--c:var(--mint-ink)" data-c="toggleBill" data-k="${b.key}" data-eff="${b.date}" data-carried="${b.carried ? 1 : ''}" ${b.paid ? 'checked' : ''} aria-label="Paid">`}
       <button class="t" data-a="editBill" data-id="${b.id}" style="text-align:left">${esc(b.name)}${billNote(b)}</button>
-      <span class="amt">${money(b.amount)}</span><span class="acts"><button class="btn icon sm ghost" data-a="moveBill" data-id="${b.id}" data-due="${b.due}" aria-label="Move this payment" title="Move this payment">${ico('move', 'sm')}</button><button class="btn icon sm ghost" data-a="delBill" data-id="${b.id}" aria-label="Delete">${ico('trash', 'sm')}</button></span></div>`).join('') : `<div class="empty small">No bills due here — add rent, phone, subscriptions…</div>`}</div>
-    ${bills.length ? `<div class="row" style="justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"><span class="b">Total</span><span class="b">${money(sum(bills, b => b.amount))}</span></div>` : ''}</div>`;
+      <span class="amt">${money(b.full)}</span><span class="acts">${!b.paid ? `<button class="btn icon sm ghost" data-a="snoozeBill" data-k="${b.key}" aria-label="${b.skipped ? 'Un-snooze' : 'Snooze'} this payment" title="${b.skipped ? 'Count it again' : 'Snooze — skip this one'}">${ico(b.skipped ? 'play' : 'pause', 'sm')}</button>` : ''}<button class="btn icon sm ghost" data-a="moveBill" data-id="${b.id}" data-due="${b.due}" aria-label="Move this payment" title="Move this payment">${ico('move', 'sm')}</button><button class="btn icon sm ghost" data-a="delBill" data-id="${b.id}" aria-label="Delete">${ico('trash', 'sm')}</button></span></div>`).join('') : `<div class="empty small">No bills due here — add rent, phone, subscriptions…</div>`}</div>
+    ${bills.length ? `<div class="row" style="justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"><span class="b">Total${bills.some(b => b.skipped) ? ' <span class="xs muted">(snoozed not counted)</span>' : ''}</span><span class="b">${money(sum(bills, b => b.amount))}</span></div>` : ''}</div>`;
 }
 function expensesCard(exps, title) {
   return `<div class="card sec"><div class="card-h"><h3>${title}</h3><span class="grow"></span><span class="xs muted b">${exps.length} entries</span></div>
     ${exps.length ? `<div class="scroll-x"><table class="tbl"><thead><tr><th>Date</th><th>What</th><th>Category</th><th class="r">Amount</th><th></th></tr></thead><tbody>
-      ${exps.map(e => `<tr><td class="muted b xs">${fmtD(e.date)}</td><td class="b">${esc(e.name)}</td><td><span class="chip dot ${tone(ecat(e.cat).t)}" style="--c:var(--c-soft)">${esc(ecat(e.cat).name)}</span></td><td class="r b">${money(e.amount)}</td>
+      ${exps.map(e => `<tr><td class="muted b xs">${fmtD(e.date)}</td><td class="b">${esc(e.name)}${e.ru ? ` <span class="chip t-mint" title="Rounded up into ${esc((byId(S.savings, e.ruGoal) || {}).name || 'savings')}">+${money(e.ru)} round-up</span>` : ''}</td><td><span class="chip dot ${tone(ecat(e.cat).t)}" style="--c:var(--c-soft)">${esc(ecat(e.cat).name)}</span></td><td class="r b">${money(e.amount)}</td>
       <td class="r"><button class="btn icon sm ghost" data-a="editExpense" data-id="${e.id}" aria-label="Edit">${ico('edit', 'sm')}</button></td></tr>`).join('')}
     </tbody></table></div>` : `<div class="empty">${ico('wallet')}No expenses logged yet.</div>`}</div>`;
 }
@@ -1280,11 +1302,11 @@ function paycheckPlan(mk) {
   const row = r => `<div class="pc-row ${cur && cur.start === r.p.date ? 'now' : ''}">
       <div class="pc-date"><b>${DOW[dow(r.p.date)]}</b><span>${fmtD(r.p.date)}</span></div>
       <div class="pc-main"><div class="top">${esc(r.p.src.map(i => i.name).join(' + ') || 'Paycheck')} <span style="color:var(--mint-ink)">+${money0(r.p.amt)}</span>${r.bonus ? `<span class="chip t-sun" style="--c:var(--sun)">${ico('spark', 'sm')} Bonus paycheck</span>` : ''}${cur && cur.start === r.p.date ? '<span class="chip t-mint">Now</span>' : ''}</div>
-        <div class="bl">${r.bs.length ? `Bills till ${fmtD(r.end)}: ${r.bs.map(b => `${esc(b.name)} ${money0(b.amount)}`).join(' · ')}` : `No bills due before ${fmtD(addDays(r.end, 1))}`}</div>
+        <div class="bl">${r.bs.filter(b => !b.skipped).length ? `Bills till ${fmtD(r.end)}: ${r.bs.filter(b => !b.skipped).map(b => `${esc(b.name)} ${money0(b.amount)}`).join(' · ')}` : `No bills due before ${fmtD(addDays(r.end, 1))}`}</div>
         <div class="bar"><i style="width:${r.p.amt ? clamp(r.bt / r.p.amt * 100, 0, 100) : 100}%;${r.left < 0 ? 'background:var(--danger)' : ''}"></i></div></div>
       <div class="pc-left"><small>after bills</small><b style="${r.left < 0 ? 'color:var(--danger)' : ''}">${money0(r.left)}</b></div></div>`;
   return `<div class="card sec t-mint"><div class="card-h">${ico('coins', 'sm')}<h3>Paycheck plan</h3><span class="grow"></span><span class="xs muted b">${pds.length} payday${pds.length > 1 ? 's' : ''} in ${MONTHS[+mk.slice(5) - 1]}</span></div>
-    <div class="pc-list">${pre.length ? `<div class="pc-row pre"><div class="pc-main"><div class="top" style="font-size:13px">Due before your first payday</div><div class="bl">${pre.map(b => `${esc(b.name)} ${money0(b.amount)}`).join(' · ')} — covered by last month’s final paycheck${preInc ? ` · +${money0(preInc)} income` : ''}</div></div><div class="pc-left"><small>bills</small><b>${money0(sum(pre, b => b.amount))}</b></div></div>` : ''}
+    <div class="pc-list">${pre.filter(b => !b.skipped).length ? `<div class="pc-row pre"><div class="pc-main"><div class="top" style="font-size:13px">Due before your first payday</div><div class="bl">${pre.filter(b => !b.skipped).map(b => `${esc(b.name)} ${money0(b.amount)}`).join(' · ')} — covered by last month’s final paycheck${preInc ? ` · +${money0(preInc)} income` : ''}</div></div><div class="pc-left"><small>bills</small><b>${money0(sum(pre, b => b.amount))}</b></div></div>` : ''}
     ${rows.map(row).join('')}</div>
     ${tight.length ? `<div class="pc-tip">${ico('info', 'sm')} The ${fmtD(tight[0].p.date)} paycheck can’t cover its bills alone. Set aside <b>${money0(-tight[0].left)}</b> from an earlier paycheck — or spread it out: about <b>${money0(monthBills / pds.length)}</b> from each paycheck covers all of ${MONTHS[+mk.slice(5) - 1]}’s bills.</div>`
       : monthBills ? `<div class="pc-tip" style="background:var(--mint-soft)">${ico('leaf', 'sm')} Every paycheck covers its own bills. Nice! Spread evenly, bills take about <b>${money0(monthBills / pds.length)}</b> from each paycheck.</div>` : ''}</div>`;
@@ -1413,10 +1435,12 @@ A.moveBill = el => {
   sheet(sheetHead(`Move ${esc(b.name)}`) + `<p class="small" style="margin:0 0 10px;font-weight:600;color:var(--ink-2)">${money(b.amount)} · due ${fmtD(due, { weekday: 'short', month: 'short', day: 'numeric' })}. Pick the ${bView() === 'paycheck' && payPeriod(t) ? 'paycheck' : 'month'} that pays it. <b>Only this payment moves</b> — the next one stays on its usual date.</p>
     <div class="list">${slots.map(row).join('')}</div>
     <form class="form" data-f="moveBill" data-k="${key}" data-due="${due}" style="margin-top:12px"><div class="row" style="gap:8px;align-items:flex-end">${fld('Or pick a date', `<input class="inp" type="date" name="on" value="${eff}">`, 'grow')}<button class="btn">Move</button></div></form>
+    <div class="row wrap" style="margin-top:12px;gap:8px"><button type="button" class="btn sm" data-a="snoozeBill" data-k="${key}">${ico((S.billSkip || {})[key] ? 'play' : 'pause', 'sm')} ${(S.billSkip || {})[key] ? 'Un-snooze this payment' : 'Snooze — skip this one'}</button><span class="xs muted b">For subscriptions you can pause, like a meal-kit week.</span></div>
     <div class="sheet-f">${S.billMove[key] ? `<button type="button" class="btn ghost" data-a="moveBillTo" data-k="${key}" data-due="${due}" data-v="${due}" style="margin-right:auto">Back to ${fmtD(due)}</button>` : ''}<button type="button" class="btn" data-a="closeSheet">Done</button></div>`);
 };
 function setMove(key, due, v) { if (!v || v === due) delete S.billMove[key]; else S.billMove[key] = v; closeSheet(); commit(v && v !== due ? `Moved to ${fmtD(v)} — the next one stays on schedule` : 'Back on its usual date'); }
 A.moveBillTo = el => setMove(el.dataset.k, el.dataset.due, el.dataset.v);
+A.snoozeBill = el => { const k = el.dataset.k, sk = S.billSkip || (S.billSkip = {}); closeSheet(); if (sk[k]) { delete sk[k]; commit('Counted again'); } else { sk[k] = true; delete S.billPaid[k]; commit('Snoozed — this one won’t count. The next one stays on schedule'); } };
 F.moveBill = (d, form) => { if (!/^\d{4}-\d\d-\d\d$/.test(d.on || '')) return toast('Pick a date'); setMove(form.dataset.k, form.dataset.due, d.on); };
 A.delBill = el => { closeSheet(); withUndo('Bill deleted', () => { S.bills = S.bills.filter(b => b.id !== el.dataset.id); }); };
 
@@ -1484,7 +1508,7 @@ function calBills(from, to) { // bills by the day they show on the calendar (rol
 function dayStuff(d, bm) {
   return { evs: eventsOn(d), tasks: S.tasks.filter(t => t.due === d), rts: routinesOn(d), bills: (bm || calBills(d, d))[d] || [] };
 }
-const billChip = (b, tag = 'span') => `<${tag} class="cal-ev cal-bill t-mint ${b.paid ? 'paid' : ''}" ${tag === 'button' ? `data-a="go" data-v="budget"` : ''} title="${esc(b.name)} ${money(b.amount)}"><span class="cal-x">${money0(b.amount)} </span>${esc(b.name)}</${tag}>`;
+const billChip = (b, tag = 'span') => `<${tag} class="cal-ev cal-bill t-mint ${b.paid ? 'paid' : ''} ${b.skipped ? 'snz' : ''}" ${tag === 'button' ? `data-a="go" data-v="budget"` : ''} title="${esc(b.name)} ${money(b.full)}${b.skipped ? ' (snoozed)' : ''}"><span class="cal-x">${money0(b.full)} </span>${esc(b.name)}</${tag}>`;
 function monthView(c) {
   const mk = monthKey(c), [y, m] = mk.split('-').map(Number), n = dim(y, m), t = today();
   const first = `${mk}-01`, lead = (dow(first) - S.settings.weekStart + 7) % 7;
@@ -1523,7 +1547,7 @@ function daySheet(d) {
   sheet(sheetHead(`${DOWL[dow(d)]}, ${fmtD(d, { month: 'long', day: 'numeric' })}`) + `
     <div class="row wrap" style="margin:-8px 0 14px"><button class="btn sm" data-a="addEvent" data-date="${d}">${ico('plus', 'sm')} Event</button><button class="btn sm" data-a="addTask" data-due="${d}">${ico('plus', 'sm')} Task</button></div>
     <div class="sec"><div class="sec-h"><h2>Schedule</h2></div><div class="list sched">${evs.length ? evs.map(e => `<div class="li ${tone(evTone(e))}"><span class="time">${fmtTime(e.start) || 'All day'}</span><button class="ev" ${evAttr(e)} style="text-align:left">${esc(e.title)}${e.end && e.start ? ` <span class="xs muted">– ${fmtTime(e.end)}</span>` : ''}<div class="xs muted">${esc((calOf(e.cal) || {}).name || '')}${e.repeat ? ' · ' + REPEAT[e.repeat] : ''}</div></button></div>`).join('') : '<div class="empty small">No events</div>'}</div></div>
-    ${bills.length ? `<div class="sec"><div class="sec-h"><h2>Bills</h2></div><div class="list">${bills.map(b => `<div class="li"><input type="checkbox" class="ck round" style="--c:var(--mint-ink)" data-c="toggleBill" data-k="${b.key}" data-eff="${b.date}" data-carried="${b.carried ? 1 : ''}" ${b.paid ? 'checked' : ''} aria-label="Paid: ${esc(b.name)}"><span class="t">${esc(b.name)}${billNote(b)}</span><span class="amt">${money(b.amount)}</span></div>`).join('')}</div></div>` : ''}
+    ${bills.length ? `<div class="sec"><div class="sec-h"><h2>Bills</h2></div><div class="list">${bills.map(b => `<div class="li ${b.skipped ? 'snoozed' : ''}">${b.skipped ? `<button class="btn icon sm ghost" data-a="snoozeBill" data-k="${b.key}" aria-label="Un-snooze">${ico('pause', 'sm')}</button>` : `<input type="checkbox" class="ck round" style="--c:var(--mint-ink)" data-c="toggleBill" data-k="${b.key}" data-eff="${b.date}" data-carried="${b.carried ? 1 : ''}" ${b.paid ? 'checked' : ''} aria-label="Paid: ${esc(b.name)}">`}<span class="t">${esc(b.name)}${billNote(b)}</span><span class="amt">${money(b.full)}</span></div>`).join('')}</div></div>` : ''}
     <div class="sec"><div class="sec-h"><h2>Tasks</h2></div><div class="list">${tasks.length ? tasks.map(x => itemRow({ k: 'task', x }, d)).join('') : '<div class="empty small">No tasks due</div>'}</div></div>
     ${rts.length ? `<div class="sec"><div class="sec-h"><h2>Routines</h2></div><div class="list">${rts.map(x => itemRow({ k: 'routine', x }, d)).join('')}</div></div>` : ''}`, { wide: true });
 }
@@ -1598,7 +1622,7 @@ VR.dashboard = () => {
   </div>`;
 
   /* ---- column: Finances ---- */
-  const bFrom = curStart() < mk + '-01' ? curStart() : mk + '-01', bills = billsBetween(bFrom, addDays(t, 14)).filter(b => !b.paid).slice(0, 5);
+  const bFrom = curStart() < mk + '-01' ? curStart() : mk + '-01', bills = billsBetween(bFrom, addDays(t, 14)).filter(b => !b.paid && !b.skipped).slice(0, 5);
   const usedPct = mm.inc ? clamp((mm.inc - mm.left) / mm.inc * 100, 0, 100) : 0;
   const cats = S.settings.expCats.map(c => ({ c, v: sum(expensesIn(mk).filter(e => e.cat === c.id), e => e.amount), max: S.limits[c.id] || 0 })).filter(x => x.v || x.max).sort((a, b) => b.v - a.v).slice(0, 5);
   const plan = S.debts.length ? payoffPlan() : null, debtLeft = sum(S.debts, debtBal);
@@ -1760,6 +1784,7 @@ function savingsTab() {
           <div class="xs muted b">of ${money0(s.target)}${per ? ` · ${money0(per)} to go` : ' · reached 🎉'}${s.due ? ` · by ${fmtD(s.due)}` : ''}</div>
           ${s.due && per ? `<div class="xs b" style="margin-top:3px;color:var(--c-ink)">${(() => { const m = Math.max(1, Math.ceil(diffDays(today(), s.due) / 30)); return `Save ${money0(per / m)}/month to make it`; })()}</div>` : ''}
         </div></div>
+      ${(() => { const r = sum((s.deposits || []).filter(d => d.label === 'Roundup'), d => d.amount); return r ? `<div class="xs b" style="margin-top:10px;color:var(--c-ink)">${money(r)} from round-ups${(S.settings.roundUp || {}).goal === s.id ? ' · round-ups go here' : ''}</div>` : (S.settings.roundUp || {}).goal === s.id ? `<div class="xs muted b" style="margin-top:10px">Round-ups go here</div>` : ''; })()}
       <div class="row" style="margin-top:12px"><button class="btn sm pri" data-a="addDeposit" data-id="${s.id}">${ico('plus', 'sm')} Add money</button><button class="btn sm ghost" data-a="savingHist" data-id="${s.id}">${(s.deposits || []).length} deposits</button></div></div>`; }).join('')}</div>`;
 }
 A.addSaving = () => savingForm();
@@ -1792,10 +1817,10 @@ F.deposit = (d, form) => {
 };
 A.savingHist = el => {
   const s = byId(S.savings, el.dataset.id), ds = (s.deposits || []).slice().sort((a, b) => b.date.localeCompare(a.date));
-  sheet(sheetHead(`${esc(s.name)} · deposits`) + `<div class="list">${ds.length ? ds.map(d => `<div class="li"><span class="t">${fmtD(d.date, { month: 'long', day: 'numeric', year: 'numeric' })}</span><span class="amt">${money(d.amount)}</span>
+  sheet(sheetHead(`${esc(s.name)} · deposits`) + `<div class="list">${ds.length ? ds.map(d => `<div class="li"><span class="t">${fmtD(d.date, { month: 'long', day: 'numeric', year: 'numeric' })}${d.label ? `<small><span class="chip t-mint" style="padding:1px 7px">${esc(d.label)}</span>${d.note ? ' · ' + esc(d.note) : ''}</small>` : ''}</span><span class="amt">${money(d.amount)}</span>
     <button class="btn icon sm ghost" data-a="delDeposit" data-s="${s.id}" data-id="${d.id}" aria-label="Delete">${ico('trash', 'sm')}</button></div>`).join('') : '<div class="empty small">Nothing yet.</div>'}</div>`);
 };
-A.delDeposit = el => { closeSheet(); withUndo('Deposit removed', () => { const s = byId(S.savings, el.dataset.s); s.deposits = s.deposits.filter(d => d.id !== el.dataset.id); }); };
+A.delDeposit = el => { closeSheet(); withUndo('Deposit removed', () => { const s = byId(S.savings, el.dataset.s), dp = s.deposits.find(d => d.id === el.dataset.id); if (dp && dp.exp) { const ex = byId(S.expenses, dp.exp); if (ex) { delete ex.ru; delete ex.ruGoal; } } s.deposits = s.deposits.filter(d => d.id !== el.dataset.id); }); };
 
 /* ---- views/fitness.js ---- */
 /* ============ Fitness & Body (movement, weight, hydration) ============ */
@@ -2146,6 +2171,15 @@ VR.settings = () => {
         <p class="xs muted b" style="margin:-4px 0 8px">People you can assign tasks to — you, a partner, a roommate.</p>
         <div class="list">${S.people.length ? S.people.map(p => `<div class="li ${tone(p.t)}">${avatar(p)}<button class="t" data-a="editPerson" data-id="${p.id}" style="text-align:left">${esc(p.name)}<small>${S.tasks.filter(t => t.who === p.id && t.status !== 'done').length} open tasks</small></button></div>`).join('') : `<div class="empty small">Add yourself and your partner to share tasks.</div>`}</div></div>
 
+      <div class="card sec t-mint" id="roundups"><div class="card-h">${ico('coins', 'sm')}<h3>Round-ups</h3></div>
+        <p class="xs muted b" style="margin:-4px 0 10px">Round each expense up and move the spare change into a savings goal — like your bank’s round-ups.</p>
+        ${S.savings.length ? `<form data-f="roundups" class="form">
+          <div class="grid2">${fld('Put spare change into', `<select class="inp" name="goal">${opt('', 'Off — no round-ups', (s.roundUp || {}).goal || '')}${S.savings.map(g => opt(g.id, g.name, (s.roundUp || {}).goal || '')).join('')}</select>`)}
+          ${fld('Round up to the nearest', `<select class="inp" name="to">${[1, 2, 5, 10].map(v => opt(v, money0(v), (s.roundUp || {}).to || 1)).join('')}</select>`)}</div>
+          <label class="row" style="font-weight:700"><input type="checkbox" class="ck" name="auto" ${(s.roundUp || {}).auto !== false ? 'checked' : ''}> Tick “Round up” on new expenses by default</label>
+          <div class="sheet-f" style="margin-top:4px"><button class="btn pri">Save round-ups</button></div></form>`
+        : `<div class="empty small">Create a savings goal first (Debts &amp; Savings → Savings), then pick it here.</div>`}</div>
+
       <div class="card sec"><div class="card-h">${ico('wallet', 'sm')}<h3>Spending categories</h3><span class="grow"></span><button class="btn sm soft" data-a="addCat" data-kind="expCats">${ico('plus', 'sm')} Add</button></div>
         <div class="list">${s.expCats.map(c => catRow(c, 'expCats')).join('')}</div></div>
     </div>
@@ -2175,6 +2209,7 @@ F.settings = d => {
   Object.assign(S.settings, { name: d.name, currency: d.currency, weekStart: +d.weekStart, units: d.units, clock: d.clock, theme: d.theme, budgetView: d.budgetView || null, carryOver: d.carryOver !== '0', waterGoal: clamp(Math.round(num(d.waterGoal)) || 8, 1, 20) });
   _nfK = ''; applyTheme(); commit('Settings saved');
 };
+F.roundups = d => { S.settings.roundUp = { goal: d.goal || '', to: [1, 2, 5, 10].includes(+d.to) ? +d.to : 1, auto: !!d.auto }; commit(d.goal ? `Round-ups on — spare change goes to ${byId(S.savings, d.goal).name}` : 'Round-ups off'); };
 A.addCat = el => catForm(el.dataset.kind);
 A.editCat = el => catForm(el.dataset.kind, byId(S.settings[el.dataset.kind], el.dataset.id));
 function catForm(kind, c) {
