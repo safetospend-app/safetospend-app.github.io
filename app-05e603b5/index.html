@@ -328,6 +328,16 @@ table.tbl tr:hover td{background:var(--surface-2)}
 .cal-tog i{width:9px;height:9px;border-radius:50%;background:var(--c-mid)}
 .cal-tog.off{background:transparent;border-color:var(--line-2);color:var(--ink-3);text-decoration:line-through}
 .cal-tog.off i{background:var(--line-2)}
+.sev{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 6px;border-radius:9px;font-weight:800;font-size:13px;flex:none;font-variant-numeric:tabular-nums}
+.sev.s1{background:var(--mint-soft);color:var(--mint-ink)}.sev.s2{background:var(--sun-soft);color:var(--sun-ink)}.sev.s3{background:var(--pink-soft);color:var(--pink-ink)}
+.sev-range{width:100%;accent-color:var(--pink-ink)}
+.tagx{display:inline-flex;align-items:center;gap:4px;padding:4px 6px 4px 11px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line);font-size:13px;font-weight:700}
+.tagx button{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:var(--ink-3)}
+.tagx button:hover{background:var(--line);color:var(--ink)}
+.hm-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.hm-grid .d{aspect-ratio:1;border-radius:8px;background:var(--surface-2);display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--ink-3)}
+.hm-grid .d.out{visibility:hidden}.hm-grid .d.s1{background:var(--mint-mid);color:var(--ink)}.hm-grid .d.s2{background:var(--sun-mid);color:var(--ink)}.hm-grid .d.s3{background:var(--pink-mid);color:var(--ink)}
+.hm-grid .d.today{outline:2px solid var(--ink)}
 .avatar{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--c-mid);color:var(--c-ink);font-size:11px;font-weight:800;flex:none;line-height:1}
 .week-grid{display:grid;grid-template-columns:56px repeat(7,minmax(104px,1fr));min-width:760px}
 .week-grid .wh{position:sticky;top:0;background:var(--bg);z-index:2;padding:6px 4px;text-align:center;font-weight:800;font-size:12px;border-bottom:1px solid var(--line)}
@@ -406,7 +416,7 @@ table.tbl tr:hover td{background:var(--surface-2)}
 </div>
 <nav class="tabbar" id="tabbar" aria-label="Quick navigation"></nav>
 <button class="fab" data-a="quickAdd" aria-label="Quick add (N)" title="Quick add (N)"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-<script>window.EVERYDAY_DEMO=false;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.4.0";</script>
+<script>window.EVERYDAY_DEMO=false;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.5.0";</script>
 <script>/* ---- core.js ---- */
 /* ============ The Everyday — core ============ */
 'use strict';
@@ -533,13 +543,17 @@ function blank() {
         { id: 'shopping', name: 'Shopping', t: 'pink' }, { id: 'fun', name: 'Fun', t: 'lilac' }, { id: 'health', name: 'Health & care', t: 'sun' }, { id: 'other', name: 'Other', t: 'lilac' },
       ],
       calendars: [{ id: 'personal', name: 'Personal', t: 'lilac' }, { id: 'work', name: 'Work', t: 'sky' }, { id: 'family', name: 'Family', t: 'peach' }, { id: 'health', name: 'Health', t: 'mint' }], calHidden: [], roundUp: { to: 1, goal: '', auto: true },
+      woTypes: ['Walk', 'Run', 'Yoga', 'Strength', 'Cycling', 'Swim', 'HIIT', 'Dance', 'Stretch', 'Sport', 'Other'],
+      hTypes: ['Migraine', 'Headache', 'Back pain', 'Allergy', 'Stomach', 'Fatigue'],
+      hSymptoms: ['Aura', 'Nausea', 'Light sensitivity', 'Sound sensitivity', 'Dizziness', 'Neck pain'],
+      hTriggers: ['Stress', 'Poor sleep', 'Weather', 'Screen time', 'Skipped meal', 'Caffeine', 'Hormones', 'Dehydration'],
     },
     tasks: [], routines: [], routineDone: {}, events: [], top3: {}, inbox: [],
     goals: [], habits: [], habitLog: {},
     income: [], extraIncome: [], bills: [], billPaid: {}, billMove: {}, billSkip: {}, expenses: [], limits: {},
     debts: [], debtPays: [], debtPlan: { strategy: 'snowball', extra: 0 }, savings: [],
     recipes: [], mealPlan: {}, grocery: { items: [], checked: {} },
-    workouts: [], people: [], weights: [], water: {},
+    workouts: [], health: [], people: [], weights: [], water: {},
   };
 }
 let S;
@@ -883,6 +897,10 @@ function sampleData(name = 'Sam') {
   [84.2, 83.9, 83.1, 82.8, 82.9, 82.2].forEach((v, i, a) => D.weights.push({ id: id('w'), pid: D.people[1].id, date: d(-(a.length - 1 - i) * 9), kg: v }));
   const wo = [[-6, 'Walk', 35, 'sun'], [-5, 'Yoga', 45, 'lilac'], [-3, 'Run', 25, 'pink'], [-2, 'Strength', 40, 'sky'], [-1, 'Walk', 30, 'sun'], [0, 'Run', 22, 'pink'], [-8, 'Yoga', 45, 'lilac'], [-9, 'Run', 20, 'pink'], [-11, 'Swim', 30, 'sky'], [-13, 'Strength', 35, 'sky']];
   D.workouts = wo.map(([k, type, minutes]) => ({ id: id('wo'), date: d(k), type, minutes, pid: D.people[0].id, notes: '' }));
+  D.health = [[-1, 'Migraine', '15:30', 240, 7, ['Aura', 'Light sensitivity', 'Nausea'], ['Poor sleep', 'Screen time'], 'Sumatriptan, dark room', 'Yes'], [-6, 'Headache', '11:00', 90, 4, ['Neck pain'], ['Skipped meal', 'Dehydration'], 'Water + ibuprofen', 'A little'],
+    [-11, 'Migraine', '07:45', 360, 8, ['Aura', 'Nausea', 'Sound sensitivity'], ['Weather', 'Stress'], 'Sumatriptan', 'Yes'], [-17, 'Headache', '18:20', 60, 3, [], ['Screen time'], 'Fresh air', 'Yes'],
+    [-23, 'Migraine', '13:00', 180, 6, ['Light sensitivity'], ['Hormones', 'Poor sleep'], 'Nap', 'A little'], [-29, 'Back pain', '09:00', 480, 5, [], ['Stress'], 'Heat pad', 'Yes'], [-36, 'Migraine', '20:10', 300, 7, ['Aura', 'Nausea'], ['Caffeine', 'Stress'], 'Sumatriptan', 'Yes']]
+    .map(([k, type, start, dur, sev, symptoms, triggers, relief, helped]) => ({ id: id('hl'), date: d(k), type, start, dur, sev, symptoms, triggers, relief, helped, notes: '', pid: D.people[0].id }));
   for (let k = -20; k <= 0; k++) D.water[d(k)] = k === 0 ? 5 : 4 + ((k * 5 + 40) % 5);
   return D;
 }
@@ -1098,18 +1116,22 @@ A.delExpense = el => { closeSheet(); withUndo('Expense deleted', () => { dropRou
 
 /* ---------- workout & weight quick forms ---------- */
 const WTYPES = ['Walk', 'Run', 'Yoga', 'Strength', 'Cycling', 'Swim', 'HIIT', 'Dance', 'Stretch', 'Sport', 'Other'];
+const woTypes = () => S.settings.woTypes && S.settings.woTypes.length ? S.settings.woTypes : WTYPES;
 A.addWorkout = el => workoutForm(el?.dataset?.id ? byId(S.workouts, el.dataset.id) : null);
 function workoutForm(w) {
-  const x = w || { date: today(), type: 'Walk', minutes: 30, pid: S.people[0]?.id || '', notes: '' };
+  const x = w || { date: today(), type: woTypes()[0], minutes: 30, pid: S.people[0]?.id || '', notes: '' };
+  const types = woTypes().includes(x.type) ? woTypes() : [...woTypes(), x.type];
   sheet(sheetHead(w ? 'Edit workout' : 'Log a workout') + `<form class="form" data-f="workout" data-id="${w ? w.id : ''}">
-    ${fld('Type', `<div class="chips">${WTYPES.map(t => `<button type="button" class="chip-btn ${t === x.type ? 'on' : ''}" data-a="pickCat" data-v="${t}">${t}</button>`).join('')}</div><input type="hidden" name="cat" value="${x.type}">`)}
+    ${fld('Type', `<div class="chips">${types.map(t => `<button type="button" class="chip-btn ${t === x.type ? 'on' : ''}" data-a="pickCat" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div><input type="hidden" name="cat" value="${esc(x.type)}">`)}
+    ${fld('Or your own type', `<input class="inp" name="newType" placeholder="e.g. Pilates, Physio, Hiking — saved for next time">`)}
     <div class="grid${S.people.length > 1 ? '3' : '2'}">${fld('Minutes', `<input class="inp" name="minutes" inputmode="numeric" value="${x.minutes}" required>`)}${fld('Date', `<input class="inp" type="date" name="date" value="${x.date}">`)}
     ${S.people.length > 1 ? fld('Who', `<select class="inp" name="pid">${S.people.map(p => opt(p.id, p.name, x.pid)).join('')}</select>`) : ''}</div>
     ${fld('Notes (optional)', `<input class="inp" name="notes" value="${esc(x.notes)}" placeholder="How did it feel?">`)}
     <div class="sheet-f">${w ? `<button type="button" class="btn danger ghost" data-a="delWorkout" data-id="${w.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete</button>` : ''}<button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">Save</button></div></form>`);
 }
+function addTag(key, v) { v = (v || '').trim().slice(0, 30); if (!v) return ''; const list = S.settings[key] || (S.settings[key] = []); const hit = list.find(x => x.toLowerCase() === v.toLowerCase()); if (hit) return hit; list.push(v); return v; }
 F.workout = (d, form) => {
-  const o = { type: d.cat, minutes: Math.round(num(d.minutes)), date: d.date || today(), pid: d.pid || S.people[0]?.id || '', notes: d.notes };
+  const o = { type: d.newType ? addTag('woTypes', d.newType) : d.cat, minutes: Math.round(num(d.minutes)), date: d.date || today(), pid: d.pid || S.people[0]?.id || '', notes: d.notes };
   if (!o.minutes) return toast('Add the minutes');
   const id = form.dataset.id; if (id) Object.assign(byId(S.workouts, id), o); else S.workouts.push({ id: uid(), ...o });
   closeSheet(); celebrate($('.fab')); commit(id ? 'Workout saved' : `Nice! ${o.minutes} min of ${o.type.toLowerCase()} 🎉`);
@@ -1172,14 +1194,20 @@ F.onboard = (d, form, sub) => {
   const set = { name: d.name, currency: d.currency, weekStart: +d.weekStart, units: d.units };
   S.settings.weekStart = +d.weekStart;
   if (sub === 'sample') { S = sampleData(d.name || 'Sam'); }
-  Object.assign(S.settings, set, { onboarded: true, seen: '1.4' });
+  Object.assign(S.settings, set, { onboarded: true, seen: '1.5' });
   closeSheet(); commit(sub === 'sample' ? 'Sample data loaded — clear it anytime in Settings' : `Welcome${d.name ? ', ' + d.name : ''}! 🌼`);
 };
 
+const NEWS = [
+  ['1.5', [['heart', 'A <b>Health log</b> in Fitness &amp; Body: track migraines, headaches or any flare-up — severity, how long, symptoms, triggers and what helped.'], ['dumbbell', 'Add your <b>own workout types</b> — they’re saved for next time.']]],
+  ['1.4', [['pause', '<b>Snooze a bill</b> for one paycheck or month — it won’t count, and the next one stays on schedule.'], ['coins', '<b>Round-ups:</b> spare change from an expense goes into a savings goal, labeled <b>Roundup</b>.']]],
+  ['1.3', [['calendar', 'Bills on your <b>calendar</b>, plus your own <b>calendars</b> with their own colors.'], ['clock', 'Events can <b>repeat</b> every day, week, month or year.'], ['wallet', 'A <b>paycheck breakdown</b> chart.'], ['check', '<b>Assign tasks</b> to yourself or your partner.']]],
+  ['1.2', [['repeat', 'Bills can repeat <b>weekly</b>, <b>every 2 weeks</b>, <b>monthly</b> or <b>yearly</b> — or be <b>one-time</b>.'], ['move', 'Unpaid bills <b>roll over</b>, and you can <b>move</b> one payment to another paycheck.']]],
+];
+const vNum = v => (v || '0').split('.').reduce((a, x) => a * 1000 + (+x || 0), 0);
 function whatsNew(prev) {
-  const fresh = [['pause', '<b>Snooze a bill</b> for one paycheck or month — perfect for a meal-kit week you skip. It won’t count, and the next one stays on schedule.'], ['coins', '<b>Round-ups:</b> tick “Round up” on an expense and the spare change goes into a savings goal, labeled <b>Roundup</b>. Set it up in Settings.']];
-  const older = [['repeat', 'Bills can repeat <b>weekly</b>, <b>every 2 weeks</b>, <b>monthly</b> or <b>yearly</b> — or be a <b>one-time</b> bill.'], ['move', 'Unpaid bills <b>roll over</b>, and you can <b>move</b> one payment to another paycheck.'], ['calendar', 'Bills on your <b>calendar</b>, plus your own <b>calendars</b> with their own colors.'], ['clock', 'Events can <b>repeat</b> every day, week, month or year.'], ['wallet', 'A <b>paycheck breakdown</b> chart.'], ['heart', '<b>Assign tasks</b> to yourself or your partner.']];
-  const items = (prev || '') < '1.3' ? [...fresh, ...older] : fresh;
+  const items = NEWS.filter(([v]) => vNum(v) > vNum(prev)).flatMap(x => x[1]);
+  if (!items.length) return;
   sheet(`${sheetHead('New in The Everyday')}<p style="margin:0 0 10px;font-weight:600;color:var(--ink-2)">Made from your ideas — thank you for them:</p>
   <div class="list">${items.map(([i, t]) => `<div class="li">${ico(i)}<span class="t" style="white-space:normal;font-weight:600">${t}</span></div>`).join('')}</div>
   <div class="sheet-f"><button class="btn" data-a="closeSheet">Later</button><button class="btn pri" data-a="whatsNewGo">Take a look ${ico('arrow', 'sm')}</button></div>`);
@@ -1221,7 +1249,7 @@ async function boot() {
   const v = location.hash.replace('#/', ''); cur = VIEWS[v] ? v : 'dashboard';
   render();
   if (!S.settings.onboarded && !DEMO) onboarding();
-  else if (!DEMO && S.settings.seen !== '1.4') { const prev = S.settings.seen; S.settings.seen = '1.4'; whatsNew(prev); }
+  else if (!DEMO && S.settings.seen !== '1.5') { const prev = S.settings.seen; S.settings.seen = '1.5'; whatsNew(prev); }
   save();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => { });
 }
@@ -1830,10 +1858,10 @@ const fPid = () => UI.fit.pid || S.people[0]?.id;
 
 VR.fitness = () => {
   const tab = UI.fit.tab;
-  let h = head('Fitness & Body', 'Movement, weight and water — gently tracked',
-    tab === 'move' ? `<button class="btn pri" data-a="addWorkout">${ico('plus', 'sm')} Log workout</button>` : tab === 'weight' ? `<button class="btn pri" data-a="addWeight" data-pid="${fPid() || ''}">${ico('plus', 'sm')} Log weight</button>` : '');
-  h += `<div class="tabs t-sun">${[['move', 'Movement'], ['weight', 'Weight'], ['water', 'Hydration']].map(([k, l]) => `<button class="${tab === k ? 'on' : ''}" data-a="fitTab" data-v="${k}">${l}</button>`).join('')}</div>`;
-  return h + (tab === 'move' ? moveTab() : tab === 'weight' ? weightTab() : waterTab());
+  let h = head('Fitness & Body', 'Movement, weight, water and health — gently tracked',
+    tab === 'move' ? `<button class="btn pri" data-a="addWorkout">${ico('plus', 'sm')} Log workout</button>` : tab === 'weight' ? `<button class="btn pri" data-a="addWeight" data-pid="${fPid() || ''}">${ico('plus', 'sm')} Log weight</button>` : tab === 'health' ? `<button class="btn pri" data-a="addHealth">${ico('plus', 'sm')} Log a flare-up</button>` : '');
+  h += `<div class="tabs t-sun">${[['move', 'Movement'], ['weight', 'Weight'], ['water', 'Hydration'], ['health', 'Health log']].map(([k, l]) => `<button class="${tab === k ? 'on' : ''}" data-a="fitTab" data-v="${k}">${l}</button>`).join('')}</div>`;
+  return h + (tab === 'move' ? moveTab() : tab === 'weight' ? weightTab() : tab === 'health' ? healthTab() : waterTab());
 };
 A.fitTab = el => { UI.fit.tab = el.dataset.v; render(); };
 A.fWeek = el => { const v = +el.dataset.v; UI.fit.week = v === 0 ? weekStartOf(today()) : addDays(fWeek(), v * 7); render(); };
@@ -1853,7 +1881,7 @@ function moveTab() {
     <div class="stat t-pink"><div class="l">Day streak</div><div class="v">${st}</div></div></div>
   <div class="cols-2-1">
     <div class="card sec"><div class="card-h"><h3>Workout log</h3><span class="grow"></span><button class="btn sm soft" data-a="addWorkout">${ico('plus', 'sm')} Log</button></div>
-      <div class="list">${S.workouts.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20).map(w => `<div class="li ${tone(cols[WTYPES.indexOf(w.type) % 6] || 'sun')}"><span class="dot"></span>
+      <div class="list">${S.workouts.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20).map(w => `<div class="li ${tone(cols[Math.max(0, woTypes().indexOf(w.type)) % 6] || 'sun')}"><span class="dot"></span>
         <button class="t" data-a="addWorkout" data-id="${w.id}" style="text-align:left">${esc(w.type)}${S.people.length > 1 ? ` · ${esc((byId(S.people, w.pid) || {}).name || '')}` : ''}<small>${relDay(w.date)}${w.notes ? ' · ' + esc(w.notes) : ''}</small></button>
         <b>${w.minutes} min</b><span class="acts"><button class="btn icon sm ghost" data-a="delWorkout" data-id="${w.id}" aria-label="Delete">${ico('trash', 'sm')}</button></span></div>`).join('') || `<div class="empty">${ico('dumbbell')}Nothing logged yet. A 10-minute walk counts.</div>`}</div></div>
     <div>
@@ -1909,6 +1937,84 @@ F.person = (d, form) => {
 };
 A.delPerson = el => { closeSheet(); withUndo('Person removed', () => { S.tasks.forEach(t => { if (t.who === el.dataset.id) t.who = ''; }); S.people = S.people.filter(p => p.id !== el.dataset.id); S.weights = S.weights.filter(w => w.pid !== el.dataset.id); UI.fit.pid = S.people[0]?.id; }); };
 A.delWeight = el => withUndo('Entry removed', () => { S.weights = S.weights.filter(w => w.id !== el.dataset.id); });
+
+/* ---------- Health log (migraines, headaches, flare-ups) ---------- */
+const sevLvl = v => v >= 7 ? 3 : v >= 4 ? 2 : 1;
+const SEVN = { 1: 'Mild', 2: 'Moderate', 3: 'Severe' };
+const durTxt = m => !m ? '' : m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ' ' + (m % 60) + ' min' : ''}`;
+UI.hl = { type: 'all', mk: null };
+function healthTab() {
+  const t = today(), f = UI.hl, mk = f.mk || monthKey(t), all = S.health || [];
+  const list = all.filter(e => f.type === 'all' || e.type === f.type).sort((a, b) => (b.date + (b.start || '')).localeCompare(a.date + (a.start || '')));
+  const inM = list.filter(e => monthKey(e.date) === mk), last30 = list.filter(e => e.date >= addDays(t, -29));
+  const avg = inM.length ? (sum(inM, e => +e.sev || 0) / inM.length) : 0, mins = sum(inM, e => +e.dur || 0);
+  const lastD = list[0] ? diffDays(list[0].date, t) : null;
+  const [y, m] = mk.split('-').map(Number), n = dim(y, m), lead = (dow(mk + '-01') - S.settings.weekStart + 7) % 7;
+  const dayMax = d => Math.max(0, ...list.filter(e => e.date === d).map(e => +e.sev || 0));
+  const cells = [...Array(lead).fill(null), ...Array.from({ length: n }, (_, k) => `${mk}-${pad(k + 1)}`)];
+  const tc = {}; last30.forEach(e => (e.triggers || []).forEach(x => tc[x] = (tc[x] || 0) + 1));
+  const trig = Object.entries(tc).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const types = (S.settings.hTypes || []).map(ty => ({ ty, v: all.filter(e => e.type === ty && e.date >= addDays(t, -89)).length })).filter(x => x.v).sort((a, b) => b.v - a.v);
+  const cols = ['pink', 'lilac', 'sky', 'peach', 'sun', 'mint'];
+  const row = e => `<div class="li"><span class="sev s${sevLvl(+e.sev)}" title="${SEVN[sevLvl(+e.sev)]}">${e.sev}</span>
+    <button class="t" data-a="addHealth" data-id="${e.id}" style="text-align:left;white-space:normal">${esc(e.type)}${S.people.length > 1 && e.pid ? ` · ${esc((byId(S.people, e.pid) || {}).name || '')}` : ''}<small>${relDay(e.date)}${e.start ? ' · ' + fmtTime(e.start) : ''}${e.dur ? ' · ' + durTxt(+e.dur) : ''}${(e.triggers || []).length ? ' · ' + e.triggers.map(esc).join(', ') : ''}${e.relief ? ' · ' + esc(e.relief) + (e.helped ? ` (${esc(e.helped)})` : '') : ''}</small></button>
+    <span class="acts"><button class="btn icon sm ghost" data-a="delHealth" data-id="${e.id}" aria-label="Delete">${ico('trash', 'sm')}</button></span></div>`;
+  return `<div class="toolbar"><select class="inp" style="max-width:190px" data-c="hlType" aria-label="Show">${opt('all', 'All types', f.type)}${(S.settings.hTypes || []).map(x => opt(x, x, f.type)).join('')}</select>
+    <div class="row" style="gap:4px"><button class="btn icon" data-a="hlMonth" data-v="-1" aria-label="Previous month">${ico('left')}</button><button class="btn" data-a="hlMonth" data-v="0">${monthLabel(mk)}</button><button class="btn icon" data-a="hlMonth" data-v="1" aria-label="Next month">${ico('right')}</button></div></div>
+  <div class="stats">
+    <div class="stat t-pink"><div class="l">${MONTHS[m - 1]} flare-ups</div><div class="v">${inM.length}</div></div>
+    <div class="stat t-sun"><div class="l">Average severity</div><div class="v">${inM.length ? avg.toFixed(1) + '/10' : '—'}</div></div>
+    <div class="stat t-sky"><div class="l">Time affected</div><div class="v">${mins ? durTxt(mins) : '—'}</div></div>
+    <div class="stat t-mint"><div class="l">Days since last</div><div class="v">${lastD === null ? '—' : lastD}</div></div></div>
+  <div class="cols-2-1">
+    <div class="card sec"><div class="card-h"><h3>Log</h3><span class="grow"></span><button class="btn sm soft" data-a="addHealth">${ico('plus', 'sm')} Log</button></div>
+      <div class="list">${list.length ? list.slice(0, 40).map(row).join('') : `<div class="empty">${ico('heart')}Nothing logged yet. Track migraines, headaches or any flare-up — severity, how long, triggers and what helped.<br><button class="btn pri" data-a="addHealth" style="margin-top:10px">${ico('plus', 'sm')} Log the first one</button></div>`}</div></div>
+    <div>
+      <div class="card sec t-pink"><div class="card-h"><h3>${monthLabel(mk)}</h3><span class="grow"></span><span class="xs muted b">worst each day</span></div>
+        <div class="hm-grid" style="margin-bottom:6px">${dowOrder().map(i => `<div class="xs muted b" style="text-align:center">${DOW[i].slice(0, 2)}</div>`).join('')}</div>
+        <div class="hm-grid">${cells.map(d => { if (!d) return '<div class="d out"></div>'; const v = dayMax(d); return `<div class="d ${v ? 's' + sevLvl(v) : ''} ${d === t ? 'today' : ''}" title="${fmtD(d)}${v ? ' · severity ' + v : ''}">${parse(d).getDate()}</div>`; }).join('')}</div>
+        <div class="row xs muted b" style="gap:12px;margin-top:10px;flex-wrap:wrap"><span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;background:var(--mint-mid)"></span> Mild 1–3</span><span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;background:var(--sun-mid)"></span> Moderate 4–6</span><span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;background:var(--pink-mid)"></span> Severe 7–10</span></div></div>
+      <div class="card sec"><div class="card-h"><h3>Common triggers</h3><span class="grow"></span><span class="xs muted b">last 30 days</span></div>
+        ${trig.length ? hbars(trig.map(([l, v], k) => ({ l, v, t: cols[k % 6], txt: `${v}×` }))) : `<div class="empty small">Tick triggers when you log — patterns show up here.</div>`}</div>
+      ${types.length > 1 ? `<div class="card"><div class="card-h"><h3>By type</h3><span class="grow"></span><span class="xs muted b">last 90 days</span></div>
+        <div class="ring-wrap">${donut(types.slice(0, 6).map((x, k) => ({ v: x.v, c: `var(--${cols[k % 6]}-mid)` })), { size: 104, w: 14, label: String(sum(types, x => x.v)), sub: 'logged' })}
+        <div class="legend" style="flex:1">${types.slice(0, 6).map((x, k) => `<span><i class="dot" style="background:var(--${cols[k % 6]}-mid)"></i>${esc(x.ty)}<b>${x.v}</b></span>`).join('')}</div></div></div>` : ''}
+    </div></div>`;
+}
+C.hlType = el => { UI.hl.type = el.value; render(); };
+A.hlMonth = el => { const v = +el.dataset.v; UI.hl.mk = v === 0 ? monthKey(today()) : addMonths(UI.hl.mk || monthKey(today()), v); render(); };
+const multiChips = (key, opts, sel) => `<div class="chips" data-multi="${key}">${opts.map(o => `<button type="button" class="chip-btn ${sel.includes(o) ? 'on' : ''}" data-a="pickMulti" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div><input type="hidden" name="${key}" value="${esc(sel.join('|'))}">`;
+A.pickMulti = el => { el.classList.toggle('on'); const w = el.closest('.field'), box = el.closest('[data-multi]'); $(`input[name=${box.dataset.multi}]`, w).value = $$('.chip-btn.on', box).map(b => b.dataset.v).join('|'); };
+A.addHealth = el => healthForm(el?.dataset?.id ? byId(S.health, el.dataset.id) : null);
+function healthForm(e) {
+  const st = S.settings, x = e || { type: (st.hTypes || ['Migraine'])[0], date: today(), start: '', dur: '', sev: 5, symptoms: [], triggers: [], relief: '', helped: '', notes: '', pid: S.people[0]?.id || '' };
+  const tys = (st.hTypes || []).includes(x.type) ? st.hTypes : [...(st.hTypes || []), x.type];
+  const plus = (sel, extra) => [...new Set([...(sel || []), ...(extra || [])])];
+  sheet(sheetHead(e ? 'Edit entry' : 'Log a flare-up') + `<form class="form" data-f="health" data-id="${e ? e.id : ''}">
+    ${fld('What was it?', `<div class="chips">${tys.map(t => `<button type="button" class="chip-btn ${t === x.type ? 'on' : ''}" data-a="pickCat" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div><input type="hidden" name="cat" value="${esc(x.type)}">`)}
+    ${fld('Or something else', `<input class="inp" name="newType" placeholder="e.g. Cluster headache, IBS, Eczema — saved for next time">`)}
+    <div class="grid3">${fld('Date', `<input class="inp" type="date" name="date" value="${x.date}" required>`)}${fld('Started (optional)', `<input class="inp" type="time" name="start" value="${x.start || ''}">`)}
+    ${fld('How long (hours · min)', `<div class="row" style="gap:6px"><input class="inp" name="durH" inputmode="numeric" placeholder="h" value="${x.dur ? Math.floor(x.dur / 60) || '' : ''}" aria-label="Hours"><input class="inp" name="durM" inputmode="numeric" placeholder="min" value="${x.dur ? x.dur % 60 || '' : ''}" aria-label="Minutes"></div>`)}</div>
+    ${fld(`Severity <b data-sevl style="color:var(--ink)">${x.sev}/10 · ${SEVN[sevLvl(x.sev)]}</b>`, `<input type="range" class="sev-range" name="sev" min="1" max="10" step="1" value="${x.sev}" oninput="this.closest('.field').querySelector('[data-sevl]').textContent=this.value+'/10 · '+SEVN[sevLvl(+this.value)]">`)}
+    ${fld('Symptoms', multiChips('symptoms', plus(st.hSymptoms, x.symptoms), x.symptoms || []) + `<input class="inp sm" name="newSym" placeholder="Add your own (comma between)" style="margin-top:6px">`)}
+    ${fld('Possible triggers', multiChips('triggers', plus(st.hTriggers, x.triggers), x.triggers || []) + `<input class="inp sm" name="newTrig" placeholder="Add your own (comma between)" style="margin-top:6px">`)}
+    <div class="grid2">${fld('What you took / did (optional)', `<input class="inp" name="relief" value="${esc(x.relief || '')}" placeholder="e.g. Ibuprofen, dark room, nap">`)}
+    ${fld('Did it help?', `<select class="inp" name="helped">${opt('', '—', x.helped || '')}${opt('Yes', 'Yes', x.helped || '')}${opt('A little', 'A little', x.helped || '')}${opt('No', 'No', x.helped || '')}</select>`)}</div>
+    ${S.people.length > 1 ? fld('Who', `<select class="inp" name="pid">${S.people.map(p => opt(p.id, p.name, x.pid)).join('')}</select>`) : ''}
+    ${fld('Notes (optional)', `<textarea class="inp" name="notes" rows="2" placeholder="Anything worth remembering for next time or your doctor">${esc(x.notes || '')}</textarea>`)}
+    <div class="sheet-f">${e ? `<button type="button" class="btn danger ghost" data-a="delHealth" data-id="${e.id}" style="margin-right:auto">${ico('trash', 'sm')} Delete</button>` : ''}<button type="button" class="btn" data-a="closeSheet">Cancel</button><button class="btn pri">Save</button></div></form>`, { wide: true });
+}
+F.health = (d, form) => {
+  if (!d.date) return toast('Pick a date');
+  const split = v => (v || '').split(/[|,]/).map(z => z.trim()).filter(Boolean);
+  const o = { type: d.newType ? addTag('hTypes', d.newType) : d.cat, date: d.date, start: d.start, dur: Math.round(num(d.durH) * 60 + num(d.durM)) || 0, sev: clamp(Math.round(num(d.sev)) || 5, 1, 10),
+    symptoms: [...new Set([...split(d.symptoms), ...split(d.newSym).map(z => addTag('hSymptoms', z))])], triggers: [...new Set([...split(d.triggers), ...split(d.newTrig).map(z => addTag('hTriggers', z))])],
+    relief: d.relief, helped: d.helped, notes: d.notes, pid: d.pid || S.people[0]?.id || '' };
+  S.health = S.health || [];
+  const id = form.dataset.id; if (id) Object.assign(byId(S.health, id), o); else S.health.push({ id: uid(), ...o });
+  closeSheet(); commit(id ? 'Entry saved' : `${o.type} logged — take care of yourself`);
+};
+A.delHealth = el => { closeSheet(); withUndo('Entry deleted', () => { S.health = (S.health || []).filter(e => e.id !== el.dataset.id); }); };
 
 function waterTab() {
   const t = today(), g = S.settings.waterGoal, wd = weekDays(fWeek());
@@ -2180,6 +2286,11 @@ VR.settings = () => {
           <div class="sheet-f" style="margin-top:4px"><button class="btn pri">Save round-ups</button></div></form>`
         : `<div class="empty small">Create a savings goal first (Debts &amp; Savings → Savings), then pick it here.</div>`}</div>
 
+      <div class="card sec t-sun" id="fitlists"><div class="card-h">${ico('heart', 'sm')}<h3>Workouts &amp; health log</h3></div>
+        ${[['woTypes', 'Workout types'], ['hTypes', 'Health log — types'], ['hSymptoms', 'Health log — symptoms'], ['hTriggers', 'Health log — triggers']].map(([k, l]) => `<div style="margin-bottom:12px"><div class="xs muted b" style="margin-bottom:6px">${l}</div>
+          <div class="chips">${(s[k] || []).map(v => `<span class="tagx">${esc(v)}<button type="button" data-a="tagDel" data-k="${k}" data-v="${esc(v)}" aria-label="Remove ${esc(v)}">${ico('x', 'sm')}</button></span>`).join('')}</div>
+          <form data-f="tagAdd" data-k="${k}" class="row" style="gap:6px;margin-top:6px"><input class="inp sm" name="v" placeholder="Add one…" aria-label="Add to ${l}" style="max-width:220px"><button class="btn sm soft">${ico('plus', 'sm')} Add</button></form></div>`).join('')}</div>
+
       <div class="card sec"><div class="card-h">${ico('wallet', 'sm')}<h3>Spending categories</h3><span class="grow"></span><button class="btn sm soft" data-a="addCat" data-kind="expCats">${ico('plus', 'sm')} Add</button></div>
         <div class="list">${s.expCats.map(c => catRow(c, 'expCats')).join('')}</div></div>
     </div>
@@ -2210,6 +2321,8 @@ F.settings = d => {
   _nfK = ''; applyTheme(); commit('Settings saved');
 };
 F.roundups = d => { S.settings.roundUp = { goal: d.goal || '', to: [1, 2, 5, 10].includes(+d.to) ? +d.to : 1, auto: !!d.auto }; commit(d.goal ? `Round-ups on — spare change goes to ${byId(S.savings, d.goal).name}` : 'Round-ups off'); };
+F.tagAdd = (d, form) => { const v = addTag(form.dataset.k, d.v); if (v) commit(`Added “${v}”`); };
+A.tagDel = el => { const k = el.dataset.k, list = S.settings[k] || []; if (list.length <= 1) return toast('Keep at least one'); withUndo(`Removed “${el.dataset.v}”`, () => { S.settings[k] = list.filter(x => x !== el.dataset.v); }); };
 A.addCat = el => catForm(el.dataset.kind);
 A.editCat = el => catForm(el.dataset.kind, byId(S.settings[el.dataset.kind], el.dataset.id));
 function catForm(kind, c) {
