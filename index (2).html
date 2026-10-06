@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Family Wall — a family calendar &amp; chore chart for any tablet</title>
+<meta name="description" content="Family calendar, chore chart with star rewards, meal planner, grocery lists and photo frame — on the tablet you already own. Shows Google, Apple and Outlook calendars. No subscription.">
+<meta name="theme-color" content="#F6F2F8">
+<meta property="og:title" content="The Family Wall — family calendar &amp; chore chart for any tablet">
+<meta property="og:description" content="Everyone's week on one screen. Works on the tablet you already own — no subscription.">
+<meta property="og:image" content="img/week.jpg">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+@font-face{font-family:"Nunito";src:url(../everyday/nunito.woff2) format("woff2");font-weight:200 1000;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(../everyday/bricolage.woff2) format("woff2");font-weight:200 800;font-display:swap}
+:root{--bg:#F6F2F8;--surface:#fff;--line:#ECE5F1;--ink:#24213B;--ink-2:#5F5A7A;--ink-3:#9C97B5;
+ --pink:#F8CFDE;--pink-ink:#B23F6B;--mint:#C6EEDD;--mint-ink:#1B7D63;
+ --sun:#FCE4A0;--sun-ink:#946400;--sky:#CDE0FA;--sky-ink:#2D63AE;
+ --lilac:#E1D5F7;--lilac-ink:#6848B8;--peach:#FCD9C6;--peach-ink:#B0521F;
+ --shadow:0 1px 2px rgba(60,40,90,.04),0 10px 30px -12px rgba(80,50,120,.22)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Nunito",system-ui,sans-serif;color:var(--ink);background:var(--bg);
+ background-image:linear-gradient(170deg,#FBEFF4 0%,#F4F1FA 40%,#EEF5FB 100%);background-attachment:fixed;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage","Nunito",sans-serif;margin:0;letter-spacing:-.02em;line-height:1.1}
+h1{font-size:clamp(34px,5.4vw,62px);font-weight:800}
+h2{font-size:clamp(26px,3.4vw,38px);font-weight:800}
+h3{font-size:20px;font-weight:800}
+p{margin:.6em 0}
+a{color:inherit}
+img{max-width:100%;display:block;border-radius:18px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:14px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Bricolage";font-weight:800;font-size:19px}
+.brand svg{width:34px;height:34px}
+.grow{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:14px;font-weight:800;text-decoration:none;border:1.5px solid var(--line);background:var(--surface);white-space:nowrap;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.sm{height:40px;padding:0 16px;font-size:15px}
+section{padding:70px 0}
+.hero{padding:64px 0 40px;text-align:center}
+.hero p.lead{font-size:clamp(17px,2vw,21px);color:var(--ink-2);max-width:680px;margin:18px auto 26px;font-weight:600}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.note{font-size:14px;color:var(--ink-3);font-weight:700;margin-top:14px}
+.shot{box-shadow:var(--shadow);border:1px solid var(--line);margin-top:40px}
+.frame{background:#1d1c27;border-radius:26px;padding:14px;box-shadow:var(--shadow);margin-top:40px}
+.frame img{border-radius:12px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:30px;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;background:var(--c);color:var(--c-ink)}
+.t-pink{--c:var(--pink);--c-ink:var(--pink-ink)}
+.t-mint{--c:var(--mint);--c-ink:var(--mint-ink)}
+.t-sun{--c:var(--sun);--c-ink:var(--sun-ink)}
+.t-sky{--c:var(--sky);--c-ink:var(--sky-ink)}
+.t-lilac{--c:var(--lilac);--c-ink:var(--lilac-ink)}
+.t-peach{--c:var(--peach);--c-ink:var(--peach-ink)}
+.grid{display:grid;gap:22px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:1fr 1fr;align-items:center;gap:42px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+.card h3{margin-bottom:6px}
+.card p{margin:0;color:var(--ink-2);font-weight:600;font-size:15px}
+.feat{display:flex;gap:13px;align-items:flex-start;margin:14px 0}
+.feat i{width:30px;height:30px;border-radius:10px;background:var(--c);display:grid;place-items:center;flex:none;font-style:normal;font-size:15px}
+.feat b{display:block}
+.feat span{color:var(--ink-2);font-weight:600;font-size:15px}
+.phones{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.phones img{width:230px;border-radius:26px;border:8px solid var(--ink);box-shadow:var(--shadow)}
+.logos{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 4px}
+.logos span{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-weight:800;font-size:15px}
+.vs{width:100%;border-collapse:separate;border-spacing:0;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);margin-top:30px;text-align:left}
+.vs th,.vs td{padding:16px 20px;border-bottom:1px solid var(--line);font-weight:700;font-size:16px}
+.vs th{font-family:"Bricolage";font-size:17px;background:#FBF9FD}
+.vs tr:last-child td{border-bottom:0}
+.vs td:first-child{color:var(--ink-2)}
+.vs .yes{color:var(--mint-ink)}
+.faq{max-width:760px;margin:0 auto}
+details{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:10px}
+details summary{font-weight:800;cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";float:right;color:var(--ink-3)}
+details[open] summary::after{content:"–"}
+details p{color:var(--ink-2);font-weight:600;font-size:15px;margin-bottom:0}
+.buy{background:var(--ink);color:#fff;border-radius:30px;padding:54px 30px;text-align:center}
+.buy h2{color:#fff}
+.buy p{color:#C9C3DE;max-width:520px;margin:14px auto 24px;font-weight:600}
+.buy .btn{background:var(--sun);border-color:var(--sun);color:#2a1e00}
+footer{padding:36px 0;text-align:center;color:var(--ink-3);font-weight:700;font-size:14px}
+.center{text-align:center}
+.sub{color:var(--ink-2);font-weight:600;max-width:680px;margin:14px auto 0}
+@media (max-width:860px){.g3,.g2{grid-template-columns:1fr}section{padding:48px 0}.vs th,.vs td{padding:12px 12px;font-size:14px}}
+@media (max-width:520px){header .wrap{gap:8px;padding:0 14px}.brand{font-size:16px}.brand svg{width:28px;height:28px}.btn.sm{height:38px;padding:0 12px;font-size:14px}.wrap{padding:0 16px}.frame{padding:7px;border-radius:16px}.frame img{border-radius:9px}.phones img{width:200px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <span class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><g transform="translate(20 20)"><ellipse rx="6.4" ry="10.5" cy="-9" fill="#F2A7C2" transform="rotate(0)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#F6CD5E" transform="rotate(60)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#8FD9BC" transform="rotate(120)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#98BFF0" transform="rotate(180)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#BFA8EE" transform="rotate(240)"/><ellipse rx="6.4" ry="10.5" cy="-9" fill="#F5AE88" transform="rotate(300)"/><circle r="5.6" fill="#24213B"/><circle r="2.2" fill="#FCE4A0"/></g></svg> The Family Wall</span><span class="grow"></span>
+  <a class="btn sm" href="demo/" target="_blank">Try the demo</a>
+  <a class="btn sm pri" href="https://thepetalo.etsy.com" target="_blank" rel="noopener">Get it</a>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <span class="pill t-sky">Family calendar · chores · meals</span>
+  <h1 style="margin-top:18px">Everyone’s week<br>on one screen.</h1>
+  <p class="lead">A family calendar, chore chart with star rewards, meal planner, grocery list and photo frame — on the tablet you already own. No $300 wall screen, no subscription.</p>
+  <div class="cta">
+    <a class="btn pri" href="https://thepetalo.etsy.com" target="_blank" rel="noopener">Get the full app</a>
+    <a class="btn" href="demo/" target="_blank">Try the free demo →</a>
+  </div>
+  <p class="note">iPad · Android tablet · phone · computer &nbsp;—&nbsp; No account · Your data stays on your device</p>
+  <div class="frame"><img src="img/week.jpg" alt="The Family Wall week view: color-coded events for each family member" width="2100"></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="grid g2">
+    <div><span class="pill t-lilac">Calendar</span>
+      <h2 style="margin-top:16px">A color for every person</h2>
+      <div class="feat"><i class="t-pink">👀</i><span><b>Who’s doing what, at a glance</b>Day, week, month or a 3–7 day schedule. Tap a name to show or hide their events.</span></div>
+      <div class="feat"><i class="t-sky">🔄</i><span><b>Shows the calendars you already use</b>Paste a link once and Google, Apple (iCloud) or Outlook calendars appear on the wall — updated by themselves every 15 minutes.</span></div>
+      <div class="feat"><i class="t-sun">↻</i><span><b>Set it and forget it</b>Every day, weekdays, every week, every 2 weeks, monthly, yearly or your own days.</span></div>
+      <div class="logos"><span>Google</span><span>Apple iCloud</span><span>Outlook</span><span>.ics files</span></div>
+    </div>
+    <img class="shot" src="img/month.jpg" alt="Month view with color-coded events" style="margin:0">
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="grid g2">
+    <img class="shot" src="img/chores.jpg" alt="Chore chart with a column for each child, progress rings and stars" style="margin:0">
+    <div><span class="pill t-mint">Chores &amp; rewards</span>
+      <h2 style="margin-top:16px">Kids tap it. Stars fly. Chores get done.</h2>
+      <div class="feat"><i class="t-mint">✓</i><span><b>A column for each kid</b>Big tap targets, a progress ring, and confetti when the list is done.</span></div>
+      <div class="feat"><i class="t-sun">★</i><span><b>Stars they can spend</b>Each chore earns stars. Trade them for rewards you choose — movie night, ice cream, 30 minutes of screen time.</span></div>
+      <div class="feat"><i class="t-lilac">✎</i><span><b>Change anything right on the screen</b>Add bonus stars, edit chores and rewards without hunting for another app.</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap center">
+  <h2>Also on your phone</h2><p class="sub">Open it in the browser and add it to the home screen — it opens full screen like a normal app and keeps working offline.</p>
+  <div class="phones" style="margin-top:34px">
+    <img src="img/m_week.jpg" alt="Calendar on a phone"><img src="img/m_chores.jpg" alt="Chores on a phone"><img src="img/m_today.jpg" alt="Today screen on a phone">
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="grid g2">
+    <div><span class="pill t-sun">Meals</span><h2 style="margin-top:16px">Dinner, decided — groceries, done</h2>
+      <p style="color:var(--ink-2);font-weight:600">Plan breakfast, lunch, dinner and snacks for the week from your own recipes. One tap sends every ingredient to the grocery list — no duplicates.</p>
+      <a class="btn sm" href="demo/" target="_blank">See it in the demo →</a></div>
+    <img class="shot" src="img/meals.jpg" alt="Weekly meal plan grid" style="margin:0">
+  </div>
+  <div class="grid g2" style="margin-top:56px">
+    <img class="shot" src="img/today.jpg" alt="Today screen: events, chores, meals and grocery list together" style="margin:0">
+    <div><span class="pill t-peach">Today</span><h2 style="margin-top:16px">The whole day on one page</h2>
+      <p style="color:var(--ink-2);font-weight:600">Today’s events, what’s coming up, every kid’s chores, the meals and the grocery list — together, no switching between tabs.</p>
+      <div class="feat"><i class="t-sky">🖼️</i><span><b>Photo frame</b>When nobody touches it, it turns into a slideshow of your photos with the time, the weather and what’s next.</span></div>
+      <div class="feat"><i class="t-lilac">🌙</i><span><b>Sleep mode</b>Goes dark at night on a schedule and keeps the screen awake during the day.</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="center"><h2>Smart wall calendar, minus the wall price</h2><p class="sub">Use the tablet that’s sitting in a drawer.</p></div>
+  <table class="vs">
+    <tr><th></th><th>Smart calendar display</th><th>The Family Wall</th></tr>
+    <tr><td>Price</td><td>$150 – $350+</td><td class="yes">One small payment</td></tr>
+    <tr><td>Subscription</td><td>Often required for extras</td><td class="yes">None, ever</td></tr>
+    <tr><td>Hardware</td><td>A new screen to buy and mount</td><td class="yes">Any tablet, phone or computer</td></tr>
+    <tr><td>Google / Apple / Outlook</td><td>Yes</td><td class="yes">Yes, updates every 15 min</td></tr>
+    <tr><td>Chores, rewards, meals, lists</td><td>Yes</td><td class="yes">Yes</td></tr>
+    <tr><td>Account &amp; cloud</td><td>Required</td><td class="yes">No account — stays on your device</td></tr>
+  </table>
+</div></section>
+
+<section><div class="wrap center">
+  <h2>What you get</h2>
+  <div class="grid g3" style="margin-top:32px;text-align:left">
+    <div class="card"><h3>Your app link</h3><p>Open it on the tablet, tap “Add to Home Screen”, and it runs full screen like any app — online or offline.</p></div>
+    <div class="card"><h3>Set up in 5 minutes</h3><p>Type your family’s names, pick colors, paste your calendar link. Or start from the sample family and edit.</p></div>
+    <div class="card"><h3>Free updates</h3><p>Improvements arrive at the same link — no subscription, no account, ever.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap faq">
+  <h2 class="center" style="margin-bottom:26px">Questions</h2>
+  <details open><summary>Which tablets does it work on?</summary><p>Any iPad, Android or Fire tablet with an up-to-date browser — plus phones and computers. Landscape on a 10″ or bigger tablet looks best on the wall.</p></details>
+  <details><summary>Does it sync with Google Calendar?</summary><p>Yes. Paste your calendar’s private iCal link (Google, Apple iCloud or Outlook) and its events show up on the wall, updated automatically every 15 minutes. To change those events, edit them in the original calendar.</p></details>
+  <details><summary>Can everyone update it from their phones?</summary><p>Calendar events, yes — add them to your Google, Apple or Outlook calendar and they appear on the wall. Chores, rewards, meals and lists are kept on the wall tablet itself.</p></details>
+  <details><summary>Where is my data stored?</summary><p>On your device, in your browser — there’s no account to make. You can download a backup file anytime and restore it on another tablet.</p></details>
+  <details><summary>Is it a subscription?</summary><p>No. One payment, yours forever.</p></details>
+  <details><summary>Can I try it first?</summary><p>Yes — the demo is the full app with a sample family. Play with it as long as you like.</p></details>
+</div></section>
+
+<section><div class="wrap"><div class="buy">
+  <h2>Put the week on the wall</h2>
+  <p>One screen for the calendar, the chores, the meals and the grocery list. Everyone knows the plan.</p>
+  <div class="cta"><a class="btn" href="https://thepetalo.etsy.com" target="_blank" rel="noopener">Get the full app</a><a class="btn" style="background:transparent;color:#fff;border-color:#4a4566" href="demo/" target="_blank">Try the demo first</a></div>
+</div></div></section>
+
+<footer>The Family Wall · a family calendar for any tablet · made by ThePetalo</footer>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => { if (new URL(r.scope).pathname === location.pathname.replace(/[^/]*$/, '')) r.unregister(); })).catch(() => {});</script>
+</body></html>
