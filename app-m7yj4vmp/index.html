@@ -1,0 +1,1777 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Family Wall</title>
+<meta name="description" content="Family calendar, chore chart, rewards, meal planner, lists and photo frame for any tablet.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Family Wall">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preload" href="inter.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Inter';src:url(inter.woff2) format('woff2');font-weight:100 900;font-display:swap}
+:root{
+  --bg:#F5F6F8; --panel:#FFFFFF; --panel2:#F5F6F8; --ink:#1F2430; --ink2:#5E6675; --ink3:#9AA2AF;
+  --line:#E8EAEE; --accent:#2D7FF9; --accent-soft:#E8F1FE; --star:#F5B400; --danger:#E5484D;
+  --radius:14px; --shadow:0 1px 3px rgba(20,24,40,.06),0 1px 2px rgba(20,24,40,.04); --side:132px;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --evink:#232733;
+}
+[data-theme="dark"]{
+  --bg:#0F1420; --panel:#171D2A; --panel2:#1E2533; --ink:#EEF1F6; --ink2:#A9B1C0; --ink3:#6E7787;
+  --line:#272F3E; --accent:#5B9BFF; --accent-soft:#1D2D48; --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px}
+body{overflow:hidden;user-select:none;-webkit-user-select:none}
+input,textarea,select{user-select:text;-webkit-user-select:text}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+svg.i{width:24px;height:24px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:none}
+svg.i.sm{width:18px;height:18px}
+
+/* ---------- shell ---------- */
+#app{display:grid;grid-template-columns:var(--side) 1fr;height:100vh;height:100dvh}
+#side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:stretch;padding:14px 0 10px;gap:2px;overflow-y:auto}
+.side-w{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 14px;margin:0 10px 8px;border-bottom:1px solid var(--line);color:var(--ink)}
+.side-w .e{font-size:34px;line-height:1}
+.side-w .t{font-size:15px;font-weight:700}
+.side-w .hl{font-size:11px;color:var(--ink3);font-weight:600}
+.nav{position:relative;display:flex;align-items:center;gap:10px;padding:11px 16px;color:var(--ink2);font-size:14px;font-weight:600;text-align:left}
+.nav svg.i{width:22px;height:22px;stroke:var(--ic)}
+.nav:hover{background:var(--panel2)}
+.nav.on{background:var(--accent-soft);color:var(--ink)}
+.nav.on:before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;border-radius:0 3px 3px 0;background:var(--accent)}
+#side .grow{flex:1}
+#main{display:flex;flex-direction:column;min-width:0;min-height:0}
+
+/* ---------- header ---------- */
+#head{padding:12px 20px 8px;background:var(--panel);border-bottom:1px solid var(--line)}
+.hd-top{display:flex;align-items:center;gap:14px}
+.hd-top .sp{flex:1}
+.hd-date{display:flex;align-items:center;gap:14px;font-size:24px;font-weight:700;letter-spacing:-.3px}
+.hd-date .bar{width:2px;height:24px;background:var(--ink)}
+.hd-date .tm small{font-size:13px;font-weight:600;color:var(--ink2);margin-left:3px}
+.hd-wx{display:none}
+.pills{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px;margin-top:10px}
+.ppill{display:flex;align-items:center;gap:8px;background:var(--pc);border-radius:10px;padding:5px 10px 5px 5px;color:var(--evink);font-weight:600;font-size:14px;min-width:0;transition:opacity .2s}
+.ppill .nm{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ppill .ct{font-size:12px;font-weight:600;opacity:.75}
+.ppill.off{opacity:.3}
+.clock{display:flex;align-items:baseline;gap:14px}
+.clock .t{font-size:44px;font-weight:700;letter-spacing:-1px;line-height:1}
+.clock .t small{font-size:18px;font-weight:800;margin-left:4px;color:var(--ink2)}
+.clock .d{font-size:17px;font-weight:700;color:var(--ink2);line-height:1.2}
+.clock .d b{display:block;color:var(--ink);font-size:19px}
+.weather{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+.weather .e{font-size:30px;line-height:1}
+.weather .tp{font-size:22px;font-weight:700}
+.weather .hl{font-size:13px;color:var(--ink2);font-weight:700}
+.people{display:flex;gap:10px;margin-left:auto;flex-wrap:wrap}
+.pchip{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:800;color:var(--ink2);opacity:1;transition:opacity .2s}
+.pchip.off{opacity:.35}
+.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:20px;flex:none;box-shadow:0 0 0 3px var(--panel)}
+.av.s{width:32px;height:32px;font-size:15px;box-shadow:none}
+.av.xs{width:24px;height:24px;font-size:12px;box-shadow:none}
+.pchip .badge{position:absolute;top:-4px;right:-6px;background:var(--danger);color:#fff;font-size:11px;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 5px;border:2px solid var(--bg)}
+.pchip .badge.done{background:#22B573}
+.iconbtn{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.iconbtn.sm{width:34px;height:34px;border:0;background:none}
+.iconbtn:hover{color:var(--accent)}
+
+#view{flex:1;min-height:0;overflow:auto;padding:14px 20px 20px}
+
+/* ---------- generic ---------- */
+.card{background:var(--panel);border-radius:var(--radius);border:1px solid var(--line);padding:18px}
+.card h3{margin:0 0 12px;font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h3 .sp{flex:1}
+.muted{color:var(--ink3);font-weight:600}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar .title{font-size:24px;font-weight:700;margin:0 6px;min-width:0}
+.toolbar .sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:10px;background:var(--panel);border:1px solid var(--line);font-weight:600;font-size:14px;white-space:nowrap}
+.btn.pri{border-color:var(--accent)}
+.btn.pri{background:var(--accent);color:#fff}
+.btn.danger{color:var(--danger)}
+.btn.sm{height:34px;padding:0 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.45;cursor:default}
+.seg{display:inline-flex;background:var(--panel2);border-radius:10px;padding:3px;border:1px solid var(--line)}
+.seg button{height:32px;padding:0 14px;border-radius:8px;font-weight:600;font-size:13px;color:var(--ink2)}
+.seg button.on{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 4px;border-radius:17px;background:var(--panel);box-shadow:var(--shadow);font-weight:800;font-size:14px}
+.chip.off{opacity:.4}
+.chip.plain{padding:0 12px}
+.chip.on{background:var(--accent);color:#fff}
+.empty{text-align:center;color:var(--ink3);font-weight:700;padding:24px 10px}
+.empty .big{font-size:40px;display:block;margin-bottom:6px}
+
+/* ---------- home ---------- */
+.home{display:grid;grid-template-columns:1.1fr 1.3fr 1fr;gap:16px;align-items:start}
+.home .col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.evrow{display:flex;gap:12px;padding:10px 12px;border-radius:12px;background:var(--panel2);margin-bottom:8px;align-items:center;cursor:pointer}
+.evrow .bar{width:5px;align-self:stretch;border-radius:3px;flex:none}
+.evrow .tm{font-size:13px;font-weight:800;color:var(--ink2);width:112px;flex:none}
+.evrow .tt{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evrow .dots{display:flex;gap:3px}
+.upc .day{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin:10px 2px 6px}
+.mini-meal{display:grid;grid-template-columns:86px 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+.mini-meal:last-child{border:0}
+.mini-meal .k{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink3);letter-spacing:.5px}
+.mini-meal .v{font-weight:800}
+
+/* ---------- tasks / chore chart ---------- */
+.chore-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;align-items:start}
+.pcol{background:var(--panel);border-radius:var(--radius);border:1px solid var(--line);overflow:hidden}
+.pcol .ph{display:flex;align-items:center;gap:12px;padding:14px 16px;color:var(--evink)}
+.pcol .ph .nm{font-weight:700;font-size:19px;line-height:1.1}
+.pcol .ph .st{font-size:13px;font-weight:800;opacity:.95}
+.pcol .ph .av{box-shadow:0 0 0 3px rgba(255,255,255,.6)}
+.ring{margin-left:auto;width:48px;height:48px;position:relative}
+.ring svg{width:48px;height:48px;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700}
+.pcol .list{padding:10px 12px 14px;display:flex;flex-direction:column;gap:8px}
+.task{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--panel2);cursor:pointer;transition:transform .12s}
+.task:active{transform:scale(.98)}
+.task .ck{width:30px;height:30px;border-radius:50%;border:3px solid var(--line);display:grid;place-items:center;flex:none;color:#fff;transition:all .2s}
+.task.done .ck{border-color:var(--pc);background:var(--pc)}
+.task .tx{flex:1;min-width:0}
+.task .tx b{display:block;font-weight:800;line-height:1.2}
+.task.done .tx b{text-decoration:line-through;color:var(--ink3)}
+.task .tx span{font-size:12px;color:var(--ink3);font-weight:700}
+.task .sv{font-size:13px;font-weight:700;color:var(--star);white-space:nowrap}
+.task .ed{color:var(--ink3);padding:4px}
+.pri-high{box-shadow:inset 3px 0 0 var(--danger)}
+.addtask{border:2px dashed var(--line);border-radius:14px;padding:10px;text-align:center;font-weight:800;color:var(--ink3)}
+.burst{position:fixed;pointer-events:none;z-index:99;font-size:22px;color:var(--star);animation:burst .9s ease-out forwards}
+@keyframes burst{from{transform:translate(0,0) scale(.6);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.3);opacity:0}}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:98;pointer-events:none;animation:fall 2.2s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* ---------- rewards ---------- */
+.bal-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}
+.bal{border-radius:var(--radius);padding:16px;color:var(--evink);display:flex;align-items:center;gap:12px}
+.bal .n{font-size:30px;font-weight:700;line-height:1}
+.bal .l{font-size:13px;font-weight:800;opacity:.95}
+.bal .adj{margin-left:auto;display:flex;flex-direction:column;gap:4px}
+.bal .adj button{width:30px;height:26px;border-radius:8px;background:rgba(255,255,255,.6);font-weight:700;color:var(--evink)}
+.rw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.rw{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:8px;position:relative}
+.rw .em{font-size:40px;line-height:1}
+.rw .tt{font-weight:700;font-size:17px}
+.rw .cost{font-weight:700;color:var(--star)}
+.rw .who{display:flex;gap:4px}
+.rw .ed{position:absolute;top:10px;right:10px;color:var(--ink3)}
+.hist{margin-top:18px}
+.hist .r{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-weight:700}
+.hist .r .amt{margin-left:auto;font-weight:700}
+
+/* ---------- calendar ---------- */
+.calwrap{position:relative;display:flex;flex-direction:column;height:100%;min-height:520px}
+.cal-tb{margin-bottom:10px}
+.navgrp{display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:2px}
+.navgrp .btn{border:0;height:34px}
+.toolbar.cal-tb .title{font-size:20px;font-weight:700}
+.fab{position:absolute;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 6px 18px rgba(45,127,249,.4);z-index:5}
+.fab svg.i{width:28px;height:28px}
+.pill{font-size:12px;font-weight:600;color:var(--evink);border-radius:6px;padding:3px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border:1px solid;border-left:3px solid var(--bl)}
+.pill i{font-style:normal;opacity:.7}
+.more{font-size:12px;font-weight:600;color:var(--ink2);padding-left:4px}
+.who{display:flex;margin-top:auto;padding-top:4px}
+.who .av{margin-right:-5px;box-shadow:0 0 0 2px rgba(255,255,255,.8)}
+.av.xxs{width:20px;height:20px;font-size:10px;box-shadow:none}
+/* time grid (day & week) */
+.tg{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.tg-head{display:grid;border-bottom:1px solid var(--line);overflow:hidden;scrollbar-gutter:stable}
+.tg-dh{display:flex;flex-direction:column;align-items:center;padding:8px 0 8px;cursor:pointer;border-left:1px solid var(--line)}
+.tg-dh .w{font-size:13px;font-weight:600;color:var(--ink2)}
+.tg-dh .n{font-size:22px;font-weight:700;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;margin-top:2px}
+.tg-dh.today .w{color:var(--accent)}
+.tg-dh.today .n{background:var(--accent);color:#fff}
+.tg.one .tg-dh{flex-direction:row;gap:10px;justify-content:flex-start;padding-left:14px}
+.tg-all{display:grid;border-bottom:1px solid var(--line);overflow:hidden;scrollbar-gutter:stable}
+.tg-all .lbl{font-size:11px;font-weight:600;color:var(--ink3);padding:8px 6px;text-align:right}
+.tg-all .cell{border-left:1px solid var(--line);padding:4px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.tg-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable}
+.tg-body{display:grid;position:relative}
+.tg-hours{position:relative}
+.tg-hours span{position:absolute;right:8px;transform:translateY(-50%);font-size:11px;font-weight:500;color:var(--ink3);white-space:nowrap}
+.tg-col{position:relative;border-left:1px solid var(--line);min-width:0}
+.tg-col.today{background:rgba(45,127,249,.03)}
+.tg-col .slot{position:absolute;left:0;right:0;height:var(--hh,64px);border-top:1px solid var(--line);cursor:pointer}
+.tg-col .slot:first-child{border-top:0}
+.tg-col .slot:hover{background:rgba(45,127,249,.05)}
+.blk{position:absolute;border:1px solid;border-radius:7px;padding:5px 7px;overflow:hidden;cursor:pointer;color:var(--evink);display:flex;flex-direction:column;gap:1px;z-index:1}
+.blk b{font-size:12px;font-weight:600;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.blk span{font-size:11px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blk.short{padding:3px 7px}
+.blk.short b{-webkit-line-clamp:1}
+.now{position:absolute;left:0;right:0;height:2px;background:var(--danger);z-index:2}
+.now:before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--danger)}
+/* month */
+.cal-month{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:34px;grid-auto-rows:minmax(100px,1fr);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.cal-month .wd{display:grid;place-items:center;font-size:12px;font-weight:600;color:var(--ink2);border-bottom:1px solid var(--line)}
+.mc{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:5px;min-width:0;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.mc:nth-child(7n){border-right:0}
+.mc.out{background:var(--panel2)}
+.mc.out .dn{color:var(--ink3)}
+.mc .dn{font-weight:600;font-size:13px;width:26px;height:26px;display:grid;place-items:center;border-radius:50%}
+.mc.today .dn{background:var(--accent);color:#fff}
+/* schedule columns */
+.cal-cols{display:grid;gap:10px;flex:1}
+.dcol{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;min-height:420px;min-width:0}
+.dcol .dh{display:flex;align-items:baseline;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.dcol .dh .w{font-size:15px;font-weight:600}
+.dcol .dh .n{font-size:15px;font-weight:700}
+.dcol.today .dh .n{background:var(--accent);color:#fff;border-radius:12px;padding:0 8px}
+.dcol .dh .c{margin-left:auto;font-size:12px;color:var(--ink3);font-weight:500}
+.dcol .body{padding:8px;display:flex;flex-direction:column;gap:6px;flex:1;cursor:pointer}
+.evc{border-radius:8px;padding:8px 10px;cursor:pointer;border:1px solid;border-left:3px solid var(--bl);min-width:0;color:var(--evink);display:flex;flex-direction:column;gap:2px}
+.evc b{font-size:14px;font-weight:600;line-height:1.25;overflow-wrap:anywhere}
+.evc span{font-size:12px;opacity:.75}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.evc .dots,.evrow .dots{display:flex;gap:3px}
+
+/* ---------- meals ---------- */
+.meal-grid{display:grid;grid-template-columns:110px repeat(7,minmax(120px,1fr));gap:8px;min-width:980px}
+.meal-grid .h{font-weight:700;text-align:center;padding:8px 0;font-size:14px}
+.meal-grid .h small{display:block;color:var(--ink3);font-size:12px}
+.meal-grid .h.today{color:var(--accent)}
+.meal-grid .slot{display:flex;align-items:center;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);gap:6px}
+.mcell{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);min-height:74px;padding:10px;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere}
+.mcell.empty{color:var(--ink3);font-size:22px;background:var(--panel2);box-shadow:none;border:2px dashed var(--line)}
+.mcell.has{border-top:4px solid var(--mc)}
+.recipes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.recipe{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;cursor:pointer}
+.recipe .tt{font-weight:700;font-size:17px}
+.recipe .tg{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--ink3)}
+.recipe ul{margin:8px 0 0;padding-left:18px;color:var(--ink2);font-weight:700;font-size:14px}
+
+/* ---------- lists ---------- */
+.lists{display:grid;grid-template-columns:240px 1fr;gap:16px;align-items:start}
+.lnav{display:flex;flex-direction:column;gap:6px}
+.lnav button{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:var(--panel);box-shadow:var(--shadow);font-weight:800;text-align:left}
+.lnav button.on{background:var(--accent);color:#fff}
+.lnav button .c{margin-left:auto;font-size:13px;opacity:.8}
+.additem{display:flex;gap:8px;margin-bottom:12px}
+.additem input{flex:1}
+.item{display:flex;align-items:center;gap:12px;padding:12px 6px;border-bottom:1px solid var(--line);cursor:pointer;font-weight:800;font-size:17px}
+.item .ck{width:28px;height:28px;border-radius:8px;border:3px solid var(--line);display:grid;place-items:center;flex:none;color:#fff}
+.item.done .ck{background:#22B573;border-color:#22B573}
+.item.done .tx{text-decoration:line-through;color:var(--ink3)}
+.item .tx{flex:1}
+.item .x{color:var(--ink3);padding:4px}
+
+/* ---------- photos ---------- */
+.phi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.phi{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--panel2)}
+.phi img{width:100%;height:100%;object-fit:cover;display:block}
+.phi button{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center}
+
+/* ---------- settings ---------- */
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start}
+.row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-weight:700}
+.row:last-child{border:0}
+.row label{flex:1}
+.row .hint{display:block;font-size:12px;color:var(--ink3);font-weight:600}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=search],select,textarea{font-family:inherit;font-size:16px;font-weight:700;color:var(--ink);background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:10px 12px;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.row select,.row input[type=number],.row input[type=time]{width:auto;min-width:110px}
+.tog{width:52px;height:30px;border-radius:15px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.tog:after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog.on{background:var(--accent)}
+.tog.on:after{left:25px}
+.prof{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-weight:800}
+.prof .nm{flex:1}
+.city-res button{display:block;width:100%;text-align:left;padding:10px;border-radius:10px;font-weight:700}
+.city-res button:hover{background:var(--panel2)}
+
+/* ---------- modal ---------- */
+#modal{position:fixed;inset:0;background:rgba(15,21,34,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#modal.open{display:flex}
+.sheet{background:var(--panel);border-radius:22px;width:min(560px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:pop .18s ease-out}
+@keyframes pop{from{transform:scale(.96);opacity:0}}
+.sheet .sh{display:flex;align-items:center;padding:16px 18px 8px;gap:10px}
+.sheet .sh h2{margin:0;font-size:21px;font-weight:700;flex:1}
+.sheet .sb{padding:6px 18px 10px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.sheet .sf{display:flex;gap:10px;padding:12px 18px 18px;border-top:1px solid var(--line)}
+.sheet .sf .sp{flex:1}
+.fld>label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:36px;height:36px;border-radius:50%;border:3px solid transparent}
+.swatches button.on{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--panel)}
+.emojis{display:flex;gap:6px;flex-wrap:wrap}
+.emojis button{width:40px;height:40px;border-radius:10px;font-size:22px;background:var(--panel2)}
+.emojis button.on{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.daypick{display:flex;gap:6px}
+.daypick button{width:40px;height:40px;border-radius:50%;background:var(--panel2);font-weight:700;font-size:13px}
+.daypick button.on{background:var(--accent);color:#fff}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--panel);padding:12px 20px;border-radius:14px;font-weight:800;z-index:80;transition:transform .25s;max-width:90vw}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ---------- screensaver & sleep ---------- */
+#saver{position:fixed;inset:0;background:#000;z-index:70;display:none;overflow:hidden;cursor:pointer}
+#saver.open{display:block}
+#saver .layer{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0;transition:opacity 1.4s}
+#saver .layer.show{opacity:1}
+#saver.fit .layer{background-size:contain}
+#saver.pan .layer.show{animation:kb 14s ease-in-out forwards}
+@keyframes kb{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.14) translate(-2%,-1.5%)}}
+#saver .nophoto{position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,#3B5BDB,#1B1F3B 60%,#0B0D1C);}
+#saver .ov{position:absolute;left:0;right:0;bottom:0;padding:40px 44px 36px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55));display:flex;align-items:flex-end;gap:30px}
+#saver .ov .t{font-size:84px;font-weight:700;line-height:.9;letter-spacing:-2px}
+#saver .ov .d{font-size:24px;font-weight:800;opacity:.9}
+#saver .ov .nx{margin-left:auto;text-align:right;font-weight:800;font-size:18px;opacity:.95;max-width:40%}
+#sleep{position:fixed;inset:0;background:#000;z-index:75;display:none;align-items:center;justify-content:center;flex-direction:column;color:#444;cursor:pointer}
+#sleep.open{display:flex}
+#sleep .t{font-size:96px;font-weight:700;color:#3a3a3a}
+#sleep .d{font-size:18px;font-weight:800;color:#333}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .home{grid-template-columns:1fr 1fr}
+  .home .col:last-child{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+}
+@media (max-width:780px){
+  :root{--side:0px}
+  #app{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  #side{grid-row:2;flex-direction:row;border-right:0;border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));overflow-x:auto;overflow-y:hidden;gap:2px}
+  #side .grow,.side-w{display:none}
+  .nav{flex-direction:column;gap:3px;min-width:62px;padding:6px 8px;font-size:11px}
+  .nav.on:before{display:none}
+  .hd-wx{display:block}.hd-wx .weather{box-shadow:none;padding:4px 8px}
+  .hd-date{font-size:18px;gap:10px;white-space:nowrap}.hd-date .bar{height:18px}.hd-date .dl{display:none}
+  .pills{grid-template-columns:repeat(var(--n),minmax(132px,1fr));overflow-x:auto;padding-bottom:2px}
+  .tg-head,.tg-all,.tg-body{grid-template-columns:52px repeat(3,minmax(0,1fr))!important}
+  .tg.one .tg-head,.tg.one .tg-all,.tg.one .tg-body{grid-template-columns:52px minmax(0,1fr)!important}
+  .tg-hours span{font-size:10px;right:4px}
+  .calwrap{min-height:0}
+  .tg{min-height:520px}
+  #head{padding:12px 14px 6px;gap:12px}
+  #head .hd-top>.iconbtn{display:none}
+  .weather{padding:6px 10px}.weather .e{font-size:24px}.weather .tp{font-size:18px}
+  .pchip span:last-child{font-size:11px}
+  .av{width:36px;height:36px;font-size:16px}
+  .evrow .tm{width:92px;font-size:12px}
+  .mc .dn{font-size:12px;width:22px;height:22px}
+  #view{padding:6px 14px 18px}
+  .home,.home .col:last-child{grid-template-columns:1fr;display:flex;flex-direction:column}
+  .lists{grid-template-columns:1fr}
+  .lnav{flex-direction:row;overflow-x:auto}
+  .lnav button{white-space:nowrap}
+  .toolbar .title{font-size:19px;width:100%;order:-1;margin:0}
+  .cal-month{grid-auto-rows:minmax(64px,1fr)}
+  .mc .pill{font-size:0;height:6px;padding:0}
+  .mc .more{display:none}
+  .cal-cols{grid-template-columns:1fr!important}
+  .dcol{min-height:0}
+  .dcol .dh{display:flex;align-items:center;gap:10px;text-align:left;padding:8px 12px}
+  .dcol .dh .n{margin:0;width:32px;height:32px;font-size:17px}
+  .dcol .body{min-height:40px}
+  .set-grid{grid-template-columns:1fr}
+  #saver .ov{flex-direction:column;align-items:flex-start;padding:24px}
+  #saver .ov .t{font-size:56px}
+  #saver .ov .nx{margin-left:0;text-align:left;max-width:100%}
+}
+
+details.help{background:var(--panel2);border-radius:12px;padding:10px 14px;font-size:14px;font-weight:600;color:var(--ink2)}
+details.help summary{cursor:pointer;font-weight:700;color:var(--accent)}
+details.help p{margin:10px 0 0;line-height:1.45}
+details.help b{color:var(--ink)}
+
+.demo-bar{display:flex;align-items:center;gap:10px;margin:-12px -20px 10px;padding:8px 20px;background:#FEF6DC;color:#5a4300;font-size:14px;font-weight:500;border-bottom:1px solid #F5E2A8}
+.demo-bar .grow{flex:1}
+.demo-bar a{background:#1F2430;color:#fff;text-decoration:none;font-weight:600;padding:6px 14px;border-radius:9px;white-space:nowrap}
+[data-theme="dark"] .demo-bar{background:#3a3214;color:#F8E7B0;border-color:#4d4320}
+@media (max-width:780px){.demo-bar{margin:-12px -14px 8px;padding:8px 14px;font-size:13px}}
+
+</style>
+</head>
+<body>
+<div id="app"><nav id="side"></nav><main id="main"><header id="head"></header><section id="view"></section></main></div>
+<div id="modal"></div><div id="saver"></div><div id="sleep"></div><div id="toast"></div>
+<script>window.FW_DEMO=false;window.FW_BUY_URL="https://www.etsy.com/listing/4589878831/family-calendar-app-for-tablet-chore";</script>
+<script>
+'use strict';
+/* ============ utils ============ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const uid = () => Math.random().toString(36).slice(2, 10);
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseYMD = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const todayStr = () => ymd(new Date());
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const toMin = t => { if (!t) return 0; const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const fromMin = m => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
+function fmtTime(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  if (S().time24) return `${pad(h)}:${pad(m)}`;
+  const ap = h < 12 ? 'am' : 'pm'; const hh = h % 12 || 12;
+  return m ? `${hh}:${pad(m)}${ap}` : `${hh}${ap}`;
+}
+const shortDate = d => `${DAYS[d.getDay()].slice(0, 3)}, ${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}`;
+
+/* ============ icons ============ */
+const IC = {
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  tasks: '<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/>',
+  star: '<path d="M12 3l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9z"/>',
+  meals: '<path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 3c-2 0-3 2-3 5s1 4 3 4v9"/>',
+  lists: '<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
+  photos: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+  sleep: '<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  left: '<path d="M15 18l-6-6 6-6"/>',
+  right: '<path d="M9 18l6-6-6-6"/>',
+  x: '<path d="M18 6L6 18M6 6l12 12"/>',
+  trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
+  check: '<path d="M5 12l5 5 9-10"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  expand: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  upload: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+  play: '<path d="M7 4l13 8-13 8z"/>',
+  cart: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h12L22 7H6"/>',
+  moon: '<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>',
+};
+const ic = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24">${IC[n] || ''}</svg>`;
+
+/* ============ state ============ */
+const DEMO = !!window.FW_DEMO;
+const BUY_URL = window.FW_BUY_URL || 'https://thepetalo.etsy.com';
+const VERSION = '1.2';
+const KEY = DEMO ? 'familywall.demo.v1' : 'familywall.v1';
+const COLORS = ['#F6B3C6', '#F8DE95', '#D9BCF2', '#A9D6F5', '#B9E6C5', '#F9C6A2', '#A8E2DF', '#F5ABA3', '#CDD5E0'];
+const OLD_COLORS = { '#FF6B5B': '#F5ABA3', '#3D8BFD': '#A9D6F5', '#22B573': '#B9E6C5', '#F5A524': '#F8DE95', '#9B6BF2': '#D9BCF2', '#EC5FA6': '#F6B3C6', '#14B8C4': '#A8E2DF', '#FF8A3D': '#F9C6A2', '#6B7A8F': '#CDD5E0' };
+/* pastel -> strong shade of the same hue (avatars, borders, dots) */
+const deepCache = {};
+function deep(hex) {
+  if (!hex) return '#6B7A8F'; if (deepCache[hex]) return deepCache[hex];
+  let r = parseInt(hex.slice(1, 3), 16) / 255, g = parseInt(hex.slice(3, 5), 16) / 255, b = parseInt(hex.slice(5, 7), 16) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b); let h = 0, sat = 0; const l = (mx + mn) / 2;
+  if (mx !== mn) { const d = mx - mn; sat = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; }
+  const S2 = sat < .15 ? .14 : Math.min(.72, sat * .75 + .2), L2 = sat < .15 ? .42 : .5;
+  const q = L2 < .5 ? L2 * (1 + S2) : L2 + S2 - L2 * S2, pp = 2 * L2 - q;
+  const f = t => { t = (t + 1) % 1; return t < 1 / 6 ? pp + (q - pp) * 6 * t : t < .5 ? q : t < 2 / 3 ? pp + (q - pp) * (2 / 3 - t) * 6 : pp; };
+  const hx = v => Math.round(v * 255).toString(16).padStart(2, '0');
+  return deepCache[hex] = '#' + hx(f(h + 1 / 3)) + hx(f(h)) + hx(f(h - 1 / 3));
+}
+const EMOJIS = ['😀', '😎', '🦄', '🐻', '🐱', '🐶', '🦊', '🐼', '🐸', '🦁', '🐰', '🌸', '⚽', '🎨', '🎮', '🚀', '👑', '⭐', '🌈', '🍕'];
+const SLOTS = [['breakfast', 'Breakfast', '🥞'], ['lunch', 'Lunch', '🥪'], ['dinner', 'Dinner', '🍝'], ['snack', 'Snack', '🍎']];
+const FAMILY = { id: 'family', name: 'Family', color: '#CDD5E0', emoji: '🏠' };
+
+function defaults() {
+  return {
+    v: 1, onboarded: false,
+    settings: {
+      familyName: 'Our Family', time24: false, weekStart: 0, units: 'F', lat: null, lon: null, city: '',
+      idleMin: 5, photoMode: 'fill', photoSec: 10, calView: 'week', schedDays: 4, theme: 'light',
+      keepAwake: false, sleep: { on: false, start: '22:00', end: '06:30' }
+    },
+    profiles: [], events: [], subs: [], tasks: [], log: [], rewards: [], meals: {}, recipes: seedRecipes(),
+    lists: [{ id: uid(), name: 'Grocery', emoji: '🛒', grocery: true, items: [] }, { id: uid(), name: 'To-Do', emoji: '✅', items: [] }]
+  };
+}
+function seedRecipes() {
+  const r = (name, slot, ing) => ({ id: uid(), name, slot, ingredients: ing, notes: '' });
+  return [
+    r('Pancakes', 'breakfast', ['Flour', 'Eggs', 'Milk', 'Butter', 'Maple syrup']),
+    r('Overnight oats', 'breakfast', ['Rolled oats', 'Milk', 'Yogurt', 'Berries', 'Honey']),
+    r('Scrambled eggs & toast', 'breakfast', ['Eggs', 'Bread', 'Butter']),
+    r('Turkey sandwiches', 'lunch', ['Bread', 'Sliced turkey', 'Cheese', 'Lettuce', 'Tomato']),
+    r('Chicken wraps', 'lunch', ['Tortillas', 'Chicken breast', 'Lettuce', 'Cheese', 'Ranch']),
+    r('Tomato soup & grilled cheese', 'lunch', ['Tomato soup', 'Bread', 'Cheddar', 'Butter']),
+    r('Spaghetti bolognese', 'dinner', ['Spaghetti', 'Ground beef', 'Tomato sauce', 'Onion', 'Garlic', 'Parmesan']),
+    r('Taco night', 'dinner', ['Taco shells', 'Ground beef', 'Taco seasoning', 'Lettuce', 'Cheese', 'Salsa', 'Sour cream']),
+    r('Sheet-pan chicken & veggies', 'dinner', ['Chicken thighs', 'Potatoes', 'Carrots', 'Broccoli', 'Olive oil']),
+    r('Homemade pizza', 'dinner', ['Pizza dough', 'Pizza sauce', 'Mozzarella', 'Pepperoni']),
+    r('Salmon, rice & green beans', 'dinner', ['Salmon', 'Rice', 'Green beans', 'Lemon']),
+    r('Apple slices & peanut butter', 'snack', ['Apples', 'Peanut butter']),
+    r('Yogurt parfait', 'snack', ['Yogurt', 'Granola', 'Berries']),
+  ];
+}
+
+let state;
+function load() {
+  try { const raw = localStorage.getItem(KEY); state = raw ? JSON.parse(raw) : defaults(); if (!raw && DEMO) { seedSample(); state.onboarded = true; } }
+  catch (e) { state = defaults(); }
+  const d = defaults();
+  state.settings = Object.assign(d.settings, state.settings || {});
+  state.settings.sleep = Object.assign(d.settings.sleep, state.settings.sleep || {});
+  for (const k of ['profiles', 'events', 'subs', 'tasks', 'log', 'rewards', 'recipes', 'lists']) if (!Array.isArray(state[k])) state[k] = d[k];
+  if (!state.meals || typeof state.meals !== 'object') state.meals = {};
+  state.profiles.forEach(p => { if (OLD_COLORS[p.color]) p.color = OLD_COLORS[p.color]; });
+}
+let saveT;
+function save() {
+  clearTimeout(saveT);
+  saveT = setTimeout(() => {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { toast('Could not save — storage is full'); }
+  }, 150);
+}
+const S = () => state.settings;
+const prof = id => state.profiles.find(p => p.id === id) || (id === 'family' ? FAMILY : null);
+const profColor = id => (prof(id) || FAMILY).color;
+
+/* UI state (not saved) */
+const ui = {
+  view: 'home', calDate: todayStr(), filter: new Set(), taskDate: todayStr(),
+  mealStart: todayStr(), mealTab: 'plan', listId: null, rwProfile: null
+};
+
+/* ============ avatars ============ */
+function avatar(p, size = '') {
+  p = p || FAMILY;
+  const inner = p.emoji ? p.emoji : esc((p.name || '?')[0].toUpperCase());
+  return `<span class="av ${size}" style="background:${deep(p.color)}">${inner}</span>`;
+}
+
+/* ============ toast / modal ============ */
+let toastT;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400);
+}
+let modalCtx = null;
+function openModal({ title, body, onSave, onDelete, saveLabel = 'Save', wide = false, noFooter = false, onOpen }) {
+  const m = $('#modal');
+  m.innerHTML = `<div class="sheet" style="${wide ? 'width:min(720px,100%)' : ''}">
+    <div class="sh"><h2>${esc(title)}</h2><button class="iconbtn" data-act="modal-close">${ic('x')}</button></div>
+    <div class="sb">${body}</div>
+    ${noFooter ? '' : `<div class="sf">${onDelete ? `<button class="btn danger" data-act="modal-del">${ic('trash', 'sm')} Delete</button>` : ''}<span class="sp"></span>
+      <button class="btn" data-act="modal-close">Cancel</button>${onSave ? `<button class="btn pri" data-act="modal-save">${esc(saveLabel)}</button>` : ''}</div>`}
+  </div>`;
+  m.classList.add('open');
+  modalCtx = { onSave, onDelete };
+  if (onOpen) onOpen(m);
+  const f = m.querySelector('input[type=text]'); if (f && !('ontouchstart' in window)) setTimeout(() => f.focus(), 50);
+}
+function closeModal() { $('#modal').classList.remove('open'); $('#modal').innerHTML = ''; modalCtx = null; }
+function confirmBox(msg, yes = 'Delete') {
+  return new Promise(res => {
+    openModal({ title: 'Are you sure?', body: `<p style="margin:0;font-weight:700">${esc(msg)}</p>`, saveLabel: yes, onSave: () => { res(true); return true; } });
+    const prev = modalCtx; prev.onCancel = () => res(false);
+  });
+}
+const fv = (sel) => { const el = $('#modal ' + sel); return el ? el.value.trim() : ''; };
+
+/* pickers used inside modals */
+function profilePicker(selected = [], multi = true, includeFamily = true) {
+  const list = includeFamily ? [...state.profiles, FAMILY] : state.profiles;
+  return `<div class="chips" data-picker="${multi ? 'multi' : 'single'}">${list.map(p =>
+    `<button type="button" class="chip ${selected.includes(p.id) ? '' : 'off'}" data-pid="${p.id}">${avatar(p, 'xs')}${esc(p.name)}</button>`).join('')}</div>`;
+}
+function readPicker(sel = '[data-picker]') { return $$(`#modal ${sel} .chip:not(.off)`).map(b => b.dataset.pid); }
+function colorPicker(sel) { return `<div class="swatches" data-swatch>${COLORS.map(c => `<button type="button" style="background:${c}" data-color="${c}" class="${c === sel ? 'on' : ''}"></button>`).join('')}</div>`; }
+function emojiPicker(sel, list = EMOJIS) { return `<div class="emojis" data-emoji>${list.map(e => `<button type="button" data-e="${e}" class="${e === sel ? 'on' : ''}">${e}</button>`).join('')}</div>`; }
+function dayPicker(sel = []) { return `<div class="daypick" data-days>${'SMTWTFS'.split('').map((l, i) => `<button type="button" data-d="${i}" class="${sel.includes(i) ? 'on' : ''}">${l}</button>`).join('')}</div>`; }
+
+/* ============ recurrence ============ */
+function occursOn(it, ds) {
+  if (it.exdates && it.exdates.includes(ds)) return false;
+  if (it.date === ds) return true;
+  if (ds < it.date) return false;
+  if (!it.repeat || it.repeat === 'none') return !!(it.endDate && ds <= it.endDate);
+  if (it.until && ds > it.until) return false;
+  const a = parseYMD(it.date), b = parseYMD(ds);
+  switch (it.repeat) {
+    case 'daily': return true;
+    case 'weekdays': { const w = b.getDay(); return w > 0 && w < 6; }
+    case 'weekly': return a.getDay() === b.getDay();
+    case 'biweekly': return a.getDay() === b.getDay() && Math.round((b - a) / 864e5) % 14 === 0;
+    case 'monthly': return a.getDate() === b.getDate();
+    case 'yearly': return a.getDate() === b.getDate() && a.getMonth() === b.getMonth();
+    case 'custom': return (it.days || []).includes(b.getDay());
+    case 'rrule': return occursRule(it, a, b);
+  }
+  return false;
+}
+const REPEATS = [['none', 'Does not repeat'], ['daily', 'Every day'], ['weekdays', 'Weekdays (Mon–Fri)'], ['weekly', 'Every week'], ['biweekly', 'Every 2 weeks'], ['monthly', 'Every month'], ['yearly', 'Every year'], ['custom', 'Pick days…']];
+const repeatLabel = (r, days) => r === 'custom' ? (days || []).slice().sort().map(d => DAYS[d].slice(0, 3)).join(', ') || 'Custom' : (REPEATS.find(x => x[0] === r) || REPEATS[0])[1];
+
+function eventsOn(ds, useFilter = true) {
+  return state.events.filter(e => occursOn(e, ds) && passFilter(e, useFilter))
+    .sort((a, b) => (b.allDay - a.allDay) || (toMin(a.start) - toMin(b.start)) || a.title.localeCompare(b.title));
+}
+function passFilter(e, useFilter) {
+  if (!useFilter || !ui.filter.size) return true;
+  const ps = (e.profiles && e.profiles.length) ? e.profiles : ['family'];
+  return ps.some(p => !ui.filter.has(p));
+}
+const evColor = e => profColor((e.profiles && e.profiles[0]) || 'family');
+const evTime = e => e.allDay ? 'All day' : fmtTime(e.start) + (e.end ? ' – ' + fmtTime(e.end) : '');
+const evDeep = e => deep(evColor(e));
+const evDots = e => (e.profiles || []).length > 1 ? `<div class="dots">${e.profiles.map(p => `<span class="dot" style="background:${deep(profColor(p))}"></span>`).join('')}</div>` : '';
+const evWho = e => { const ps = (e.profiles && e.profiles.length ? e.profiles : ['family']).map(prof).filter(Boolean); return `<span class="who">${ps.slice(0, 4).map(p => avatar(p, 'xxs')).join('')}</span>`; };
+
+function tasksOn(ds, pid) { return state.tasks.filter(t => t.profile === pid && occursOn(t, ds)).sort((a, b) => (a.time || '99').localeCompare(b.time || '99') || (b.priority === 'high') - (a.priority === 'high')); }
+const isDone = (t, ds) => !!(t.done && t.done[ds]);
+const balance = pid => state.log.filter(l => l.pid === pid).reduce((s, l) => s + l.amt, 0);
+
+/* ============ shell ============ */
+const NAV = [['home', 'Today', 'home', '#3D8BFD'], ['calendar', 'Calendar', 'calendar', '#3D8BFD'], ['tasks', 'Tasks', 'tasks', '#2F7CF6'], ['rewards', 'Rewards', 'star', '#F5B400'],
+  ['meals', 'Meals', 'meals', '#FF8A3D'], ['photos', 'Photos', 'photos', '#22B573'], ['lists', 'Lists', 'lists', '#14B8C4'], ['sleep', 'Sleep', 'sleep', '#F5A524'], ['settings', 'Settings', 'settings', '#6B7A8F']];
+
+function renderSide() {
+  $('#side').innerHTML = weatherSide() +
+    NAV.map(([id, label, icon, col], i) => (i === 7 ? '<div class="grow"></div>' : '') +
+      `<button class="nav ${ui.view === id ? 'on' : ''}" data-act="nav" data-v="${id}" style="--ic:${col}">${ic(icon)}<span>${label}</span></button>`).join('');
+}
+function weatherSide() {
+  const s = S();
+  if (s.lat == null) return `<button class="side-w" data-act="nav" data-v="settings" title="Set your city"><span class="e">🌤️</span><span class="t">Set city</span></button>`;
+  const w = weatherData();
+  return `<div class="side-w" title="${esc(s.city)}"><span class="e">${w ? w.emoji : '⏳'}</span><span class="t">${w ? w.temp + '°' + s.units : ''}</span>${w ? `<span class="hl">${w.hi}° / ${w.lo}°</span>` : ''}</div>`;
+}
+
+function renderHead() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes();
+  const t = S().time24 ? `${pad(h)}:${pad(m)}` : `${h % 12 || 12}:${pad(m)}<small>${h < 12 ? 'AM' : 'PM'}</small>`;
+  const ds = todayStr();
+  const people = state.profiles.map(p => {
+    const ts = tasksOn(ds, p.id), done = ts.filter(x => isDone(x, ds)).length;
+    return `<button class="ppill ${ui.filter.has(p.id) ? 'off' : ''}" style="--pc:${p.color}" data-act="headprof" data-pid="${p.id}" title="Show / hide ${esc(p.name)}">${avatar(p, 's')}<span class="nm">${esc(p.name)}</span><span class="ct">${ts.length ? done + '/' + ts.length : ''}</span></button>`;
+  }).join('');
+  $('#head').innerHTML = (DEMO ? `<div class="demo-bar"><span class="grow">✨ <b>Free demo</b> — play with it! Your changes stay in this browser.</span><a href="${esc(BUY_URL)}" target="_blank" rel="noopener">Get the full app</a></div>` : '') + `
+    <div class="hd-top"><div class="hd-date"><span class="dt"><span class="dl">${DAYS[now.getDay()]}, </span>${MONTHS[now.getMonth()]} ${now.getDate()}</span><span class="bar"></span><span class="tm" id="clk">${t}</span></div>
+      <span class="sp"></span>${S().lat != null ? `<span class="hd-wx">${weatherHTML()}</span>` : ''}
+      <button class="iconbtn" data-act="fullscreen" title="Full screen">${ic('expand')}</button></div>
+    ${people ? `<div class="pills" style="--n:${state.profiles.length}">${people}</div>` : ''}`;
+}
+
+function render() {
+  document.documentElement.dataset.theme = S().theme;
+  renderSide(); renderHead();
+  const v = $('#view');
+  const fn = { home: vHome, calendar: vCalendar, tasks: vTasks, rewards: vRewards, meals: vMeals, lists: vLists, photos: vPhotos, sleep: vSleep, settings: vSettings }[ui.view] || vHome;
+  v.innerHTML = fn();
+  if (ui.view === 'photos') fillPhotoGrid();
+  const sc = $('.tg-scroll');
+  if (sc) { const key = S().calView + ui.calDate; if (ui.tgKey !== key) { ui.tgKey = key; ui.tgTop = 7 * HH - 6; } sc.scrollTop = ui.tgTop; sc.addEventListener('scroll', () => { ui.tgTop = sc.scrollTop; }, { passive: true }); }
+}
+
+/* ============ TODAY (home dashboard) ============ */
+function vHome() {
+  const ds = todayStr();
+  const evs = eventsOn(ds);
+  const today = evs.length ? evs.map(evRow).join('') : `<div class="empty"><span class="big">🌤️</span>Nothing on the calendar today</div>`;
+  let upc = '', n = 0;
+  for (let i = 1; i <= 14 && n < 6; i++) {
+    const d = addDays(new Date(), i), e = eventsOn(ymd(d));
+    if (!e.length) continue;
+    upc += `<div class="day">${i === 1 ? 'Tomorrow' : shortDate(d)}</div>` + e.slice(0, 6 - n).map(evRow).join('');
+    n += Math.min(e.length, 6 - n);
+  }
+  const chores = state.profiles.length ? state.profiles.map(p => {
+    const ts = tasksOn(ds, p.id); if (!ts.length) return '';
+    const done = ts.filter(t => isDone(t, ds)).length;
+    return `<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${avatar(p, 's')}<b style="flex:1">${esc(p.name)}</b><span class="muted">${done}/${ts.length}</span><span style="color:var(--star);font-weight:900">★ ${balance(p.id)}</span></div>
+      ${ts.map(t => taskRow(t, ds, p)).join('')}</div>`;
+  }).join('') : '';
+  const meals = state.meals[ds] || {};
+  const mealRows = SLOTS.map(([k, l, e]) => `<div class="mini-meal" data-act="meal-cell" data-ds="${ds}" data-slot="${k}" style="cursor:pointer"><span class="k">${e} ${l}</span><span class="v">${meals[k] ? esc(meals[k].name) : '<span class="muted">—</span>'}</span></div>`).join('');
+  const g = state.lists.find(l => l.grocery) || state.lists[0];
+  const gi = g ? g.items.filter(i => !i.done) : [];
+  return `<div class="home">
+    <div class="col">
+      <div class="card"><h3>📅 Today<span class="sp"></span><button class="btn sm" data-act="ev-new" data-ds="${ds}">${ic('plus', 'sm')} Event</button></h3>${today}</div>
+      <div class="card upc"><h3>⏭️ Coming up</h3>${upc || '<div class="empty">Nothing in the next two weeks</div>'}</div>
+    </div>
+    <div class="col">
+      <div class="card"><h3>✅ Today's chores<span class="sp"></span><button class="btn sm" data-act="nav" data-v="tasks">Open</button></h3>
+        ${chores.replace(/\s/g, '') ? chores : `<div class="empty"><span class="big">🧹</span>No chores for today.<br><button class="btn sm pri" style="margin-top:10px" data-act="task-new">${ic('plus', 'sm')} Add a chore</button></div>`}</div>
+    </div>
+    <div class="col">
+      <div class="card"><h3>🍽️ Meals today<span class="sp"></span><button class="btn sm" data-act="nav" data-v="meals">Plan</button></h3>${mealRows}</div>
+      ${g ? `<div class="card"><h3>${g.emoji} ${esc(g.name)}<span class="sp"></span><span class="muted">${gi.length} left</span></h3>
+        ${gi.length ? gi.slice(0, 8).map(i => `<div class="item" data-act="item-tog" data-lid="${g.id}" data-iid="${i.id}" style="font-size:15px;padding:8px 2px"><span class="ck"></span><span class="tx">${esc(i.text)}</span></div>`).join('') + (gi.length > 8 ? `<div class="muted" style="padding-top:8px">+${gi.length - 8} more</div>` : '') : '<div class="empty">All done 🎉</div>'}
+        <button class="btn sm" style="margin-top:10px" data-act="list-open" data-lid="${g.id}">Open list</button></div>` : ''}
+    </div>
+  </div>`;
+}
+function evRow(e) {
+  return `<div class="evrow" data-act="ev-edit" data-id="${e.id}"><span class="bar" style="background:${evDeep(e)}"></span><span class="tm">${evTime(e)}</span><span class="tt">${esc(e.title)}</span>${evDots(e)}</div>`;
+}
+
+/* ============ CALENDAR ============ */
+const HH = 64; // px per hour in time grids
+const narrowCal = () => window.innerWidth < 700;
+function vCalendar() {
+  const s = S(), view = s.calView, d = parseYMD(ui.calDate);
+  let title = '', body = '';
+  if (view === 'month') { title = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`; body = calMonth(d); }
+  else if (view === 'week' && narrowCal()) { title = rangeTitle(d, addDays(d, 2)); body = timeGrid([0, 1, 2].map(i => addDays(d, i))); }
+  else if (view === 'week') {
+    const st = addDays(d, -((d.getDay() - s.weekStart + 7) % 7));
+    title = rangeTitle(st, addDays(st, 6)); body = timeGrid([...Array(7)].map((_, i) => addDays(st, i)));
+  } else if (view === 'schedule') {
+    title = rangeTitle(d, addDays(d, s.schedDays - 1)); body = calCols(d, s.schedDays);
+  } else { title = `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`; body = timeGrid([d]); }
+  return `<div class="calwrap"><div class="toolbar cal-tb">
+      <div class="navgrp"><button class="iconbtn sm" data-act="cal-move" data-n="-1" title="Previous">${ic('left')}</button><button class="btn sm" data-act="cal-today">Today</button><button class="iconbtn sm" data-act="cal-move" data-n="1" title="Next">${ic('right')}</button></div>
+      <div class="title">${title}</div><span class="sp"></span>
+      <div class="seg">${[['day', 'Day'], ['week', 'Week'], ['month', 'Month'], ['schedule', 'Schedule']].map(([k, l]) => `<button class="${view === k ? 'on' : ''}" data-act="cal-view" data-k="${k}">${l}</button>`).join('')}</div>
+    </div>${body}
+    <button class="fab" data-act="ev-new" data-ds="${ui.calDate}" title="New event">${ic('plus')}</button></div>`;
+}
+function rangeTitle(a, b) {
+  if (a.getMonth() === b.getMonth()) return `${MONTHS[a.getMonth()].slice(0, 3)} ${a.getDate()} – ${b.getDate()}, ${b.getFullYear()}`;
+  return `${MONTHS[a.getMonth()].slice(0, 3)} ${a.getDate()} – ${MONTHS[b.getMonth()].slice(0, 3)} ${b.getDate()}, ${b.getFullYear()}`;
+}
+const evStyle = e => `background:${evColor(e)};border-color:${evDeep(e)}55;--bl:${evDeep(e)}`;
+function calMonth(d) {
+  const ws = S().weekStart, first = new Date(d.getFullYear(), d.getMonth(), 1);
+  const start = addDays(first, -((first.getDay() - ws + 7) % 7));
+  const td = todayStr();
+  let html = '<div class="cal-month">';
+  for (let i = 0; i < 7; i++) html += `<div class="wd">${DAYS[(i + ws) % 7].slice(0, 3)}</div>`;
+  for (let i = 0; i < 42; i++) {
+    const day = addDays(start, i), ds = ymd(day), evs = eventsOn(ds);
+    const out = day.getMonth() !== d.getMonth();
+    html += `<div class="mc ${out ? 'out' : ''} ${ds === td ? 'today' : ''}" data-act="ev-new" data-ds="${ds}">
+      <span class="dn" data-act="cal-goday" data-ds="${ds}">${day.getDate()}</span>
+      ${evs.slice(0, 3).map(e => `<div class="pill" style="${evStyle(e)}" data-act="ev-edit" data-id="${e.id}">${e.allDay ? '' : `<i>${fmtTime(e.start)}</i> `}${esc(e.title)}</div>`).join('')}
+      ${evs.length > 3 ? `<span class="more" data-act="cal-goday" data-ds="${ds}">+${evs.length - 3} more</span>` : ''}</div>`;
+  }
+  return html + '</div>';
+}
+function calCols(start, n) {
+  const td = todayStr();
+  let html = `<div class="cal-cols" style="grid-template-columns:repeat(${n},minmax(0,1fr))">`;
+  for (let i = 0; i < n; i++) {
+    const day = addDays(start, i), ds = ymd(day), evs = eventsOn(ds);
+    html += `<div class="dcol ${ds === td ? 'today' : ''}">
+      <div class="dh" data-act="cal-goday" data-ds="${ds}"><span class="w">${DAYS[day.getDay()].slice(0, 3)}</span><span class="n">${day.getDate()}</span><span class="c">${evs.length ? evs.length + (evs.length > 1 ? ' events' : ' event') : ''}</span></div>
+      <div class="body" data-act="ev-new" data-ds="${ds}">${evs.map(e => `<div class="evc" style="${evStyle(e)}" data-act="ev-edit" data-id="${e.id}"><b>${esc(e.title)}</b><span>${evTime(e)}${e.src === 'sub' ? ' · 🔄' : ''}</span>${evWho(e)}</div>`).join('')}</div></div>`;
+  }
+  return html + '</div>';
+}
+function gridHour(h) { if (S().time24) return pad(h) + ':00'; return `${pad(h % 12 || 12)}:00 ${h < 12 ? 'AM' : 'PM'}`; }
+function layoutDay(evs) {
+  const timed = evs.filter(e => !e.allDay).map(e => { const s = toMin(e.start); return { e, s, en: Math.max(e.end ? toMin(e.end) : s + 60, s + 30) }; });
+  timed.sort((a, b) => a.s - b.s || b.en - a.en);
+  let group = [], gEnd = -1;
+  const flush = () => { const cols = []; group.forEach(x => { let i = cols.findIndex(c => c <= x.s); if (i < 0) { i = cols.length; cols.push(0); } cols[i] = x.en; x.col = i; }); group.forEach(x => x.n = cols.length); group = []; };
+  timed.forEach(x => { if (group.length && x.s >= gEnd) { flush(); gEnd = -1; } group.push(x); gEnd = Math.max(gEnd, x.en); });
+  flush();
+  return timed;
+}
+function timeGrid(days) {
+  const n = days.length, td = todayStr(), now = new Date(), cols = `64px repeat(${n},minmax(0,1fr))`;
+  const per = days.map(d => { const ds = ymd(d); return { d, ds, evs: eventsOn(ds) }; });
+  const anyAll = per.some(p => p.evs.some(e => e.allDay));
+  let head = `<div class="tg-head" style="grid-template-columns:${cols}"><div></div>` + per.map(p => `<div class="tg-dh ${p.ds === td ? 'today' : ''}" data-act="cal-goday" data-ds="${p.ds}"><span class="w">${DAYS[p.d.getDay()].slice(0, 3)}</span><span class="n">${p.d.getDate()}</span></div>`).join('') + '</div>';
+  if (anyAll) head += `<div class="tg-all" style="grid-template-columns:${cols}"><div class="lbl">All day</div>` + per.map(p => `<div class="cell">${p.evs.filter(e => e.allDay).map(e => `<div class="pill" style="${evStyle(e)}" data-act="ev-edit" data-id="${e.id}">${esc(e.title)}</div>`).join('')}</div>`).join('') + '</div>';
+  let hours = ''; for (let h = 1; h < 24; h++) hours += `<span style="top:${h * HH}px">${gridHour(h)}</span>`;
+  const body = per.map(p => {
+    let cells = ''; for (let h = 0; h < 24; h++) cells += `<div class="slot" style="top:${h * HH}px" data-act="ev-new" data-ds="${p.ds}" data-t="${pad(h)}:00"></div>`;
+    const blocks = layoutDay(p.evs).map(x => {
+      const top = x.s / 60 * HH, hgt = Math.max((x.en - x.s) / 60 * HH - 3, 24);
+      const short = hgt < 46;
+      return `<div class="blk ${short ? 'short' : ''}" data-act="ev-edit" data-id="${x.e.id}" style="top:${top + 1}px;height:${hgt}px;left:calc(${x.col} * (100% - 6px) / ${x.n} + 3px);width:calc((100% - 6px) / ${x.n} - 3px);${evStyle(x.e)}"><b>${esc(x.e.title)}</b>${short ? '' : `<span>${evTime(x.e)}</span>`}${hgt > 70 ? evWho(x.e) : ''}</div>`;
+    }).join('');
+    const nowLine = p.ds === td ? `<div class="now" style="top:${(now.getHours() * 60 + now.getMinutes()) / 60 * HH}px"></div>` : '';
+    return `<div class="tg-col ${p.ds === td ? 'today' : ''}">${cells}${blocks}${nowLine}</div>`;
+  }).join('');
+  return `<div class="tg ${n === 1 ? 'one' : ''}">${head}<div class="tg-scroll"><div class="tg-body" style="grid-template-columns:${cols};height:${24 * HH}px"><div class="tg-hours">${hours}</div>${body}</div></div></div>`;
+}
+
+/* event modal */
+function eventModal(ev, ds, t) {
+  if (ev && ev.src === 'sub') return readOnlyEvent(ev);
+  const isNew = !ev;
+  const st = t || '09:00';
+  ev = ev || { title: '', date: ds || ui.calDate, allDay: !t && false, start: st, end: fromMin(toMin(st) + 60), repeat: 'none', profiles: [], notes: '', days: [] };
+  openModal({
+    title: isNew ? 'New event' : 'Edit event',
+    body: `<div class="fld"><label>Title</label><input type="text" id="e-title" value="${esc(ev.title)}" placeholder="Soccer practice"></div>
+      <div class="two"><div class="fld"><label>Date</label><input type="date" id="e-date" value="${ev.date}"></div>
+        <div class="fld"><label>All day</label><button type="button" class="tog ${ev.allDay ? 'on' : ''}" id="e-all" data-toggle></button></div></div>
+      <div class="two" id="e-times" style="${ev.allDay ? 'display:none' : ''}"><div class="fld"><label>Starts</label><input type="time" id="e-start" value="${ev.start || '09:00'}"></div>
+        <div class="fld"><label>Ends</label><input type="time" id="e-end" value="${ev.end || ''}"></div></div>
+      <div class="fld"><label>Repeats</label><select id="e-rep">${ev.repeat === 'rrule' ? '<option value="rrule" selected>Repeats (as in the imported calendar)</option>' : ''}${REPEATS.map(([k, l]) => `<option value="${k}" ${ev.repeat === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="fld" id="e-days" style="${ev.repeat === 'custom' ? '' : 'display:none'}"><label>On these days</label>${dayPicker(ev.days || [])}</div>
+      <div class="fld"><label>Who</label>${profilePicker(ev.profiles && ev.profiles.length ? ev.profiles : [], true)}</div>
+      <div class="fld"><label>Notes</label><textarea id="e-notes" rows="2">${esc(ev.notes || '')}</textarea></div>`,
+    onOpen: m => {
+      m.querySelector('#e-all').addEventListener('click', () => { m.querySelector('#e-times').style.display = m.querySelector('#e-all').classList.contains('on') ? 'none' : ''; });
+      m.querySelector('#e-rep').addEventListener('change', e => { m.querySelector('#e-days').style.display = e.target.value === 'custom' ? '' : 'none'; });
+    },
+    onSave: () => {
+      const title = fv('#e-title'); if (!title) { toast('Add a title'); return false; }
+      const date = fv('#e-date') || todayStr();
+      const allDay = $('#e-all').classList.contains('on');
+      let start = fv('#e-start') || '09:00', end = fv('#e-end');
+      if (!allDay && end && toMin(end) <= toMin(start)) end = fromMin(Math.min(toMin(start) + 60, 23 * 60 + 59));
+      const repeat = fv('#e-rep');
+      const days = $$('#modal [data-days] button.on').map(b => +b.dataset.d);
+      if (repeat === 'custom' && !days.length) { toast('Pick at least one day'); return false; }
+      let profiles = readPicker(); if (profiles.includes('family')) profiles = profiles.filter(p => p !== 'family');
+      Object.assign(ev, { title, date, allDay, start: allDay ? '' : start, end: allDay ? '' : end, repeat, days, profiles, notes: fv('#e-notes') });
+      if (repeat !== 'none') delete ev.endDate;
+      if (isNew) { ev.id = uid(); state.events.push(ev); }
+      save(); render(); return true;
+    },
+    onDelete: isNew ? null : async () => {
+      state.events = state.events.filter(x => x !== ev); save(); render(); return true;
+    }
+  });
+}
+
+/* ============ CHORES ============ */
+function taskRow(t, ds, p) {
+  const done = isDone(t, ds);
+  return `<div class="task ${done ? 'done' : ''} ${t.priority === 'high' ? 'pri-high' : ''}" style="--pc:${deep(p.color)}" data-act="task-tog" data-id="${t.id}" data-ds="${ds}">
+    <span class="ck">${done ? ic('check', 'sm') : ''}</span>
+    <span class="tx"><b>${esc(t.title)}</b><span>${[t.time ? fmtTime(t.time) : '', t.repeat && t.repeat !== 'none' ? repeatLabel(t.repeat, t.days) : ''].filter(Boolean).join(' · ')}</span></span>
+    <span class="sv">+${t.stars || 0}★</span>
+    <button class="ed" data-act="task-edit" data-id="${t.id}">${ic('edit', 'sm')}</button></div>`;
+}
+function ring(pct, color) {
+  const r = 20, c = 2 * Math.PI * r;
+  return `<div class="ring"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="${r}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="5"/><circle cx="24" cy="24" r="${r}" fill="none" stroke="${deep(color)}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - pct)}"/></svg><b>${Math.round(pct * 100)}%</b></div>`;
+}
+function vTasks() {
+  const ds = ui.taskDate, d = parseYMD(ds), td = todayStr();
+  const label = ds === td ? 'Today' : ds === ymd(addDays(new Date(), 1)) ? 'Tomorrow' : ds === ymd(addDays(new Date(), -1)) ? 'Yesterday' : shortDate(d);
+  if (!state.profiles.length) return noFamily();
+  const cols = state.profiles.filter(p => !ui.filter.has(p.id)).map(p => {
+    const ts = tasksOn(ds, p.id), done = ts.filter(t => isDone(t, ds)).length;
+    return `<div class="pcol"><div class="ph" style="background:${p.color}">${avatar(p)}<div><div class="nm">${esc(p.name)}</div><div class="st">★ ${balance(p.id)} stars · ${done}/${ts.length} done</div></div>${ring(ts.length ? done / ts.length : 0, p.color)}</div>
+      <div class="list">${ts.map(t => taskRow(t, ds, p)).join('')}<button class="addtask" data-act="task-new" data-pid="${p.id}">+ Add chore</button></div></div>`;
+  }).join('');
+  return `<div class="toolbar">
+    <button class="iconbtn" data-act="task-move" data-n="-1">${ic('left')}</button>
+    <button class="btn" data-act="task-today">Today</button>
+    <button class="iconbtn" data-act="task-move" data-n="1">${ic('right')}</button>
+    <div class="title">${label} <span class="muted" style="font-size:16px">${ds === td || label !== shortDate(d) ? shortDate(d) : ''}</span></div><span class="sp"></span>
+    <button class="btn pri" data-act="task-new">${ic('plus', 'sm')} Chore</button></div>
+    <div class="chore-grid">${cols}</div>`;
+}
+function noFamily() {
+  return `<div class="card empty" style="max-width:520px;margin:30px auto"><span class="big">👨‍👩‍👧</span>Add your family members first.<br><button class="btn pri" style="margin-top:14px" data-act="prof-new">${ic('plus', 'sm')} Add a person</button></div>`;
+}
+function taskModal(t, pid) {
+  const isNew = !t;
+  t = t || { title: '', profile: pid || (state.profiles[0] || {}).id, date: ui.view === 'tasks' ? ui.taskDate : todayStr(), repeat: 'daily', days: [], stars: 1, priority: 'normal', time: '', done: {} };
+  openModal({
+    title: isNew ? 'New chore' : 'Edit chore',
+    body: `<div class="fld"><label>Chore</label><input type="text" id="t-title" value="${esc(t.title)}" placeholder="Make your bed" list="t-sugg">
+        <datalist id="t-sugg">${['Make your bed', 'Brush teeth', 'Feed the dog', 'Empty dishwasher', 'Take out trash', 'Homework', 'Read 20 minutes', 'Tidy room', 'Set the table', 'Laundry to hamper', 'Water plants', 'Practice piano'].map(x => `<option value="${x}">`).join('')}</datalist></div>
+      <div class="fld"><label>Assigned to</label>${profilePicker([t.profile], false, false)}</div>
+      <div class="two"><div class="fld"><label>Start date</label><input type="date" id="t-date" value="${t.date}"></div>
+        <div class="fld"><label>Time (optional)</label><input type="time" id="t-time" value="${t.time || ''}"></div></div>
+      <div class="fld"><label>Repeats</label><select id="t-rep">${REPEATS.filter(r => r[0] !== 'yearly').map(([k, l]) => `<option value="${k}" ${t.repeat === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="fld" id="t-days" style="${t.repeat === 'custom' ? '' : 'display:none'}"><label>On these days</label>${dayPicker(t.days || [])}</div>
+      <div class="two"><div class="fld"><label>Stars earned</label><input type="number" id="t-stars" min="0" max="100" value="${t.stars}"></div>
+        <div class="fld"><label>Priority</label><select id="t-pri"><option value="normal">Normal</option><option value="high" ${t.priority === 'high' ? 'selected' : ''}>High</option></select></div></div>`,
+    onOpen: m => m.querySelector('#t-rep').addEventListener('change', e => { m.querySelector('#t-days').style.display = e.target.value === 'custom' ? '' : 'none'; }),
+    onSave: () => {
+      const title = fv('#t-title'); if (!title) { toast('Name the chore'); return false; }
+      const who = readPicker()[0]; if (!who) { toast('Pick who does it'); return false; }
+      const repeat = fv('#t-rep'); const days = $$('#modal [data-days] button.on').map(b => +b.dataset.d);
+      if (repeat === 'custom' && !days.length) { toast('Pick at least one day'); return false; }
+      const oldStars = t.stars;
+      Object.assign(t, { title, profile: who, date: fv('#t-date') || todayStr(), time: fv('#t-time'), repeat, days, stars: Math.max(0, parseInt(fv('#t-stars')) || 0), priority: fv('#t-pri') });
+      if (isNew) { t.id = uid(); state.tasks.push(t); }
+      else if (oldStars !== t.stars) state.log.forEach(l => { if (l.taskId === t.id) l.amt = t.stars; });
+      state.log.forEach(l => { if (l.taskId === t.id) l.pid = t.profile; });
+      save(); render(); return true;
+    },
+    onDelete: isNew ? null : () => { state.tasks = state.tasks.filter(x => x !== t); save(); render(); return true; }
+  });
+}
+function toggleTask(id, ds, el) {
+  const t = state.tasks.find(x => x.id === id); if (!t) return;
+  t.done = t.done || {};
+  if (t.done[ds]) {
+    delete t.done[ds];
+    state.log = state.log.filter(l => !(l.taskId === t.id && l.ds === ds));
+  } else {
+    t.done[ds] = true;
+    if (t.stars) state.log.push({ id: uid(), pid: t.profile, amt: t.stars, ds, taskId: t.id, note: t.title, at: Date.now() });
+    if (el) starBurst(el);
+    const all = tasksOn(ds, t.profile); if (all.length && all.every(x => isDone(x, ds))) { confetti(profColor(t.profile)); toast(`🎉 ${prof(t.profile).name} finished everything!`); }
+  }
+  save(); render();
+}
+function starBurst(el) {
+  const r = el.getBoundingClientRect(), x = r.left + 26, y = r.top + r.height / 2;
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('span'); s.className = 'burst'; s.textContent = '★';
+    const a = (i / 8) * Math.PI * 2; s.style.left = x + 'px'; s.style.top = y + 'px';
+    s.style.setProperty('--dx', Math.cos(a) * 60 + 'px'); s.style.setProperty('--dy', Math.sin(a) * 60 + 'px');
+    document.body.appendChild(s); setTimeout(() => s.remove(), 950);
+  }
+}
+function confetti(color) {
+  const cs = [color, '#F5B400', '#3D8BFD', '#FF6B5B', '#22B573', '#9B6BF2'];
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement('span'); c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw'; c.style.background = cs[i % cs.length];
+    c.style.animationDelay = Math.random() * .6 + 's'; c.style.animationDuration = 1.6 + Math.random() * 1.2 + 's';
+    document.body.appendChild(c); setTimeout(() => c.remove(), 3200);
+  }
+}
+
+/* ============ REWARDS ============ */
+function vRewards() {
+  if (!state.profiles.length) return noFamily();
+  const bals = state.profiles.map(p => `<div class="bal" style="background:${p.color}">${avatar(p)}<div><div class="n">★ ${balance(p.id)}</div><div class="l">${esc(p.name)}</div></div>
+    <div class="adj"><button data-act="star-adj" data-pid="${p.id}" data-n="1" title="Add a star">+</button><button data-act="star-adj" data-pid="${p.id}" data-n="-1" title="Remove a star">−</button></div></div>`).join('');
+  const rws = state.rewards.map(r => {
+    const who = r.profiles && r.profiles.length ? r.profiles.map(prof).filter(Boolean) : state.profiles;
+    const can = who.some(p => balance(p.id) >= r.cost);
+    return `<div class="rw"><button class="ed" data-act="rw-edit" data-id="${r.id}">${ic('edit', 'sm')}</button><div class="em">${r.emoji || '🎁'}</div><div class="tt">${esc(r.title)}</div>
+      <div class="cost">★ ${r.cost}</div><div class="who">${who.map(p => avatar(p, 'xs')).join('')}</div>
+      <button class="btn sm ${can ? 'pri' : ''}" ${can ? '' : 'disabled'} data-act="rw-redeem" data-id="${r.id}">Redeem</button></div>`;
+  }).join('');
+  const hist = state.log.filter(l => !l.taskId).slice(-15).reverse().map(l => {
+    const p = prof(l.pid); if (!p) return '';
+    return `<div class="r">${avatar(p, 'xs')}<span>${esc(l.note || '')}</span><span class="muted" style="font-size:13px">${l.ds ? shortDate(parseYMD(l.ds)) : ''}</span><span class="amt" style="color:${l.amt < 0 ? 'var(--danger)' : '#22B573'}">${l.amt > 0 ? '+' : ''}${l.amt}★</span></div>`;
+  }).join('');
+  return `<div class="toolbar"><div class="title">Star balance</div><span class="sp"></span><button class="btn pri" data-act="rw-new">${ic('plus', 'sm')} Reward</button></div>
+    <div class="bal-row">${bals}</div>
+    <div class="toolbar"><div class="title" style="font-size:20px">Rewards to earn</div></div>
+    ${rws ? `<div class="rw-grid">${rws}</div>` : `<div class="card empty"><span class="big">🎁</span>No rewards yet. Add things like “Movie night — 20★” or “Pick dinner — 10★”.</div>`}
+    ${hist ? `<div class="card hist"><h3>🧾 Redeemed & adjustments</h3>${hist}</div>` : ''}`;
+}
+const RW_EMOJI = ['🎁', '🍦', '🎬', '🎮', '📱', '🍕', '🧸', '🛝', '📚', '🎨', '💵', '🌙', '🏊', '🍩', '🎟️', '⚽'];
+function rewardModal(r) {
+  const isNew = !r; r = r || { title: '', emoji: '🎁', cost: 10, profiles: [] };
+  openModal({
+    title: isNew ? 'New reward' : 'Edit reward',
+    body: `<div class="fld"><label>Reward</label><input type="text" id="r-title" value="${esc(r.title)}" placeholder="Movie night"></div>
+      <div class="fld"><label>Icon</label>${emojiPicker(r.emoji, RW_EMOJI)}</div>
+      <div class="fld"><label>Cost in stars</label><input type="number" id="r-cost" min="1" value="${r.cost}"></div>
+      <div class="fld"><label>Who can redeem (none = everyone)</label>${profilePicker(r.profiles || [], true, false)}</div>`,
+    onSave: () => {
+      const title = fv('#r-title'); if (!title) { toast('Name the reward'); return false; }
+      Object.assign(r, { title, emoji: ($('#modal [data-emoji] .on') || {}).dataset?.e || '🎁', cost: Math.max(1, parseInt(fv('#r-cost')) || 1), profiles: readPicker() });
+      if (isNew) { r.id = uid(); state.rewards.push(r); }
+      save(); render(); return true;
+    },
+    onDelete: isNew ? null : () => { state.rewards = state.rewards.filter(x => x !== r); save(); render(); return true; }
+  });
+}
+function redeem(id) {
+  const r = state.rewards.find(x => x.id === id); if (!r) return;
+  const who = (r.profiles && r.profiles.length ? r.profiles.map(prof).filter(Boolean) : state.profiles);
+  openModal({
+    title: `Redeem “${r.title}”`, noFooter: true,
+    body: `<p style="margin:0;font-weight:700">Who is redeeming? It costs ★ ${r.cost}.</p><div class="chips">${who.map(p => {
+      const ok = balance(p.id) >= r.cost;
+      return `<button class="chip" ${ok ? '' : 'disabled style="opacity:.35"'} data-act="rw-do" data-id="${r.id}" data-pid="${p.id}">${avatar(p, 'xs')}${esc(p.name)} · ★${balance(p.id)}</button>`;
+    }).join('')}</div>`
+  });
+}
+
+/* ============ MEALS ============ */
+function vMeals() {
+  const tabs = `<div class="seg">${[['plan', 'Meal plan'], ['recipes', 'Recipes']].map(([k, l]) => `<button class="${ui.mealTab === k ? 'on' : ''}" data-act="meal-tab" data-k="${k}">${l}</button>`).join('')}</div>`;
+  if (ui.mealTab === 'recipes') {
+    return `<div class="toolbar">${tabs}<span class="sp"></span><button class="btn pri" data-act="rec-new">${ic('plus', 'sm')} Recipe</button></div>
+      <div class="recipes">${state.recipes.map(r => `<div class="recipe" data-act="rec-edit" data-id="${r.id}"><div class="tg">${(SLOTS.find(s => s[0] === r.slot) || ['', 'Any', '🍽️'])[2]} ${(SLOTS.find(s => s[0] === r.slot) || ['', 'Any'])[1]}</div><div class="tt">${esc(r.name)}</div>
+        ${r.ingredients.length ? `<ul>${r.ingredients.slice(0, 5).map(i => `<li>${esc(i)}</li>`).join('')}${r.ingredients.length > 5 ? `<li>+${r.ingredients.length - 5} more</li>` : ''}</ul>` : ''}</div>`).join('')}</div>`;
+  }
+  const st = parseYMD(ui.mealStart), td = todayStr();
+  const days = [...Array(7)].map((_, i) => addDays(st, i));
+  let grid = '<div class="meal-grid"><div></div>' + days.map(d => `<div class="h ${ymd(d) === td ? 'today' : ''}">${DAYS[d.getDay()].slice(0, 3)}<small>${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}</small></div>`).join('');
+  const mc = { breakfast: '#F5A524', lunch: '#22B573', dinner: '#FF6B5B', snack: '#9B6BF2' };
+  for (const [k, l, e] of SLOTS) {
+    grid += `<div class="slot">${e} ${l}</div>`;
+    grid += days.map(d => { const ds = ymd(d), m = (state.meals[ds] || {})[k]; return `<div class="mcell ${m ? 'has' : 'empty'}" style="--mc:${mc[k]}" data-act="meal-cell" data-ds="${ds}" data-slot="${k}">${m ? esc(m.name) : '+'}</div>`; }).join('');
+  }
+  grid += '</div>';
+  return `<div class="toolbar">${tabs}
+    <button class="iconbtn" data-act="meal-move" data-n="-7">${ic('left')}</button><button class="btn" data-act="meal-today">This week</button><button class="iconbtn" data-act="meal-move" data-n="7">${ic('right')}</button>
+    <div class="title" style="font-size:19px">${rangeTitle(days[0], days[6])}</div><span class="sp"></span>
+    <button class="btn" data-act="meal-grocery">${ic('cart', 'sm')} Add ingredients to Grocery</button></div>
+    <div style="overflow-x:auto;padding-bottom:6px">${grid}</div>`;
+}
+function mealModal(ds, slot) {
+  const cur = (state.meals[ds] || {})[slot];
+  const slotName = SLOTS.find(s => s[0] === slot)[1];
+  const recs = [...state.recipes].sort((a, b) => (b.slot === slot) - (a.slot === slot));
+  openModal({
+    title: `${slotName} · ${shortDate(parseYMD(ds))}`,
+    body: `<div class="fld"><label>What's for ${slotName.toLowerCase()}?</label><input type="text" id="m-name" value="${esc(cur ? cur.name : '')}" placeholder="Type a meal or pick a recipe"></div>
+      <div class="fld"><label>Recipes</label><div class="chips">${recs.map(r => `<button type="button" class="chip plain ${cur && cur.recipeId === r.id ? 'on' : ''}" data-rec="${r.id}">${esc(r.name)}</button>`).join('')}</div></div>`,
+    onOpen: m => m.querySelectorAll('[data-rec]').forEach(b => b.addEventListener('click', () => {
+      m.querySelectorAll('[data-rec]').forEach(x => x.classList.remove('on')); b.classList.add('on');
+      m.querySelector('#m-name').value = state.recipes.find(r => r.id === b.dataset.rec).name;
+    })),
+    onSave: () => {
+      const name = fv('#m-name'); state.meals[ds] = state.meals[ds] || {};
+      if (!name) delete state.meals[ds][slot];
+      else {
+        const on = $('#modal [data-rec].on'); let rid = on ? on.dataset.rec : null;
+        const r = state.recipes.find(x => x.id === rid) || state.recipes.find(x => x.name.toLowerCase() === name.toLowerCase());
+        state.meals[ds][slot] = { name, recipeId: r && r.name.toLowerCase() === name.toLowerCase() ? r.id : null };
+      }
+      if (!Object.keys(state.meals[ds]).length) delete state.meals[ds];
+      save(); render(); return true;
+    },
+    onDelete: cur ? () => { delete state.meals[ds][slot]; save(); render(); return true; } : null
+  });
+}
+function recipeModal(r) {
+  const isNew = !r; r = r || { name: '', slot: 'dinner', ingredients: [], notes: '' };
+  openModal({
+    title: isNew ? 'New recipe' : 'Edit recipe',
+    body: `<div class="fld"><label>Name</label><input type="text" id="rc-name" value="${esc(r.name)}"></div>
+      <div class="fld"><label>Meal</label><select id="rc-slot">${SLOTS.map(([k, l]) => `<option value="${k}" ${r.slot === k ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+      <div class="fld"><label>Ingredients (one per line)</label><textarea id="rc-ing" rows="6">${esc(r.ingredients.join('\n'))}</textarea></div>
+      <div class="fld"><label>Notes</label><textarea id="rc-notes" rows="3">${esc(r.notes || '')}</textarea></div>`,
+    onSave: () => {
+      const name = fv('#rc-name'); if (!name) { toast('Name the recipe'); return false; }
+      Object.assign(r, { name, slot: fv('#rc-slot'), ingredients: $('#rc-ing').value.split('\n').map(s => s.trim()).filter(Boolean), notes: fv('#rc-notes') });
+      if (isNew) { r.id = uid(); state.recipes.push(r); }
+      save(); render(); return true;
+    },
+    onDelete: isNew ? null : () => { state.recipes = state.recipes.filter(x => x !== r); save(); render(); return true; }
+  });
+}
+function mealsToGrocery() {
+  let g = state.lists.find(l => l.grocery);
+  if (!g) { g = { id: uid(), name: 'Grocery', emoji: '🛒', grocery: true, items: [] }; state.lists.unshift(g); }
+  const st = parseYMD(ui.mealStart), have = new Set(g.items.filter(i => !i.done).map(i => i.text.toLowerCase()));
+  let added = 0;
+  for (let i = 0; i < 7; i++) {
+    const m = state.meals[ymd(addDays(st, i))] || {};
+    for (const k in m) {
+      const r = state.recipes.find(x => x.id === m[k].recipeId); if (!r) continue;
+      for (const ing of r.ingredients) if (!have.has(ing.toLowerCase())) { have.add(ing.toLowerCase()); g.items.push({ id: uid(), text: ing, done: false }); added++; }
+    }
+  }
+  save(); render();
+  toast(added ? `🛒 Added ${added} item${added > 1 ? 's' : ''} to ${g.name}` : 'Nothing new to add — plan meals from your recipes first');
+}
+
+/* ============ LISTS ============ */
+function vLists() {
+  if (!state.lists.length) state.lists.push({ id: uid(), name: 'To-Do', emoji: '✅', items: [] });
+  let L = state.lists.find(l => l.id === ui.listId) || state.lists[0]; ui.listId = L.id;
+  const items = [...L.items].sort((a, b) => a.done - b.done);
+  return `<div class="lists">
+    <div class="lnav">${state.lists.map(l => `<button class="${l.id === L.id ? 'on' : ''}" data-act="list-open" data-lid="${l.id}"><span>${l.emoji || '📝'}</span>${esc(l.name)}<span class="c">${l.items.filter(i => !i.done).length}</span></button>`).join('')}
+      <button data-act="list-new">${ic('plus', 'sm')} New list</button></div>
+    <div class="card"><h3>${L.emoji || '📝'} ${esc(L.name)}<span class="sp"></span>
+      <button class="btn sm" data-act="list-clear" data-lid="${L.id}">Clear checked</button><button class="btn sm" data-act="list-edit" data-lid="${L.id}">${ic('edit', 'sm')}</button></h3>
+      <form class="additem" data-form="additem" data-lid="${L.id}"><input type="text" id="new-item" placeholder="Add an item…" autocomplete="off"><button class="btn pri" type="submit">${ic('plus', 'sm')} Add</button></form>
+      ${items.length ? items.map(i => `<div class="item ${i.done ? 'done' : ''}" data-act="item-tog" data-lid="${L.id}" data-iid="${i.id}"><span class="ck">${i.done ? ic('check', 'sm') : ''}</span><span class="tx">${esc(i.text)}</span><button class="x" data-act="item-del" data-lid="${L.id}" data-iid="${i.id}">${ic('x', 'sm')}</button></div>`).join('') : '<div class="empty"><span class="big">📝</span>This list is empty</div>'}
+    </div></div>`;
+}
+const LIST_EMOJI = ['📝', '🛒', '✅', '🎒', '🏠', '🎁', '✈️', '📚', '🧺', '🎉', '💊', '🐾'];
+function listModal(L) {
+  const isNew = !L; L = L || { name: '', emoji: '📝', items: [] };
+  openModal({
+    title: isNew ? 'New list' : 'Edit list',
+    body: `<div class="fld"><label>Name</label><input type="text" id="l-name" value="${esc(L.name)}" placeholder="Packing list"></div><div class="fld"><label>Icon</label>${emojiPicker(L.emoji, LIST_EMOJI)}</div>`,
+    onSave: () => {
+      const name = fv('#l-name'); if (!name) { toast('Name the list'); return false; }
+      L.name = name; L.emoji = ($('#modal [data-emoji] .on') || {}).dataset?.e || '📝';
+      if (isNew) { L.id = uid(); state.lists.push(L); ui.listId = L.id; }
+      save(); render(); return true;
+    },
+    onDelete: isNew ? null : () => { state.lists = state.lists.filter(x => x !== L); ui.listId = null; save(); render(); return true; }
+  });
+}
+
+/* ============ ICS parsing (Google / Apple / Outlook) ============ */
+const WD = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+const tzFmt = {};
+function tzLocal(y, mo, d, h, mi, s, tz) {
+  const guess = Date.UTC(y, mo - 1, d, h, mi, s);
+  try {
+    const f = tzFmt[tz] || (tzFmt[tz] = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    const off = t => { const p = {}; f.formatToParts(new Date(t)).forEach(x => p[x.type] = x.value); return Date.UTC(+p.year, p.month - 1, +p.day, +p.hour % 24, +p.minute, +p.second) - t; };
+    let t = guess - off(guess); t = guess - off(t);
+    return new Date(t);
+  } catch (e) { return new Date(y, mo - 1, d, h, mi, s); }   // unknown zone name (e.g. Windows names) -> device time
+}
+function icsParams(str) { const o = {}; (str || '').split(';').filter(Boolean).forEach(kv => { const i = kv.indexOf('='); if (i > 0) o[kv.slice(0, i).toUpperCase()] = kv.slice(i + 1).replace(/^"|"$/g, ''); }); return o; }
+// one ICS date/date-time value -> {allDay, date:'YYYY-MM-DD', time:'HH:MM', d:Date}
+function icsDT(v, params) {
+  v = (v || '').trim();
+  if (/^\d{8}$/.test(v)) { const d = new Date(+v.slice(0, 4), v.slice(4, 6) - 1, +v.slice(6, 8)); return { allDay: true, date: ymd(d), time: '', d }; }
+  const m = v.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z?)$/); if (!m) return null;
+  const a = [+m[1], +m[2], +m[3], +m[4], +m[5], +(m[6] || 0)];
+  let d;
+  if (m[7]) d = new Date(Date.UTC(a[0], a[1] - 1, a[2], a[3], a[4], a[5]));
+  else if (params && params.TZID) d = tzLocal(...a, params.TZID);
+  else d = new Date(a[0], a[1] - 1, a[2], a[3], a[4], a[5]);
+  return { allDay: false, date: ymd(d), time: `${pad(d.getHours())}:${pad(d.getMinutes())}`, d };
+}
+function icsDuration(s) {
+  const m = (s || '').match(/^([+-])?P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/); if (!m) return 0;
+  return ((+m[2] || 0) * 7 * 1440 + (+m[3] || 0) * 1440 + (+m[4] || 0) * 60 + (+m[5] || 0)) * (m[1] === '-' ? -1 : 1);
+}
+const icsText = s => (s || '').replace(/\\n/gi, ' ').replace(/\\([,;\\])/g, '$1').replace(/\s+/g, ' ').trim();
+
+function parseICS(text, who, src = 'ics', subId = null) {
+  const lines = text.replace(/\r?\n[ \t]/g, '').split(/\r?\n/);
+  const raw = []; let cur = null, nest = 0;
+  for (const ln of lines) {
+    if (ln === 'BEGIN:VEVENT') { cur = { _ex: [] }; nest = 0; continue; }
+    if (!cur) continue;
+    if (ln === 'END:VEVENT') { raw.push(cur); cur = null; continue; }
+    if (ln.startsWith('BEGIN:')) { nest++; continue; }          // VALARM etc.
+    if (ln.startsWith('END:')) { nest = Math.max(0, nest - 1); continue; }
+    if (nest) continue;
+    const i = ln.indexOf(':'); if (i < 0) continue;
+    const head = ln.slice(0, i), val = ln.slice(i + 1), si = head.indexOf(';');
+    const name = (si < 0 ? head : head.slice(0, si)).toUpperCase(), params = icsParams(si < 0 ? '' : head.slice(si + 1));
+    if (name === 'EXDATE') { val.split(',').forEach(x => cur._ex.push([x, params])); continue; }
+    if (!cur[name]) cur[name] = { val, params };
+  }
+  const masters = {}, overrides = [], out = [];
+  for (const v of raw) {
+    if (!v.DTSTART) continue;
+    const s = icsDT(v.DTSTART.val, v.DTSTART.params); if (!s) continue;
+    if (v['RECURRENCE-ID']) { overrides.push([v, s]); continue; }
+    if (v.STATUS && /CANCELLED/i.test(v.STATUS.val)) continue;
+    const ev = buildEvent(v, s, who, src, subId);
+    if (ev) { out.push(ev); if (v.UID) masters[v.UID.val] = ev; }
+  }
+  for (const [v, s] of overrides) {               // moved / edited / cancelled single occurrences
+    const m = v.UID && masters[v.UID.val];
+    const rid = icsDT(v['RECURRENCE-ID'].val, v['RECURRENCE-ID'].params);
+    if (m && rid) (m.exdates = m.exdates || []).push(rid.date);
+    if (v.STATUS && /CANCELLED/i.test(v.STATUS.val)) continue;
+    const ev = buildEvent(v, s, who, src, subId, true); if (ev) out.push(ev);
+  }
+  const cutoff = ymd(addDays(new Date(), -60));
+  return out.filter(ev => (ev.repeat === 'none' ? (ev.endDate || ev.date) : (ev.until || '9999')) >= cutoff);
+}
+function buildEvent(v, s, who, src, subId, single) {
+  let e = v.DTEND ? icsDT(v.DTEND.val, v.DTEND.params) : null;
+  if (!e && v.DURATION) { const d = new Date(s.d.getTime() + icsDuration(v.DURATION.val) * 60000); e = { allDay: s.allDay, date: ymd(d), time: `${pad(d.getHours())}:${pad(d.getMinutes())}`, d }; }
+  const ev = {
+    id: uid(), src, title: icsText(v.SUMMARY && v.SUMMARY.val) || '(No title)', date: s.date, allDay: s.allDay,
+    start: s.allDay ? '' : s.time, end: s.allDay || !e ? '' : e.time, repeat: 'none', days: [], profiles: who ? [who] : [],
+    notes: icsText(v.LOCATION && v.LOCATION.val)
+  };
+  if (subId) ev.subId = subId;
+  if (!s.allDay) {                                   // device zone differs from calendar zone across midnight -> keep rule days in calendar's terms
+    const rv = v.DTSTART.val.trim(), src = new Date(+rv.slice(0, 4), rv.slice(4, 6) - 1, +rv.slice(6, 8));
+    const sh = Math.round((parseYMD(s.date) - src) / 864e5); if (sh) ev.shift = sh;
+  }
+  if (s.allDay && e && e.date > s.date) { const last = ymd(addDays(parseYMD(e.date), -1)); if (last > s.date) ev.endDate = last; }
+  if (!s.allDay && e && e.date !== s.date) ev.end = '23:59';
+  if (!s.allDay && ev.end && toMin(ev.end) <= toMin(ev.start) && e && e.date === s.date) ev.end = '';
+  if (v.RRULE && !single) {
+    const r = {}; v.RRULE.val.split(';').forEach(kv => { const [k, x] = kv.split('='); r[k.toUpperCase()] = x; });
+    if (!['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'].includes(r.FREQ)) return ev;      // HOURLY etc. -> first occurrence only
+    ev.repeat = 'rrule';
+    ev.rule = {
+      freq: r.FREQ, interval: Math.max(1, +r.INTERVAL || 1), wkst: r.WKST ? WD[r.WKST] : 1,
+      byday: (r.BYDAY || '').split(',').filter(Boolean).map(x => { const m = x.match(/^([+-]?\d+)?([A-Z]{2})$/); return m ? { n: m[1] ? +m[1] : 0, wd: WD[m[2]] } : null; }).filter(x => x && x.wd !== undefined),
+      bymonthday: (r.BYMONTHDAY || '').split(',').filter(Boolean).map(Number),
+      bymonth: (r.BYMONTH || '').split(',').filter(Boolean).map(Number),
+      bysetpos: r.BYSETPOS ? +r.BYSETPOS.split(',')[0] : 0
+    };
+    if (r.UNTIL) { const u = icsDT(r.UNTIL, null); if (u) ev.until = u.date; }
+    if (v._ex.length) ev.exdates = v._ex.map(([x, p]) => (icsDT(x, p) || {}).date).filter(Boolean);
+    if (r.COUNT) {                                    // turn COUNT into an end date
+      let n = +r.COUNT, d = parseYMD(ev.date);
+      const probe = Object.assign({}, ev, { exdates: [], until: '' });
+      for (let i = 0; i < 3700 && n > 0; i++, d = addDays(d, 1)) { const ds = ymd(d); if (occursOn(probe, ds)) { n--; if (!n) ev.until = ds; } }
+    }
+  }
+  return ev;
+}
+function occursRule(it, a, b) {
+  const r = it.rule; if (!r) return false;
+  if (it.shift) { a = addDays(a, -it.shift); b = addDays(b, -it.shift); }
+  const iv = r.interval || 1, wd = b.getDay(), dim = new Date(b.getFullYear(), b.getMonth() + 1, 0).getDate();
+  const nthOK = n => !n || (n > 0 ? Math.ceil(b.getDate() / 7) === n : Math.ceil((dim - b.getDate() + 1) / 7) === -n);
+  const bydayOK = () => r.byday.some(x => x.wd === wd && nthOK(x.n));
+  const mdayOK = () => r.bymonthday.some(d => d > 0 ? d === b.getDate() : dim + d + 1 === b.getDate());
+  const setpos = () => {                              // e.g. "last weekday of the month"
+    const c = []; for (let i = 1; i <= dim; i++) { const w = new Date(b.getFullYear(), b.getMonth(), i).getDay(); if (r.byday.some(x => x.wd === w)) c.push(i); }
+    const p = r.bysetpos > 0 ? c[r.bysetpos - 1] : c[c.length + r.bysetpos]; return p === b.getDate();
+  };
+  const dayInPeriod = () => r.byday.length ? (r.bysetpos ? setpos() : bydayOK()) : r.bymonthday.length ? mdayOK() : b.getDate() === a.getDate();
+  switch (r.freq) {
+    case 'DAILY': {
+      const days = Math.round((b - a) / 864e5);
+      return days % iv === 0 && (!r.byday.length || r.byday.some(x => x.wd === wd)) && (!r.bymonth.length || r.bymonth.includes(b.getMonth() + 1));
+    }
+    case 'WEEKLY': {
+      const sw = d => addDays(d, -((d.getDay() - r.wkst + 7) % 7));
+      if (Math.round((sw(b) - sw(a)) / 6048e5) % iv) return false;
+      return r.byday.length ? r.byday.some(x => x.wd === wd) : wd === a.getDay();
+    }
+    case 'MONTHLY': {
+      if (((b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth()) % iv) return false;
+      return dayInPeriod();
+    }
+    case 'YEARLY': {
+      if ((b.getFullYear() - a.getFullYear()) % iv) return false;
+      const months = r.bymonth.length ? r.bymonth : [a.getMonth() + 1];
+      if (!months.includes(b.getMonth() + 1)) return false;
+      return dayInPeriod();
+    }
+  }
+  return false;
+}
+
+/* ============ Live calendar subscriptions ============ */
+// Google / iCloud / Outlook don't allow browsers to read their calendar feeds directly (CORS),
+// so feeds go through a tiny Cloudflare Worker (see worker.js). Set its URL here.
+const ICS_PROXY = 'https://familywall-relay.ayoub-hliyel.workers.dev';
+const SYNC_EVERY = 15 * 60 * 1000;
+const NO_CORS_HOSTS = /(google\.com|icloud\.com|outlook\.|office365\.com|live\.com|yahoo\.com)$/i;
+let syncing = false;
+
+function normalizeUrl(u) {
+  u = (u || '').trim().replace(/^webcals?:\/\//i, 'https://');
+  try { const x = new URL(u); return x.protocol === 'https:' || x.protocol === 'http:' ? x.toString() : ''; } catch (e) { return ''; }
+}
+async function fetchICS(url) {
+  const host = new URL(url).hostname;
+  if (!NO_CORS_HOSTS.test(host)) {
+    try { const r = await fetch(url, { cache: 'no-store' }); if (r.ok) { const t = await r.text(); if (t.includes('BEGIN:VCALENDAR')) return t; } } catch (e) { }
+  }
+  if (!ICS_PROXY || ICS_PROXY.startsWith('__')) throw new Error('setup');
+  let r;
+  try { r = await fetch(ICS_PROXY + '?url=' + encodeURIComponent(url), { cache: 'no-store' }); }
+  catch (e) { throw new Error(navigator.onLine === false ? 'offline' : 'network'); }
+  if (!r.ok) throw new Error(r.status === 404 || r.status === 403 || r.status === 401 ? 'badlink' : r.status === 415 ? 'notcal' : 'server');
+  const t = await r.text(); if (!t.includes('BEGIN:VCALENDAR')) throw new Error('notcal');
+  return t;
+}
+const SYNC_ERR = {
+  setup: 'Live sync is not set up yet', offline: 'Offline — will retry', network: 'Could not connect — will retry',
+  badlink: "That link didn't work. Copy the secret/private iCal address again.", notcal: "That link isn't a calendar feed (.ics)", server: 'Calendar server busy — will retry'
+};
+async function syncSub(sub) {
+  try {
+    const txt = await fetchICS(sub.url);
+    const evs = parseICS(txt, sub.profile || '', 'sub', sub.id);
+    state.events = state.events.filter(e => e.subId !== sub.id).concat(evs);
+    Object.assign(sub, { lastSync: Date.now(), count: evs.length, error: '' });
+    return true;
+  } catch (e) {
+    sub.error = SYNC_ERR[e.message] || SYNC_ERR.network; sub.lastTry = Date.now();
+    return false;
+  }
+}
+async function syncAll(force) {
+  if (syncing || !state.subs.length) return;
+  syncing = true;
+  let changed = false;
+  for (const s of state.subs) if (force || !s.lastSync || Date.now() - s.lastSync > SYNC_EVERY - 30000) { await syncSub(s); changed = true; }
+  syncing = false;
+  if (changed) { save(); if (!$('#modal').classList.contains('open')) render(); }
+}
+function ago(t) {
+  if (!t) return 'never'; const m = Math.round((Date.now() - t) / 60000);
+  return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} d ago`;
+}
+function subsCard() {
+  const rows = state.subs.map(s => {
+    const p = prof(s.profile) || FAMILY;
+    return `<div class="prof">${avatar(p, 's')}<span class="nm">${esc(s.name)}<span class="hint" style="display:block;font-size:12px;font-weight:700;color:${s.error ? 'var(--danger)' : 'var(--ink3)'}">${s.error ? esc(s.error) : `${s.count || 0} events · synced ${ago(s.lastSync)}`}</span></span>
+      <button class="btn sm" data-act="sub-edit" data-id="${s.id}">${ic('edit', 'sm')}</button></div>`;
+  }).join('');
+  return `<div class="card"><h3>🔄 Live calendars<span class="sp"></span>${state.subs.length ? `<button class="btn sm" data-act="sub-sync">Sync now</button>` : ''}<button class="btn sm pri" data-act="sub-new">${ic('plus', 'sm')} Add</button></h3>
+    <p class="muted" style="margin:0 0 6px;font-size:14px">Show Google, Apple (iCloud) or Outlook calendars here. They update by themselves every 15 minutes. Changes are made in the original calendar.</p>
+    ${rows || ''}</div>`;
+}
+const SUB_HELP = `<details class="help"><summary>Where do I find the link?</summary>
+  <p><b>Google Calendar</b> (on a computer): open Google Calendar → ⚙️ Settings → click your calendar on the left under “Settings for my calendars” → scroll to <i>Integrate calendar</i> → copy <b>Secret address in iCal format</b>.</p>
+  <p><b>Apple / iCloud</b> (iPhone): Calendar app → <i>Calendars</i> → tap ⓘ next to the calendar → turn on <b>Public Calendar</b> → <i>Share Link</i> → Copy.</p>
+  <p><b>Outlook</b> (outlook.com): ⚙️ Settings → Calendar → <i>Shared calendars</i> → <b>Publish a calendar</b> → pick the calendar and “Can view all details” → Publish → copy the <b>ICS</b> link.</p>
+  <p class="muted">Keep this link private — anyone with it can see the calendar.</p></details>`;
+function subModal(sub) {
+  const isNew = !sub; sub = sub || { name: '', url: '', profile: '' };
+  openModal({
+    title: isNew ? 'Add a live calendar' : 'Edit live calendar',
+    body: `<div class="fld"><label>Name</label><input type="text" id="s-name" value="${esc(sub.name)}" placeholder="Mom's work"></div>
+      <div class="fld"><label>Calendar link (iCal / .ics)</label><input type="text" id="s-url" value="${esc(sub.url)}" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+      <div class="fld"><label>Show events as</label><select id="s-who"><option value="">Family</option>${state.profiles.map(p => `<option value="${p.id}" ${sub.profile === p.id ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></div>
+      ${SUB_HELP}`,
+    saveLabel: isNew ? 'Add & sync' : 'Save',
+    onSave: async () => {
+      const name = fv('#s-name') || 'Calendar', url = normalizeUrl(fv('#s-url'));
+      if (!url) { toast('Paste the calendar link'); return false; }
+      const btn = $('#modal [data-act=modal-save]'); if (btn) { btn.disabled = true; btn.textContent = 'Syncing…'; }
+      const urlChanged = url !== sub.url;
+      Object.assign(sub, { name, url, profile: $('#s-who').value });
+      if (isNew) { sub.id = uid(); state.subs.push(sub); }
+      state.events.forEach(e => { if (e.subId === sub.id) e.profiles = sub.profile ? [sub.profile] : []; });
+      if (isNew || urlChanged) {
+        const ok = await syncSub(sub);
+        toast(ok ? `✅ ${sub.name}: ${sub.count} event${sub.count === 1 ? '' : 's'}` : '⚠️ ' + sub.error);
+      }
+      save(); render(); return true;
+    },
+    onDelete: isNew ? null : () => { state.subs = state.subs.filter(x => x !== sub); state.events = state.events.filter(e => e.subId !== sub.id); save(); render(); return true; }
+  });
+}
+function readOnlyEvent(ev) {
+  const sub = state.subs.find(s => s.id === ev.subId);
+  const who = (ev.profiles || []).map(prof).filter(Boolean);
+  openModal({
+    title: ev.title, noFooter: true,
+    body: `<div class="evrow" style="cursor:default"><span class="bar" style="background:${evDeep(ev)}"></span><span class="tt" style="white-space:normal">${evTime(ev)}${ev.repeat !== 'none' ? ' · repeats' : ''}</span></div>
+      ${ev.notes ? `<div class="fld"><label>Where</label><div style="font-weight:700">${esc(ev.notes)}</div></div>` : ''}
+      <div class="fld"><label>Who</label><div class="chips">${(who.length ? who : [FAMILY]).map(p => `<span class="chip">${avatar(p, 'xs')}${esc(p.name)}</span>`).join('')}</div></div>
+      <p class="muted" style="margin:0">🔄 From <b>${esc(sub ? sub.name : 'a live calendar')}</b>. To change it, edit it in that calendar — it updates here automatically.</p>`
+  });
+}
+
+/* ============ PHOTOS (IndexedDB) ============ */
+const IDB = {
+  db: null,
+  open() {
+    if (this.db) return Promise.resolve(this.db);
+    return new Promise((res, rej) => {
+      const r = indexedDB.open(DEMO ? 'familywall-demo-photos' : 'familywall-photos', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('photos', { keyPath: 'id' });
+      r.onsuccess = () => { this.db = r.result; res(this.db); }; r.onerror = () => rej(r.error);
+    });
+  },
+  async tx(mode, fn) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction('photos', mode); const s = t.objectStore('photos'); const out = fn(s); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); }); },
+  all() { return this.tx('readonly', s => s.getAll()); },
+  put(o) { return this.tx('readwrite', s => s.put(o)); },
+  del(id) { return this.tx('readwrite', s => s.delete(id)); },
+  clear() { return this.tx('readwrite', s => s.clear()); }
+};
+let photoCache = null; // [{id, url}]
+async function getPhotos() {
+  if (photoCache) return photoCache;
+  try { const all = await IDB.all(); all.sort((a, b) => a.added - b.added); photoCache = all.map(p => ({ id: p.id, url: URL.createObjectURL(p.blob) })); }
+  catch (e) { photoCache = []; }
+  return photoCache;
+}
+function resetPhotoCache() { if (photoCache) photoCache.forEach(p => URL.revokeObjectURL(p.url)); photoCache = null; }
+function resizeImage(file, max = 1920) {
+  return new Promise((res, rej) => {
+    const img = new Image(), u = URL.createObjectURL(file);
+    img.onload = () => {
+      let w = img.naturalWidth, h = img.naturalHeight; const k = Math.min(1, max / Math.max(w, h)); w = Math.round(w * k); h = Math.round(h * k);
+      const c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(u); c.toBlob(b => b ? res(b) : rej(new Error('encode')), 'image/jpeg', .86);
+    };
+    img.onerror = () => { URL.revokeObjectURL(u); rej(new Error('load')); };
+    img.src = u;
+  });
+}
+async function addPhotos(files) {
+  let n = 0; toast('Adding photos…');
+  for (const f of files) { try { const blob = await resizeImage(f); await IDB.put({ id: uid(), blob, added: Date.now() + n }); n++; } catch (e) { } }
+  resetPhotoCache(); render(); toast(`📷 Added ${n} photo${n === 1 ? '' : 's'}`);
+}
+function vPhotos() {
+  const s = S();
+  return `<div class="toolbar"><div class="title">Photo frame</div><span class="sp"></span>
+    <label class="btn">${ic('upload', 'sm')} Add photos<input type="file" id="ph-in" accept="image/*" multiple hidden></label>
+    <button class="btn pri" data-act="saver-start">${ic('play', 'sm')} Start slideshow</button></div>
+    <div class="card" style="margin-bottom:16px"><div class="row"><label>Display<span class="hint">How photos fill the screen</span></label><div class="seg">${[['fill', 'Fill'], ['fit', 'Fit'], ['pan', 'Pan & zoom']].map(([k, l]) => `<button class="${s.photoMode === k ? 'on' : ''}" data-act="set" data-k="photoMode" data-val="${k}">${l}</button>`).join('')}</div></div>
+      <div class="row"><label>Seconds per photo</label><select data-set="photoSec">${[5, 10, 15, 30, 60].map(n => `<option ${s.photoSec == n ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+      <div class="row"><label>Start slideshow when idle<span class="hint">Turns the screen into a photo frame when nobody touches it</span></label><select data-set="idleMin" data-num>${[[0, 'Never'], [1, '1 min'], [2, '2 min'], [5, '5 min'], [10, '10 min'], [30, '30 min']].map(([v, l]) => `<option value="${v}" ${s.idleMin == v ? 'selected' : ''}>${l}</option>`).join('')}</select></div></div>
+    <div class="phi-grid" id="ph-grid"></div>`;
+}
+async function fillPhotoGrid() {
+  const g = $('#ph-grid'); if (!g) return;
+  const ps = await getPhotos();
+  if (!$('#ph-grid')) return;
+  g.innerHTML = ps.length ? ps.map(p => `<div class="phi"><img src="${p.url}" alt="" loading="lazy"><button data-act="ph-del" data-id="${p.id}">${ic('x', 'sm')}</button></div>`).join('')
+    : `<div class="card empty" style="grid-column:1/-1"><span class="big">🖼️</span>Add family photos — they're stored only on this device.</div>`;
+}
+
+/* ============ SCREENSAVER ============ */
+let saverT = null, saverIdx = 0, lastTouch = Date.now();
+async function startSaver() {
+  const el = $('#saver'); if (el.classList.contains('open')) return;
+  const ps = await getPhotos();
+  el.className = 'open ' + S().photoMode;
+  el.innerHTML = (ps.length ? '<div class="layer"></div><div class="layer"></div>' : '<div class="nophoto"></div>') + '<div class="ov" id="saver-ov"></div>';
+  saverIdx = 0; saverOverlay();
+  if (ps.length) {
+    const step = () => {
+      const ls = el.querySelectorAll('.layer'); if (!ls.length) return;
+      const cur = ls[saverIdx % 2], other = ls[(saverIdx + 1) % 2];
+      cur.style.backgroundImage = `url("${ps[saverIdx % ps.length].url}")`;
+      cur.classList.remove('show'); void cur.offsetWidth; cur.classList.add('show'); other.classList.remove('show');
+      saverIdx++;
+    };
+    step(); saverT = setInterval(() => { step(); saverOverlay(); }, Math.max(3, S().photoSec) * 1000);
+  } else saverT = setInterval(saverOverlay, 15000);
+}
+function saverOverlay() {
+  const ov = $('#saver-ov'); if (!ov) return;
+  const now = new Date(), h = now.getHours();
+  const t = S().time24 ? `${pad(h)}:${pad(now.getMinutes())}` : `${h % 12 || 12}:${pad(now.getMinutes())}`;
+  const nowMin = h * 60 + now.getMinutes();
+  const next = eventsOn(todayStr(), false).find(e => !e.allDay && toMin(e.start) >= nowMin);
+  const w = weatherData();
+  ov.innerHTML = `<div><div class="t">${t}</div><div class="d">${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}${w ? ` · ${w.emoji} ${w.temp}°` : ''}</div></div>
+    ${next ? `<div class="nx">Next: ${esc(next.title)}<br><span style="opacity:.8">${fmtTime(next.start)}</span></div>` : ''}`;
+}
+function stopSaver() { clearInterval(saverT); saverT = null; const el = $('#saver'); el.className = ''; el.innerHTML = ''; lastTouch = Date.now(); }
+
+/* ============ SLEEP ============ */
+let wokeUntil = 0;
+function inSleepWindow() {
+  const s = S().sleep; if (!s.on) return false;
+  const n = new Date(), m = n.getHours() * 60 + n.getMinutes(), a = toMin(s.start), b = toMin(s.end);
+  return a < b ? (m >= a && m < b) : (m >= a || m < b);
+}
+function sleepNow() { stopSaver(); const el = $('#sleep'); el.classList.add('open'); tickSleep(); }
+function tickSleep() {
+  const el = $('#sleep'); if (!el.classList.contains('open')) return;
+  const n = new Date(), h = n.getHours();
+  el.innerHTML = `<div class="t">${S().time24 ? pad(h) : (h % 12 || 12)}:${pad(n.getMinutes())}</div><div class="d">Tap to wake</div>`;
+}
+function wake() { $('#sleep').classList.remove('open'); wokeUntil = Date.now() + 5 * 60 * 1000; lastTouch = Date.now(); }
+function vSleep() {
+  const s = S().sleep;
+  return `<div class="toolbar"><div class="title">Sleep mode</div><span class="sp"></span><button class="btn pri" data-act="sleep-now">${ic('moon', 'sm')} Sleep now</button></div>
+    <div class="card" style="max-width:640px">
+      <div class="row"><label>Sleep on a schedule<span class="hint">The screen goes dark at night. Tap it to wake for 5 minutes.</span></label><button class="tog ${s.on ? 'on' : ''}" data-act="sleep-tog"></button></div>
+      <div class="row"><label>Go to sleep at</label><input type="time" data-sleep="start" value="${s.start}"></div>
+      <div class="row"><label>Wake up at</label><input type="time" data-sleep="end" value="${s.end}"></div>
+      <div class="row"><label>Keep screen on<span class="hint">Stops the tablet from locking while the app is open (supported browsers)</span></label><button class="tog ${S().keepAwake ? 'on' : ''}" data-act="awake-tog"></button></div>
+    </div>`;
+}
+let wakeLock = null;
+async function applyWakeLock() {
+  try {
+    if (S().keepAwake && 'wakeLock' in navigator && document.visibilityState === 'visible') { if (!wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } }
+    else if (wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch (e) { wakeLock = null; }
+}
+
+/* ============ WEATHER (Open-Meteo, no key) ============ */
+const WKEY = 'familywall.weather';
+function wEmoji(c) { if (c === 0) return '☀️'; if (c <= 2) return '🌤️'; if (c === 3) return '☁️'; if (c <= 48) return '🌫️'; if (c <= 57) return '🌦️'; if (c <= 67) return '🌧️'; if (c <= 77) return '🌨️'; if (c <= 82) return '🌧️'; if (c <= 86) return '🌨️'; return '⛈️'; }
+function weatherData() {
+  try { const w = JSON.parse(localStorage.getItem(WKEY)); if (!w || w.lat !== S().lat || w.units !== S().units) return null; return w; } catch (e) { return null; }
+}
+function weatherHTML() {
+  if (S().lat == null) return `<button class="weather" data-act="nav" data-v="settings"><span class="e">🌤️</span><span class="hl">Set your city<br>for weather</span></button>`;
+  const w = weatherData(); if (!w) return `<div class="weather"><span class="e">⏳</span></div>`;
+  return `<div class="weather"><span class="e">${w.emoji}</span><div><div class="tp">${w.temp}°</div><div class="hl">H ${w.hi}° · L ${w.lo}°</div></div></div>`;
+}
+async function loadWeather(force) {
+  const s = S(); if (s.lat == null) return;
+  const w = weatherData(); if (!force && w && Date.now() - w.t < 30 * 60 * 1000) return;
+  try {
+    const u = `https://api.open-meteo.com/v1/forecast?latitude=${s.lat}&longitude=${s.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1${s.units === 'F' ? '&temperature_unit=fahrenheit' : ''}`;
+    const r = await fetch(u); const j = await r.json();
+    const d = { t: Date.now(), lat: s.lat, units: s.units, temp: Math.round(j.current.temperature_2m), emoji: wEmoji(j.current.weather_code), hi: Math.round(j.daily.temperature_2m_max[0]), lo: Math.round(j.daily.temperature_2m_min[0]) };
+    localStorage.setItem(WKEY, JSON.stringify(d)); renderHead();
+  } catch (e) { /* offline — keep old */ }
+}
+async function citySearch(q) {
+  const box = $('#city-res'); if (!box) return;
+  if (q.length < 2) { box.innerHTML = ''; return; }
+  try {
+    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=en&format=json`);
+    const j = await r.json();
+    box.innerHTML = (j.results || []).map(c => `<button data-act="city-pick" data-lat="${c.latitude}" data-lon="${c.longitude}" data-name="${esc(c.name + (c.admin1 ? ', ' + c.admin1 : '') + ', ' + (c.country_code || ''))}">${esc(c.name)}<span class="muted"> · ${esc([c.admin1, c.country].filter(Boolean).join(', '))}</span></button>`).join('') || '<div class="muted">No city found</div>';
+  } catch (e) { box.innerHTML = '<div class="muted">You seem to be offline</div>'; }
+}
+
+/* ============ SETTINGS ============ */
+function tog(on, act, extra = '') { return `<button class="tog ${on ? 'on' : ''}" data-act="${act}" ${extra}></button>`; }
+function vSettings() {
+  const s = S();
+  const icsCount = state.events.filter(e => e.src === 'ics').length;
+  return `<div class="set-grid">
+    <div class="card"><h3>👨‍👩‍👧 Family<span class="sp"></span><button class="btn sm pri" data-act="prof-new">${ic('plus', 'sm')} Person</button></h3>
+      <div class="row"><label>Family name</label><input type="text" data-set="familyName" value="${esc(s.familyName)}" style="max-width:200px"></div>
+      ${state.profiles.map(p => `<div class="prof">${avatar(p, 's')}<span class="nm">${esc(p.name)}</span><span style="color:var(--star)">★ ${balance(p.id)}</span><button class="btn sm" data-act="prof-edit" data-pid="${p.id}">${ic('edit', 'sm')}</button></div>`).join('') || '<div class="empty">No one yet</div>'}
+    </div>
+    <div class="card"><h3>🖥️ Display</h3>
+      <div class="row"><label>Theme</label><div class="seg">${[['light', 'Light'], ['dark', 'Dark']].map(([k, l]) => `<button class="${s.theme === k ? 'on' : ''}" data-act="set" data-k="theme" data-val="${k}">${l}</button>`).join('')}</div></div>
+      <div class="row"><label>24-hour clock</label>${tog(s.time24, 'set-bool', 'data-k="time24"')}</div>
+      <div class="row"><label>Week starts on</label><div class="seg">${[[0, 'Sun'], [1, 'Mon']].map(([k, l]) => `<button class="${s.weekStart === k ? 'on' : ''}" data-act="set" data-k="weekStart" data-val="${k}" data-num>${l}</button>`).join('')}</div></div>
+      <div class="row"><label>Schedule view shows</label><select data-set="schedDays" data-num>${[3, 4, 5, 6, 7].map(n => `<option value="${n}" ${s.schedDays == n ? 'selected' : ''}>${n} days</option>`).join('')}</select></div>
+      <div class="row"><label>Keep screen on</label>${tog(s.keepAwake, 'awake-tog')}</div>
+    </div>
+    <div class="card"><h3>🌤️ Weather</h3>
+      <div class="row"><label>Location<span class="hint">${s.city ? esc(s.city) : 'Not set'}</span></label><div class="seg">${[['F', '°F'], ['C', '°C']].map(([k, l]) => `<button class="${s.units === k ? 'on' : ''}" data-act="set" data-k="units" data-val="${k}">${l}</button>`).join('')}</div></div>
+      <input type="search" id="city-q" placeholder="Search your city…" style="margin-top:10px"><div class="city-res" id="city-res"></div>
+    </div>
+    ${subsCard()}
+    <div class="card"><h3>📅 Import a calendar file</h3>
+      <p class="muted" style="margin:0 0 10px;font-size:14px">One-time import of an <b>.ics</b> file (school calendar, sports schedule…). Imported events can be edited here.</p>
+      <div class="row"><label>Assign imported events to</label><select id="ics-who"><option value="">Family</option>${state.profiles.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><label class="btn pri">${ic('upload', 'sm')} Import .ics file<input type="file" id="ics-in" accept=".ics,text/calendar" hidden></label>
+        ${icsCount ? `<button class="btn danger" data-act="ics-clear">Remove ${icsCount} imported</button>` : ''}</div>
+    </div>
+    <div class="card"><h3>💾 Backup</h3>
+      <p class="muted" style="margin:0 0 10px;font-size:14px">Everything is saved on this device. Download a backup to move to a new tablet.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-act="backup">Download backup</button>
+        <label class="btn">Restore backup<input type="file" id="restore-in" accept=".json,application/json" hidden></label>
+        <button class="btn danger" data-act="reset">${DEMO ? 'Reset demo' : 'Reset app'}</button></div>
+    </div>
+  </div>
+  <p class="muted" style="text-align:center;font-size:13px;margin:22px 0 4px">The Family Wall · v${VERSION}${DEMO ? ' · demo' : ''}</p>`;
+}
+function profileModal(p) {
+  const isNew = !p; p = p || { name: '', color: COLORS[state.profiles.length % COLORS.length], emoji: '' };
+  openModal({
+    title: isNew ? 'Add a person' : 'Edit ' + p.name,
+    body: `<div class="fld"><label>Name</label><input type="text" id="p-name" value="${esc(p.name)}" placeholder="Emma"></div>
+      <div class="fld"><label>Color</label>${colorPicker(p.color)}</div>
+      <div class="fld"><label>Avatar (optional)</label>${emojiPicker(p.emoji)}</div>`,
+    onSave: () => {
+      const name = fv('#p-name'); if (!name) { toast('Add a name'); return false; }
+      p.name = name; p.color = ($('#modal [data-swatch] .on') || {}).dataset?.color || p.color;
+      p.emoji = ($('#modal [data-emoji] .on') || {}).dataset?.e || '';
+      if (isNew) { p.id = uid(); state.profiles.push(p); }
+      save(); render(); return true;
+    },
+    onDelete: isNew ? null : () => {
+      state.profiles = state.profiles.filter(x => x !== p);
+      state.tasks = state.tasks.filter(t => t.profile !== p.id);
+      state.log = state.log.filter(l => l.pid !== p.id);
+      state.events.forEach(e => { if (e.profiles) e.profiles = e.profiles.filter(x => x !== p.id); });
+      state.rewards.forEach(r => { if (r.profiles) r.profiles = r.profiles.filter(x => x !== p.id); });
+      save(); render(); return true;
+    }
+  });
+}
+
+/* ============ onboarding ============ */
+function onboarding() {
+  openModal({
+    title: 'Welcome to The Family Wall 👋', noFooter: true,
+    body: `<p style="margin:0;font-weight:700;color:var(--ink2)">Your family calendar, chore chart, meal planner, lists and photo frame — on any tablet. Everything stays on this device.</p>
+      <div class="fld"><label>Family name</label><input type="text" id="ob-fam" placeholder="The Parkers" value=""></div>
+      <div class="fld"><label>Who's in the family? (comma separated)</label><input type="text" id="ob-names" placeholder="Mom, Dad, Emma, Leo"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn pri" data-act="ob-start">Let's go</button><button class="btn" data-act="ob-sample">Explore with a sample family</button></div>`
+  });
+}
+function finishOnboarding(sample) {
+  if (sample) seedSample();
+  else {
+    const fam = fv('#ob-fam'); if (fam) S().familyName = fam;
+    const names = fv('#ob-names').split(',').map(s => s.trim()).filter(Boolean).slice(0, 9);
+    names.forEach((n, i) => state.profiles.push({ id: uid(), name: n, color: COLORS[i % COLORS.length], emoji: '' }));
+  }
+  state.onboarded = true; save(); closeModal(); render();
+}
+function seedSample() {
+  S().familyName = 'The Parkers';
+  const P = [['Mom', '#F6B3C6', ''], ['Dad', '#F8DE95', ''], ['Emma', '#D9BCF2', '🦄'], ['Leo', '#A9D6F5', '🚀']].map(([name, color, emoji]) => ({ id: uid(), name, color, emoji }));
+  state.profiles = P; const [mom, dad, emma, leo] = P.map(p => p.id);
+  const T = todayStr(), D = n => ymd(addDays(new Date(), n)); const wd = new Date().getDay();
+  const ev = (title, date, start, end, profiles, repeat = 'none', extra = {}) => state.events.push({ id: uid(), title, date: repeat === 'none' ? date : ymd(addDays(parseYMD(date), -28)), allDay: !start, start: start || '', end: end || '', profiles, repeat, days: [], notes: '', ...extra });
+  ev('School', T, '08:00', '15:00', [emma, leo], 'weekdays');
+  ev('Soccer practice', T, '16:30', '17:30', [leo], 'weekly');
+  ev('Piano lesson', D(1), '17:00', '17:45', [emma], 'weekly');
+  ev('Team meeting', D(1), '10:00', '11:00', [dad], 'weekly');
+  ev('Yoga', T, '07:00', '08:00', [mom], 'custom', { days: [(wd) % 7, (wd + 2) % 7, (wd + 4) % 7] });
+  ev('Family movie night', D(2), '19:00', '21:00', [], 'weekly');
+  ev('Dentist — Emma', D(3), '14:30', '15:30', [mom, emma]);
+  ev("Grandma's birthday 🎂", D(5), '', '', []);
+  ev('Farmers market', D(4), '09:00', '11:00', [dad, leo]);
+  ev('Book club', D(6), '19:30', '21:00', [mom]);
+  const tk = (title, profile, stars, repeat = 'daily', extra = {}) => state.tasks.push({ id: uid(), title, profile, date: D(-7), repeat, days: [], stars, priority: 'normal', time: '', done: {}, ...extra });
+  tk('Make your bed', emma, 1); tk('Brush teeth', emma, 1); tk('Homework', emma, 3, 'weekdays', { priority: 'high' }); tk('Practice piano', emma, 2);
+  tk('Make your bed', leo, 1); tk('Feed the dog', leo, 2); tk('Tidy room', leo, 2); tk('Read 20 minutes', leo, 2);
+  tk('Take out trash', dad, 1, 'weekly'); tk('Empty dishwasher', dad, 1);
+  tk('Water plants', mom, 1, 'custom', { days: [1, 4] }); tk('Plan meals', mom, 1, 'weekly');
+  state.tasks.filter(t => [emma, leo].includes(t.profile)).slice(0, 3).forEach(t => { if (occursOn(t, T)) { t.done[T] = true; state.log.push({ id: uid(), pid: t.profile, amt: t.stars, ds: T, taskId: t.id, note: t.title }); } });
+  state.log.push({ id: uid(), pid: emma, amt: 18, ds: D(-1), note: 'Last week' }, { id: uid(), pid: leo, amt: 12, ds: D(-1), note: 'Last week' });
+  state.rewards = [{ id: uid(), title: 'Pick the movie', emoji: '🎬', cost: 10, profiles: [] }, { id: uid(), title: 'Ice cream trip', emoji: '🍦', cost: 20, profiles: [emma, leo] },
+    { id: uid(), title: '30 min extra screen time', emoji: '🎮', cost: 15, profiles: [emma, leo] }, { id: uid(), title: 'Stay up 30 min later', emoji: '🌙', cost: 25, profiles: [] }];
+  const rid = n => (state.recipes.find(r => r.name === n) || {}).id;
+  const plan = [['Pancakes', 'Turkey sandwiches', 'Taco night'], ['Overnight oats', 'Chicken wraps', 'Spaghetti bolognese'], ['Scrambled eggs & toast', 'Tomato soup & grilled cheese', 'Sheet-pan chicken & veggies'], ['Overnight oats', 'Turkey sandwiches', 'Homemade pizza'], ['Pancakes', 'Chicken wraps', 'Salmon, rice & green beans']];
+  plan.forEach((m, i) => { state.meals[D(i)] = { breakfast: { name: m[0], recipeId: rid(m[0]) }, lunch: { name: m[1], recipeId: rid(m[1]) }, dinner: { name: m[2], recipeId: rid(m[2]) } }; });
+  state.meals[T].snack = { name: 'Apple slices & peanut butter', recipeId: rid('Apple slices & peanut butter') };
+  const g = state.lists.find(l => l.grocery); if (g) g.items = ['Milk', 'Bananas', 'Eggs', 'Bread', 'Coffee', 'Paper towels'].map(text => ({ id: uid(), text, done: false }));
+  const td = state.lists.find(l => !l.grocery); if (td) td.items = ['Sign field trip form', 'Call the plumber', 'Return library books'].map(text => ({ id: uid(), text, done: false }));
+  state.lists.push({ id: uid(), name: 'Weekend packing', emoji: '🎒', items: ['Swimsuits', 'Sunscreen', 'Snacks'].map(text => ({ id: uid(), text, done: false })) });
+}
+
+/* ============ actions ============ */
+function goView(v) { ui.view = v; render(); $('#view').scrollTop = 0; }
+const ACT = {
+  'nav': d => goView(d.v),
+  'headprof': d => { ui.filter.has(d.pid) ? ui.filter.delete(d.pid) : ui.filter.add(d.pid); render(); toast(ui.filter.has(d.pid) ? `Hiding ${prof(d.pid).name}` : `Showing ${prof(d.pid).name}`); },
+  'filter': d => { ui.filter.has(d.pid) ? ui.filter.delete(d.pid) : ui.filter.add(d.pid); render(); },
+  'fullscreen': () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) { } },
+  'modal-close': () => { const c = modalCtx; closeModal(); if (c && c.onCancel) c.onCancel(); },
+  'modal-save': async () => { if (!modalCtx || !modalCtx.onSave) return; const ok = await modalCtx.onSave(); if (ok !== false && $('#modal').classList.contains('open') && modalCtx && !modalCtx.keep) closeModal(); },
+  'modal-del': (d, el) => {
+    if (!el.dataset.sure) { el.dataset.sure = 1; el.innerHTML = 'Tap again to delete'; setTimeout(() => { if (el.isConnected) { delete el.dataset.sure; el.innerHTML = `${ic('trash', 'sm')} Delete`; } }, 3000); return; }
+    if (modalCtx && modalCtx.onDelete) { modalCtx.onDelete(); closeModal(); }
+  },
+  'ev-new': d => { if (ui.view === 'calendar' || ui.view === 'home') eventModal(null, d.ds, d.t); },
+  'ev-edit': d => { const e = state.events.find(x => x.id === d.id); if (e) eventModal(e); },
+  'cal-move': d => {
+    const n = +d.n, v = S().calView, c = parseYMD(ui.calDate);
+    if (v === 'month') { const x = new Date(c.getFullYear(), c.getMonth() + n, 1); ui.calDate = ymd(x); }
+    else ui.calDate = ymd(addDays(c, n * (v === 'week' ? (narrowCal() ? 3 : 7) : v === 'schedule' ? S().schedDays : 1)));
+    render();
+  },
+  'cal-today': () => { ui.calDate = todayStr(); render(); },
+  'cal-view': d => { S().calView = d.k; save(); render(); },
+  'cal-goday': d => { ui.calDate = d.ds; S().calView = 'day'; ui.view = 'calendar'; save(); render(); },
+  'task-tog': (d, el) => toggleTask(d.id, d.ds, el),
+  'task-edit': d => { const t = state.tasks.find(x => x.id === d.id); if (t) taskModal(t); },
+  'task-new': d => { if (!state.profiles.length) return profileModal(); taskModal(null, d.pid); },
+  'task-move': d => { ui.taskDate = ymd(addDays(parseYMD(ui.taskDate), +d.n)); render(); },
+  'task-today': () => { ui.taskDate = todayStr(); render(); },
+  'star-adj': d => { const n = +d.n; if (n < 0 && balance(d.pid) <= 0) return; state.log.push({ id: uid(), pid: d.pid, amt: n, ds: todayStr(), note: n > 0 ? 'Bonus star' : 'Star removed' }); save(); render(); },
+  'rw-new': () => rewardModal(),
+  'rw-edit': d => rewardModal(state.rewards.find(x => x.id === d.id)),
+  'rw-redeem': d => redeem(d.id),
+  'rw-do': d => {
+    const r = state.rewards.find(x => x.id === d.id), p = prof(d.pid); if (!r || !p || balance(p.id) < r.cost) return;
+    state.log.push({ id: uid(), pid: p.id, amt: -r.cost, ds: todayStr(), note: `${r.emoji || '🎁'} ${r.title}` });
+    save(); closeModal(); render(); confetti(p.color); toast(`🎉 ${p.name} redeemed ${r.title}!`);
+  },
+  'meal-tab': d => { ui.mealTab = d.k; render(); },
+  'meal-cell': d => mealModal(d.ds, d.slot),
+  'meal-move': d => { ui.mealStart = ymd(addDays(parseYMD(ui.mealStart), +d.n)); render(); },
+  'meal-today': () => { ui.mealStart = todayStr(); render(); },
+  'meal-grocery': () => mealsToGrocery(),
+  'rec-new': () => recipeModal(),
+  'rec-edit': d => recipeModal(state.recipes.find(x => x.id === d.id)),
+  'list-open': d => { ui.listId = d.lid; if (ui.view !== 'lists') ui.view = 'lists'; render(); },
+  'list-new': () => listModal(),
+  'list-edit': d => listModal(state.lists.find(x => x.id === d.lid)),
+  'list-clear': d => { const L = state.lists.find(x => x.id === d.lid); if (L) { L.items = L.items.filter(i => !i.done); save(); render(); } },
+  'item-tog': d => { const L = state.lists.find(x => x.id === d.lid); const i = L && L.items.find(x => x.id === d.iid); if (i) { i.done = !i.done; save(); render(); } },
+  'item-del': d => { const L = state.lists.find(x => x.id === d.lid); if (L) { L.items = L.items.filter(x => x.id !== d.iid); save(); render(); } },
+  'saver-start': () => startSaver(),
+  'ph-del': async d => { await IDB.del(d.id); resetPhotoCache(); render(); },
+  'sleep-now': () => sleepNow(),
+  'sleep-tog': () => { S().sleep.on = !S().sleep.on; save(); render(); },
+  'awake-tog': () => { S().keepAwake = !S().keepAwake; save(); applyWakeLock(); render(); },
+  'set': d => { S()[d.k] = d.num !== undefined ? +d.val : d.val; save(); render(); if (d.k === 'units') loadWeather(true); },
+  'set-bool': d => { S()[d.k] = !S()[d.k]; save(); render(); },
+  'prof-new': () => profileModal(),
+  'prof-edit': d => profileModal(state.profiles.find(x => x.id === d.pid)),
+  'city-pick': d => { Object.assign(S(), { lat: +(+d.lat).toFixed(3), lon: +(+d.lon).toFixed(3), city: d.name }); save(); render(); loadWeather(true); toast('📍 ' + d.name); },
+  'ics-clear': async () => { if (await confirmBox('Remove all imported calendar events?', 'Remove')) { state.events = state.events.filter(e => e.src !== 'ics'); save(); render(); } },
+  'backup': () => {
+    const blob = new Blob([JSON.stringify(state, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `family-wall-backup-${todayStr()}.json`; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast('Backup downloaded (photos not included)');
+  },
+  'reset': async () => {
+    if (!(await confirmBox(DEMO ? 'This puts the demo back to the sample family.' : 'This erases everything in the app on this device, including photos.', DEMO ? 'Reset demo' : 'Erase everything'))) return;
+    try { localStorage.removeItem(KEY); localStorage.removeItem(WKEY); await IDB.clear(); } catch (e) { }
+    location.reload();
+  },
+  'sub-new': () => { if (state.subs.length >= 20) return toast('Up to 20 live calendars'); subModal(); },
+  'sub-edit': d => subModal(state.subs.find(x => x.id === d.id)),
+  'sub-sync': async (d, el) => { el.disabled = true; el.textContent = 'Syncing…'; await syncAll(true); const bad = state.subs.filter(s => s.error); toast(bad.length ? '⚠️ ' + bad[0].name + ': ' + bad[0].error : '✅ Calendars up to date'); render(); },
+  'ob-start': () => finishOnboarding(false),
+  'ob-sample': () => finishOnboarding(true),
+};
+
+document.addEventListener('click', e => {
+  const m = $('#modal');
+  if (e.target === m) { ACT['modal-close'](); return; }
+  // pickers inside modals
+  const pk = e.target.closest('[data-picker] .chip');
+  if (pk) { const box = pk.parentElement; if (box.dataset.picker === 'single') box.querySelectorAll('.chip').forEach(c => c.classList.add('off')); pk.classList.toggle('off', box.dataset.picker === 'single' ? false : !pk.classList.contains('off')); return; }
+  const sw = e.target.closest('[data-swatch] button'); if (sw) { sw.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('on')); sw.classList.add('on'); return; }
+  const em = e.target.closest('[data-emoji] button'); if (em) { const was = em.classList.contains('on'); em.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('on')); if (!was) em.classList.add('on'); return; }
+  const dp = e.target.closest('[data-days] button'); if (dp) { dp.classList.toggle('on'); return; }
+  const tg = e.target.closest('[data-toggle]'); if (tg) { tg.classList.toggle('on'); return; }
+  const a = e.target.closest('[data-act]');
+  if (a && ACT[a.dataset.act]) { e.preventDefault(); e.stopPropagation(); ACT[a.dataset.act](a.dataset, a); }
+});
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.dataset.set) { const k = t.dataset.set; S()[k] = t.dataset.num !== undefined || typeof S()[k] === 'number' ? +t.value : t.value; save(); if (k === 'familyName') renderSide(); else render(); return; }
+  if (t.dataset.sleep) { S().sleep[t.dataset.sleep] = t.value || S().sleep[t.dataset.sleep]; save(); return; }
+  if (t.id === 'ph-in' && t.files.length) { await addPhotos([...t.files]); return; }
+  if (t.id === 'ics-in' && t.files[0]) {
+    try { const txt = await t.files[0].text(); const evs = parseICS(txt, $('#ics-who').value); state.events.push(...evs); save(); render(); toast(evs.length ? `📅 Imported ${evs.length} event${evs.length > 1 ? 's' : ''}` : 'No upcoming events found in that file'); }
+    catch (err) { toast('Could not read that file'); }
+    return;
+  }
+  if (t.id === 'restore-in' && t.files[0]) {
+    try {
+      const j = JSON.parse(await t.files[0].text()); if (!j || !Array.isArray(j.profiles)) throw 0;
+      localStorage.setItem(KEY, JSON.stringify(j)); load(); render(); toast('✅ Backup restored');
+    } catch (err) { toast('That is not a Family Wall backup file'); }
+  }
+});
+let cityT;
+document.addEventListener('input', e => { if (e.target.id === 'city-q') { clearTimeout(cityT); const q = e.target.value.trim(); cityT = setTimeout(() => citySearch(q), 350); } });
+document.addEventListener('submit', e => {
+  const f = e.target; if (f.dataset.form !== 'additem') return; e.preventDefault();
+  const inp = f.querySelector('input'), L = state.lists.find(x => x.id === f.dataset.lid); const txt = inp.value.trim();
+  if (!L || !txt) return;
+  txt.split(/\s*,\s*/).filter(Boolean).forEach(text => L.items.push({ id: uid(), text, done: false }));
+  save(); render(); const ni = $('#new-item'); if (ni) ni.focus();
+});
+document.addEventListener('keydown', e => {
+  lastTouch = Date.now();
+  if (e.key === 'Escape') { if ($('#saver').classList.contains('open')) stopSaver(); else if ($('#modal').classList.contains('open')) ACT['modal-close'](); }
+  if (e.key === 'Enter' && $('#modal').classList.contains('open') && e.target.tagName === 'INPUT' && e.target.type === 'text' && modalCtx && modalCtx.onSave) { e.preventDefault(); ACT['modal-save'](); }
+});
+document.addEventListener('pointerdown', () => { lastTouch = Date.now(); }, true);
+
+/* ============ clock / timers ============ */
+let lastMin = -1, lastDay = todayStr(), sleepAuto = false;
+function tick() {
+  const n = new Date();
+  if (n.getMinutes() !== lastMin) {
+    lastMin = n.getMinutes();
+    if (todayStr() !== lastDay) {
+      const was = lastDay; lastDay = todayStr();
+      if (ui.taskDate === was) ui.taskDate = lastDay;
+      if (ui.calDate === was) ui.calDate = lastDay;
+      if (ui.mealStart === was) ui.mealStart = lastDay;
+      if (!$('#modal').classList.contains('open')) render();
+    } else renderHead();
+    tickSleep(); saverOverlay();
+  }
+  // sleep schedule
+  const sl = $('#sleep').classList.contains('open');
+  if (inSleepWindow() && Date.now() > wokeUntil && !sl) { sleepNow(); sleepAuto = true; }
+  else if (sl && sleepAuto && !inSleepWindow()) { wake(); sleepAuto = false; }
+  // idle screensaver
+  const idle = S().idleMin;
+  if (idle > 0 && !sl && !$('#saver').classList.contains('open') && !$('#modal').classList.contains('open') && Date.now() - lastTouch > idle * 60000) startSaver();
+}
+
+/* ============ init ============ */
+function init() {
+  load();
+  $('#saver').addEventListener('click', e => { e.stopPropagation(); stopSaver(); });
+  $('#sleep').addEventListener('click', e => { e.stopPropagation(); wake(); sleepAuto = false; });
+  render();
+  if (!state.onboarded && !DEMO) onboarding();
+  setInterval(tick, 5000); tick();
+  loadWeather(); setInterval(() => loadWeather(), 30 * 60 * 1000);
+  syncAll(); setInterval(() => syncAll(), 60 * 1000);
+  window.addEventListener('online', () => syncAll());
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { syncAll(); loadWeather(); } });
+  applyWakeLock(); document.addEventListener('visibilitychange', applyWakeLock);
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => { });
+}
+init();
+
+</script>
+</body>
+</html>
