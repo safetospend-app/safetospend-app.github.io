@@ -251,7 +251,8 @@ svg text{font-family:var(--f-body)}
 @media (max-width:1100px){.kpis{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:900px){
   :root{--sidebar:0px}
-  .side{transform:translateX(-105%);transition:transform .25s;width:280px;box-shadow:var(--shadow-lg);background:var(--surface)}
+  .side{transform:translateX(-105%);transition:transform .25s;width:280px;max-width:86vw;box-shadow:var(--shadow-lg);background:var(--surface);z-index:50;padding-top:calc(18px + env(safe-area-inset-top));padding-bottom:0;overscroll-behavior:contain} /* above the bottom bar, so Settings is reachable */
+  .side-foot{position:sticky;bottom:0;background:var(--surface);padding-bottom:calc(14px + env(safe-area-inset-bottom));z-index:1} /* Settings always visible at the bottom of the menu */
   .side.open{transform:none}
   .main{padding:0 16px 110px}
   .mob-top{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20;margin:0 -16px 14px;padding:12px 16px;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px)}
@@ -411,12 +412,12 @@ table.tbl tr:hover td{background:var(--surface-2)}
 <body>
 <div class="app">
   <nav class="side" id="side" aria-label="Main"></nav>
-  <div id="navscrim" hidden style="position:fixed;inset:0;z-index:29;background:rgba(30,20,50,.3)" data-a="closeNav"></div>
+  <div id="navscrim" hidden style="position:fixed;inset:0;z-index:45;background:rgba(30,20,50,.3)" data-a="closeNav"></div>
   <main class="main" id="main"></main>
 </div>
 <nav class="tabbar" id="tabbar" aria-label="Quick navigation"></nav>
 <button class="fab" data-a="quickAdd" aria-label="Quick add (N)" title="Quick add (N)"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-<script>window.EVERYDAY_DEMO=false;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.5.0";</script>
+<script>window.EVERYDAY_DEMO=false;window.EVERYDAY_SAMPLE=false;window.EVERYDAY_BUY_URL="https://thepetalo.etsy.com/listing/4582148138";window.EVERYDAY_VERSION="1.5.1";</script>
 <script>/* ---- core.js ---- */
 /* ============ The Everyday — core ============ */
 'use strict';
@@ -968,7 +969,7 @@ function render() {
   if (keep) window.scrollTo(0, keep);
   document.title = `${VIEWS[cur].title} · The Everyday`;
 }
-function go(v) { if (!VIEWS[v]) v = 'dashboard'; if (location.hash !== '#/' + v) history.replaceState(null, '', '#/' + v); cur = v; $('#side').classList.remove('open'); window.scrollTo(0, 0); render(); }
+function go(v) { if (!VIEWS[v]) v = 'dashboard'; if (location.hash !== '#/' + v) history.replaceState(null, '', '#/' + v); cur = v; $('#side').classList.remove('open'); $('#navscrim').hidden = true; window.scrollTo(0, 0); render(); }
 const commit = (msg, undo) => { save(); render(); if (msg) toast(msg, undo); };
 /* snapshot-based undo for destructive actions */
 function withUndo(msg, fn) { const snap = JSON.stringify(S); fn(); commit(msg, () => { S = JSON.parse(snap); commit(); }); }
