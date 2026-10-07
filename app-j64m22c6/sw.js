@@ -1,5 +1,5 @@
 /* The Shelf — service worker (offline support) */
-const VERSION = 'the-shelf-v1.1.0';
+const VERSION = 'the-shelf-v1.1.1';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
