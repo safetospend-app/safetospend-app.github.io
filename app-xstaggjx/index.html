@@ -1,0 +1,2071 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Workflow — Project Manager</title>
+<meta name="description" content="All-in-one project manager: dashboard, task tracker, recurring tasks, Gantt chart, Kanban board, Eisenhower matrix, weekly & monthly calendars. Works offline.">
+<meta name="theme-color" content="#ece4fb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="The Workflow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#ece4fb;--bg2:#d5e3fa;
+  --panel:#ffffff;--panel2:#f6f7fc;--panel3:#eef1fa;
+  --line:#e2e6f1;--line2:#d3d9e8;
+  --head:#d4e3f7;--head2:#e7eefa;--head-ink:#2a3a64;
+  --navy:#22346b;--navy2:#1c2a55;--navy-ink:#ffffff;
+  --ink:#1d2433;--ink2:#465169;--muted:#8891a5;
+  --accent:#5a63d8;--accent2:#7a5ae0;--accent-soft:#e6e5fb;
+  --side:#d6e5f8;--side2:#c6daf4;
+  --today:#2b2f3a;--deadline:#e04848;
+  --p-pink:#f8d3dd;--p-lav:#d3cdf4;--p-blue:#cde2f6;--p-green:#d2e8cf;--p-yellow:#fbe8bb;--p-peach:#f9dcc2;--p-teal:#c9ebe8;
+  --pd-pink:#c2416a;--pd-lav:#5d4bbd;--pd-blue:#2c6aa8;--pd-green:#3d7a3c;--pd-yellow:#94700f;--pd-peach:#b0602a;--pd-teal:#1e7c74;
+  --ok:#3f9a5a;--ok-soft:#dcefdc;--bad:#e04848;--bad-soft:#fbe0e0;--warn:#e6932f;--warn-soft:#fdecd6;
+  --shadow:0 1px 2px rgba(34,52,107,.06),0 6px 22px rgba(34,52,107,.08);
+  --shadow-lg:0 20px 60px rgba(28,42,85,.25);
+  --r:12px;--r-sm:8px;
+  --serif:'Lora',Georgia,'Times New Roman',serif;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg1:#161a2b;--bg2:#121827;
+  --panel:#1d2336;--panel2:#22293e;--panel3:#283049;
+  --line:#2e3650;--line2:#38415e;
+  --head:#2a3757;--head2:#252f4a;--head-ink:#cfdaf5;
+  --navy:#3a4f8f;--navy2:#33467f;
+  --ink:#e8ecf6;--ink2:#b6bfd6;--muted:#7d87a3;
+  --accent:#8b93f5;--accent2:#a68cf5;--accent-soft:#2c2f55;
+  --side:#1a2134;--side2:#242d47;
+  --today:#e8ecf6;
+  --p-pink:#4a2a3a;--p-lav:#352f5c;--p-blue:#22385a;--p-green:#263f2c;--p-yellow:#4a3f1f;--p-peach:#4a3222;--p-teal:#1f4442;
+  --pd-pink:#f5a3bd;--pd-lav:#c2b6ff;--pd-blue:#9cc8f5;--pd-green:#a6dba3;--pd-yellow:#f1d27a;--pd-peach:#f5bf95;--pd-teal:#90ddd5;
+  --ok-soft:#21402b;--bad-soft:#4a2328;--warn-soft:#4a3520;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--sans);color:var(--ink);background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 100%) fixed;min-height:100vh;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.tiny{font-size:11px}
+.nowrap{white-space:nowrap}
+.serif{font-family:var(--serif)}
+
+/* ---------- layout ---------- */
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+.side{background:var(--side);border-right:1px solid var(--line);padding:18px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 6px 2px}
+.brand-logo{width:36px;height:36px;border-radius:10px;background:var(--navy);display:grid;place-items:center;flex:none}
+.brand-name{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--navy2);line-height:1}
+:root[data-theme="dark"] .brand-name{color:var(--ink)}
+.brand-sub{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.today-box{background:var(--panel);border-radius:var(--r-sm);padding:9px 12px;text-align:center}
+.today-box .lbl{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.today-box .val{font-family:var(--serif);font-size:18px;color:var(--navy2);font-weight:600}
+:root[data-theme="dark"] .today-box .val{color:var(--ink)}
+.jump{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);text-align:center;margin:2px 0 -6px}
+.nav{display:flex;flex-direction:column;gap:5px}
+.nav button{display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:7px 10px 7px 7px;border-radius:999px;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:.02em;color:var(--ink2);text-align:left;text-transform:uppercase}
+.nav button .ic{width:28px;height:28px;border-radius:50%;background:var(--panel);display:grid;place-items:center;flex:none;color:var(--navy)}
+:root[data-theme="dark"] .nav button .ic{color:var(--accent)}
+.nav button:hover{background:rgba(255,255,255,.45)}
+:root[data-theme="dark"] .nav button:hover{background:rgba(255,255,255,.05)}
+.nav button.on{background:var(--panel);color:var(--navy2);box-shadow:var(--shadow)}
+:root[data-theme="dark"] .nav button.on{color:var(--ink)}
+.nav button.on .ic{background:var(--navy);color:#fff}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.main{min-width:0;padding:22px 26px 60px}
+.topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.page-title{font-family:var(--serif);font-size:30px;font-weight:500;color:var(--navy2);margin:0;line-height:1.1}
+:root[data-theme="dark"] .page-title{color:var(--ink)}
+.page-sub{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mob-head,.bottom-nav,.fab{display:none}
+
+/* ---------- panels ---------- */
+.panel{background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;min-width:0}
+.panel.flush{padding:0;overflow:hidden}
+.ptitle{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--head-ink);font-weight:600;text-align:center;margin:0 0 10px}
+.ptitle.left{text-align:left}
+.bar-title{background:var(--head);color:var(--head-ink);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;text-align:center;padding:7px 10px}
+.bar-title.navy{background:var(--navy);color:#fff}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+
+/* ---------- KPIs ---------- */
+.kpis{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end}
+.kpi{text-align:center;min-width:56px}
+.kpi .k{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--navy2);line-height:1.2}
+:root[data-theme="dark"] .kpi .v{color:var(--ink)}
+.kpi.bad .v{color:var(--bad)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip-stat{border-radius:8px;padding:6px 12px;text-align:center;min-width:84px}
+.chip-stat .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.8}
+.chip-stat .v{font-family:var(--serif);font-size:16px;font-weight:700}
+
+/* ---------- buttons & inputs ---------- */
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);border-radius:9px;padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;line-height:1.1}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.pri:hover{background:var(--navy2)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover{background:var(--panel3)}
+.btn.danger{color:var(--bad)}
+.btn.danger:hover{border-color:var(--bad)}
+.btn.sm{padding:5px 9px;font-size:12px;border-radius:7px}
+.btn.icon{padding:6px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.inp,select.inp,textarea.inp{width:100%;border:1px solid var(--line2);background:var(--panel);border-radius:8px;padding:7px 10px;font-size:13px;outline:none;min-width:0}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238891a5' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px}
+textarea.inp{resize:vertical;min-height:70px}
+.inp.sm{padding:5px 8px;font-size:12px}
+select.inp.sm{padding-right:22px}
+.fld{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);min-width:0}
+.filter-box{background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.filter-box .fb-h{background:var(--head);color:var(--head-ink);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;text-align:center;padding:5px}
+.filter-box .fb-b{padding:8px}
+.check{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:12.5px;user-select:none}
+.check input{width:15px;height:15px;accent-color:var(--navy)}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar .inp{width:auto}
+.search{position:relative;flex:1;min-width:180px;max-width:320px}
+.search .inp{padding-left:32px;width:100%}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+
+/* ---------- tables ---------- */
+.tbl-wrap{overflow:auto;border-radius:var(--r);background:var(--panel);box-shadow:var(--shadow);max-width:100%}
+table.tbl{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+.tbl th{position:sticky;top:0;z-index:2;background:var(--head);color:var(--head-ink);font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;text-align:left;padding:8px 9px;white-space:nowrap;border-bottom:1px solid var(--line2);cursor:default}
+.tbl th.sort{cursor:pointer}
+.tbl th.sort:hover{color:var(--accent)}
+.tbl.navyhead th{background:var(--navy);color:#fff}
+.tbl td{padding:6px 9px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis}
+.tbl tr:hover td{background:var(--panel2)}
+.tbl tr.done td{color:var(--muted)}
+.tbl tr.done td.tname{text-decoration:line-through}
+.tbl tr.clickable{cursor:pointer}
+.tbl td.wrap{white-space:normal}
+.tbl td.c,.tbl th.c{text-align:center}
+.tbl td.r,.tbl th.r{text-align:right}
+.tbl .tname{font-weight:600;color:var(--ink)}
+.empty{padding:34px 16px;text-align:center;color:var(--muted)}
+.empty .big{font-family:var(--serif);font-size:18px;color:var(--ink2);margin-bottom:6px}
+.pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 4px;font-size:12px;color:var(--muted)}
+
+/* ---------- tags ---------- */
+.tag{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:2px 8px;font-size:11.5px;font-weight:600;white-space:nowrap;line-height:1.5}
+.dot{width:9px;height:9px;border-radius:3px;display:inline-block;flex:none}
+.pri-tag{background:var(--panel2);border:1px solid var(--line)}
+.st{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;white-space:nowrap}
+.st .si{width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:10px;color:#fff;flex:none}
+.days{display:inline-block;min-width:34px;text-align:center;border-radius:6px;padding:1px 6px;font-weight:700;font-size:12px}
+.days.over{background:var(--bad-soft);color:var(--bad)}
+.days.soon{background:var(--warn-soft);color:var(--warn)}
+.days.ok{color:var(--ink2)}
+.prog{display:flex;align-items:center;gap:6px;min-width:90px}
+.prog .pb{flex:1;height:7px;border-radius:9px;background:var(--panel3);overflow:hidden}
+.prog .pb i{display:block;height:100%;background:var(--accent);border-radius:9px}
+.prog span{font-size:11px;font-weight:700;color:var(--ink2);min-width:30px;text-align:right}
+.code{font-weight:700;color:var(--navy);font-size:11.5px}
+:root[data-theme="dark"] .code{color:var(--accent)}
+.cbx{width:18px;height:18px;border:1.6px solid var(--line2);border-radius:5px;display:inline-grid;place-items:center;cursor:pointer;background:var(--panel);flex:none;vertical-align:middle;padding:0}
+.cbx.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.cbx svg{display:none}
+.cbx.on svg{display:block}
+.flag{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line2);font-size:10px}
+.flag.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* ---------- charts ---------- */
+.chart-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.donut-wrap{position:relative;display:grid;place-items:center}
+.donut-wrap .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
+.donut-wrap .center b{font-family:var(--serif);font-size:24px;font-weight:600;color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:center;font-size:10.5px;color:var(--ink2);margin-top:6px}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+svg text{font-family:var(--sans)}
+
+/* ---------- dashboard ---------- */
+.dash{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start}
+.proj-strip{display:grid;grid-template-columns:50px 1.6fr 1fr 1fr 1fr .8fr .8fr 1.2fr;background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px}
+.proj-strip>div{padding:0;text-align:center;min-width:0}
+.proj-strip .h{background:var(--head);color:var(--head-ink);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:6px 4px}
+.proj-strip .b{padding:8px 4px;font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quad-card{background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.quad-card .qh{font-size:10px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;text-align:center;padding:7px}
+.quad-card .qs{font-size:10.5px;color:var(--muted);text-align:center;margin-top:6px}
+.qc-do .qh{background:var(--p-green);color:var(--pd-green)}
+.qc-sch .qh{background:var(--p-blue);color:var(--pd-blue)}
+.qc-del .qh{background:var(--p-peach);color:var(--pd-peach)}
+.qc-dont .qh{background:var(--p-lav);color:var(--pd-lav)}
+.mini-cal{width:100%;border-collapse:collapse;font-size:11px;text-align:center}
+.mini-cal th{font-weight:700;color:var(--muted);padding:3px 0;font-size:10px}
+.mini-cal td{padding:3px 0;border-radius:5px}
+.mini-cal td.has{background:var(--p-peach);color:var(--pd-peach);font-weight:700}
+.mini-cal td.over{background:var(--bad-soft);color:var(--bad);font-weight:700}
+.mini-cal td.tod{background:var(--today);color:var(--panel);font-weight:700}
+.mini-cal td.out{color:var(--line2)}
+.list-mini{width:100%;border-collapse:collapse;font-size:11.5px}
+.list-mini th{background:var(--head2);color:var(--head-ink);font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;padding:5px 6px;text-align:left}
+.list-mini td{padding:5px 6px;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.list-mini tr{cursor:pointer}
+.list-mini tr:hover td{background:var(--panel2)}
+
+/* ---------- projects ---------- */
+.proj-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.pcard{background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .12s}
+.pcard:hover{transform:translateY(-2px)}
+.pcard .pc-top{height:6px}
+.pcard .pc-b{padding:14px 16px}
+.pcard h3{margin:2px 0 4px;font-family:var(--serif);font-size:18px;font-weight:600}
+.pcard .meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12px;margin:10px 0}
+.pcard .meta b{display:block;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- kanban ---------- */
+.kb-wrap{display:grid;grid-template-columns:minmax(0,1fr) 236px;gap:14px;align-items:start}
+.kb{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;align-items:flex-start;min-height:300px}
+.kb-col{flex:0 0 224px;background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;max-height:calc(100vh - 170px)}
+.kb-col .kh{background:var(--head2);border-bottom:1px solid var(--line);color:var(--head-ink);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:9px 10px;display:flex;align-items:center;gap:8px;border-radius:var(--r) var(--r) 0 0}
+.kb-col .kh .cnt{margin-left:auto;background:var(--panel);border-radius:999px;padding:0 8px;font-size:11px;letter-spacing:0}
+.kb-col .kbody{padding:8px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;min-height:80px;flex:1}
+.kb-col.over .kbody{background:var(--accent-soft)}
+.kcard{border-radius:9px;padding:9px 10px;cursor:grab;font-size:11.5px;box-shadow:0 1px 2px rgba(0,0,0,.06);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-x pan-y;color:#1d2433}
+:root[data-theme="dark"] .kcard{color:var(--ink)}
+.kcard.dragging{opacity:.4}
+.kcard .kt{font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-align:center;margin-bottom:6px;line-height:1.3}
+.kcard .kd{font-size:11px;opacity:.8;text-align:center;margin:4px 0}
+.kcard .kp{height:6px;border-radius:9px;background:rgba(255,255,255,.75);overflow:hidden;margin:4px 0 2px}
+:root[data-theme="dark"] .kcard .kp{background:rgba(0,0,0,.25)}
+.kcard .kp i{display:block;height:100%;background:rgba(29,36,51,.55)}
+:root[data-theme="dark"] .kcard .kp i{background:rgba(255,255,255,.6)}
+.kcard .km{display:grid;grid-template-columns:auto 1fr;gap:1px 8px;font-size:10.5px;margin-top:6px}
+.kcard .km b{font-weight:700;opacity:.65;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase}
+.kcard .kside{font-size:9.5px;font-weight:700;opacity:.7;letter-spacing:.04em}
+.kghost{position:fixed;pointer-events:none;z-index:999;transform:rotate(3deg);box-shadow:var(--shadow-lg);opacity:.95}
+
+/* ---------- gantt ---------- */
+.gantt{overflow:auto;background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);max-height:calc(100vh - 210px);position:relative}
+.gt{border-collapse:separate;border-spacing:0;font-size:11.5px}
+.gt th,.gt td{padding:0;height:26px;border-bottom:1px solid var(--line);white-space:nowrap}
+.gt thead th{position:sticky;z-index:3;background:var(--head);color:var(--head-ink);font-size:9.5px;font-weight:700}
+.gt thead tr.r1 th{top:0;height:24px}
+.gt thead tr.r2 th{top:24px;height:20px}
+.gt thead tr.r3 th{top:44px;height:20px}
+.gt .fx{position:sticky;left:0;z-index:2;background:var(--panel)}
+.gt thead .fx{z-index:5;background:var(--head)}
+.gt td.info{padding:0 8px;border-right:1px solid var(--line)}
+.gt .day{width:22px;min-width:22px;max-width:22px;text-align:center;border-left:1px solid var(--line)}
+.gt .day.we{background:var(--panel2)}
+.gt thead .day.we{background:var(--head2)}
+.gt .day.tod{background:var(--today)!important;color:var(--panel)}
+.gt .day.dl{background:var(--deadline)!important;color:#fff}
+.gt tr.phase td{background:var(--panel3);font-weight:700;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--head-ink)}
+.gt .bar{height:16px;border-radius:5px;position:relative;overflow:hidden;margin:0 1px}
+.gt .bar i{position:absolute;left:0;top:0;bottom:0;background:rgba(29,36,51,.18)}
+.gt .wk{font-family:var(--serif);font-style:italic;font-size:12px;text-transform:none;letter-spacing:0;border-left:1px solid var(--line2)}
+.gt .info-name{display:inline-block;max-width:200px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;font-weight:600}
+
+/* ---------- eisenhower ---------- */
+.eis-top{display:grid;grid-template-columns:260px 300px minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:stretch}
+.matrix{display:grid;grid-template-columns:22px 1fr 1fr;grid-template-rows:20px 1fr 1fr;gap:6px;font-size:10px;height:100%}
+.matrix .ax{color:var(--muted);font-weight:700;display:grid;place-items:center;text-transform:uppercase;letter-spacing:.06em;font-size:9.5px}
+.matrix .ax.v{writing-mode:vertical-rl;transform:rotate(180deg)}
+.matrix .q{border-radius:10px;padding:8px;text-align:center;display:flex;flex-direction:column;justify-content:center;min-height:70px;cursor:pointer;border:2px solid transparent}
+.matrix .q.sel{border-color:var(--navy)}
+.matrix .q b{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase}
+.matrix .q span{font-size:10px;opacity:.8;margin-top:3px}
+.q-do{background:var(--p-green);color:var(--pd-green)}
+.q-sch{background:var(--p-blue);color:var(--pd-blue)}
+.q-del{background:var(--p-peach);color:var(--pd-peach)}
+.q-dont{background:var(--p-lav);color:var(--pd-lav)}
+.qtag{display:inline-block;border-radius:5px;padding:1px 8px;font-size:11px;font-weight:700}
+.quads{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.quad-panel{background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.quad-panel .qbody{display:grid;grid-template-columns:1fr 64px;align-items:center;padding:10px}
+.quad-panel .qnums{display:flex;flex-direction:column;gap:6px;text-align:center}
+.quad-panel .qnums div b{display:block;font-family:var(--serif);font-size:17px}
+.quad-panel .qnums div span{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.quad-panel .qlist{border-top:1px solid var(--line);max-height:300px;overflow-y:auto}
+
+/* ---------- weekly ---------- */
+.week-wrap{display:grid;grid-template-columns:200px minmax(0,1fr);gap:14px;align-items:start}
+.week{display:grid;grid-template-columns:repeat(7,minmax(150px,1fr)) minmax(170px,1fr);gap:10px;overflow-x:auto;padding-bottom:8px}
+.wday{background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-height:420px}
+.wday .wh{text-align:center;padding:7px 4px 6px}
+.wday .wh b{display:block;font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.wday .wh span{font-size:10.5px;opacity:.85}
+.wday.tod{outline:2px solid var(--navy);outline-offset:-2px}
+.wday .wdonut{padding:10px 0 6px;display:grid;place-items:center}
+.wday .wlist{border-top:1px solid var(--line);flex:1}
+.wday .wlist .wlh{background:var(--head2);color:var(--head-ink);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;display:flex;justify-content:space-between;padding:4px 8px}
+.witem{display:flex;gap:6px;align-items:center;padding:5px 8px;border-bottom:1px solid var(--line);font-size:11.5px;cursor:pointer}
+.witem:hover{background:var(--panel2)}
+.witem .wn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.witem.done .wn{text-decoration:line-through;color:var(--muted)}
+.witem .pc{font-size:9.5px;font-weight:700;color:var(--muted)}
+.wnotes textarea{border:0;background:transparent;width:100%;flex:1;min-height:360px;padding:10px;resize:none;outline:none;font-size:12.5px;line-height:1.7;background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 21.25px;background-position:0 30px}
+.h-lav{background:var(--p-lav);color:var(--pd-lav)}.h-blue{background:var(--p-blue);color:var(--pd-blue)}.h-yellow{background:var(--p-yellow);color:var(--pd-yellow)}.h-green{background:var(--p-green);color:var(--pd-green)}.h-pink{background:var(--p-pink);color:var(--pd-pink)}.h-peach{background:var(--p-peach);color:var(--pd-peach)}.h-teal{background:var(--p-teal);color:var(--pd-teal)}
+
+/* ---------- monthly ---------- */
+.month-wrap{display:grid;grid-template-columns:200px minmax(0,1fr);gap:14px;align-items:start}
+.mcal{background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.mcal .mhead{display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+.mcal .mhead h2{margin:0;font-family:var(--serif);font-weight:500;font-size:24px;color:var(--navy2)}
+:root[data-theme="dark"] .mcal .mhead h2{color:var(--ink)}
+.mgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.mgrid .dow{background:var(--head);color:var(--head-ink);text-align:center;font-size:9.5px;letter-spacing:.2em;font-weight:700;padding:6px 2px;text-transform:uppercase}
+.mcell{min-height:112px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:0;display:flex;flex-direction:column;cursor:pointer;min-width:0}
+.mcell:nth-child(7n+7){border-right:0}
+.mcell .dn{font-size:11px;font-weight:700;padding:3px 7px;color:var(--ink2);display:flex;justify-content:space-between}
+.mcell.out{background:var(--panel2)}
+.mcell.out .dn{color:var(--line2)}
+.mcell.tod .dn{background:var(--today);color:var(--panel)}
+.mcell:hover{background:var(--panel2)}
+.mcell .mi{display:flex;align-items:center;gap:4px;font-size:10.5px;padding:1px 5px;white-space:nowrap;overflow:hidden;min-width:0}
+.mcell .mi .t{overflow:hidden;text-overflow:ellipsis}
+.mcell .mi.done .t{text-decoration:line-through;color:var(--muted)}
+.mcell .more{font-size:10px;color:var(--accent);padding:1px 6px;font-weight:700}
+.wk-band{height:4px}
+.mi-ic{width:12px;height:12px;border-radius:3px;display:grid;place-items:center;flex:none;font-size:8px;color:#fff;font-weight:900}
+
+/* ---------- setup ---------- */
+.setup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.list-edit{display:flex;flex-direction:column;gap:6px}
+.list-edit .li{display:flex;gap:6px;align-items:center}
+.list-edit .li .inp{flex:1}
+.swatches{display:flex;gap:5px;flex-wrap:wrap}
+.sw{width:22px;height:22px;border-radius:6px;border:2px solid transparent;cursor:pointer;padding:0}
+.sw.on{border-color:var(--ink)}
+
+/* ---------- modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(20,26,45,.42);display:grid;grid-template-columns:minmax(0,1fr);place-items:center;z-index:100;padding:16px;animation:fade .15s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--panel);border-radius:16px;box-shadow:var(--shadow-lg);width:min(720px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;animation:pop .18s}
+.modal.sm{width:min(430px,100%)}
+@keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.modal .mh{display:flex;align-items:center;gap:10px;padding:16px 20px 10px}
+.modal .mh h3{margin:0;font-family:var(--serif);font-size:21px;font-weight:600;flex:1}
+.modal .mb{padding:6px 20px 14px;overflow-y:auto}
+.modal .mf{display:flex;gap:8px;padding:12px 20px 16px;border-top:1px solid var(--line);align-items:center}
+.fgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.fgrid .s2{grid-column:span 2}.fgrid .s4{grid-column:span 4}.fgrid .s3{grid-column:span 3}
+.seg{display:inline-flex;background:var(--panel3);border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.seg button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--navy2);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:200;box-shadow:var(--shadow-lg);display:flex;gap:12px;align-items:center;animation:pop .2s;max-width:calc(100vw - 32px)}
+.toast button{background:transparent;border:0;color:#bcd0ff;font-weight:700;cursor:pointer}
+.demo-bar{background:linear-gradient(90deg,#3b5bdb,#9b5fe0);color:#fff;padding:8px 16px;display:flex;gap:12px;align-items:center;justify-content:center;font-size:13px;flex-wrap:wrap;position:sticky;top:0;z-index:50}
+.demo-bar a{background:#fff;color:#3b3fb0;border-radius:8px;padding:5px 12px;font-weight:700;text-decoration:none;font-size:12px}
+.help{font-size:12px;color:var(--muted);line-height:1.5}
+.pill-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.pill-tabs button{border:1px solid var(--line2);background:var(--panel);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.pill-tabs button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.freq{display:inline-block;border-radius:6px;padding:1px 9px;font-size:11.5px;font-weight:600}
+
+/* filter column */
+.fcol>summary{display:none;list-style:none}
+.fcol>summary::-webkit-details-marker{display:none}
+.qlist .list-mini td:nth-child(3){max-width:120px}
+.witem .wn{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3}
+html{background:var(--bg2)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1280px){
+  .chart-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .dash{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .dash>.col3{grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .quads{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .eis-top{grid-template-columns:240px minmax(0,1fr)}
+  .eis-top>.eis-prog{grid-column:span 2}
+}
+@media (max-width:980px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;width:260px;z-index:90;transform:translateX(-105%);transition:transform .2s;box-shadow:var(--shadow-lg)}
+  .side.open{transform:none}
+  .side-scrim{position:fixed;inset:0;background:rgba(20,26,45,.35);z-index:80}
+  .mob-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--side);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+  .mob-head .brand-name{font-size:18px}
+  .main{padding:16px 16px 96px}
+  .bottom-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);z-index:60;padding:4px 4px calc(4px + env(safe-area-inset-bottom))}
+  .bottom-nav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--muted);padding:5px 0;cursor:pointer}
+  .bottom-nav button.on{color:var(--navy)}
+  :root[data-theme="dark"] .bottom-nav button.on{color:var(--accent)}
+  .fab{display:grid;place-items:center;position:fixed;right:16px;bottom:calc(70px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:50%;background:var(--navy);color:#fff;border:0;box-shadow:var(--shadow-lg);z-index:61;cursor:pointer}
+  .top-actions .hide-m{display:none}
+  .dash{grid-template-columns:1fr}
+  .dash>.col3{grid-column:auto}
+  .kb-wrap,.week-wrap,.month-wrap{grid-template-columns:1fr}
+  .proj-strip{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .proj-strip>div:nth-child(1){display:none}
+  .eis-top{grid-template-columns:1fr}
+  .eis-top>.eis-prog{grid-column:auto}
+  .page-title{font-size:25px}
+  .fcol>summary{display:inline-flex;margin-bottom:4px}
+  .fcol[open]>summary{margin-bottom:10px}
+}
+@media (max-width:640px){
+  .chart-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chart-row>.panel:first-child{grid-column:span 2}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .dash>.col3{grid-template-columns:1fr}
+  .quads{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fgrid .s3,.fgrid .s4{grid-column:span 2}
+  .modal{border-radius:16px 16px 0 0;max-height:94vh;align-self:end}
+  .overlay{padding:0;place-items:end center}
+  .modal .mf{padding-bottom:calc(16px + env(safe-area-inset-bottom));gap:6px}
+  .modal .mf .hide-m{display:none}
+  .modal .mf .btn{padding:8px 11px}
+  .week{grid-template-columns:repeat(8,minmax(78vw,1fr));scroll-snap-type:x mandatory}
+  .week>*{scroll-snap-align:start}
+  .mcell{min-height:64px}
+  .mcell .mi .t{display:none}
+  .mcell .mi{padding:1px 3px}
+  .mcell .mitems{display:flex;flex-wrap:wrap;gap:2px;padding:2px}
+  .mgrid .dow{letter-spacing:.05em}
+  .kb-col{flex-basis:80vw}
+  .kpis{gap:14px}
+  .kpi .v{font-size:19px}
+  .toolbar .search{max-width:none;flex-basis:100%}
+  .proj-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tbl td{max-width:200px}
+  .gt .gx1,.gt .gx2,.gt .gx3,.gt .gx4,.gt .gx5{display:none}
+  .gt .gx0{width:150px!important;min-width:150px!important;max-width:150px!important}
+  .gt .info-name{max-width:134px}
+  .toolbar .inp{max-width:100%}
+}
+@media print{
+  .side,.mob-head,.bottom-nav,.fab,.top-actions,.demo-bar{display:none!important}
+  .app{display:block}
+  body{background:#fff}
+}
+
+</style>
+
+</head>
+<body>
+<noscript>Please enable JavaScript to use The Workflow.</noscript>
+<script>
+/* ===================== The Workflow — core ===================== */
+'use strict';
+const DEMO = !!window.WF_DEMO;
+const BUY_URL = window.WF_BUY_URL || 'https://thepetalo.etsy.com';
+const STORE_KEY = 'theworkflow.v1';
+const UI_KEY = 'theworkflow.ui.v1';
+
+/* ---------- tiny helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+const by = (f, dir = 1) => (a, b) => { const x = f(a), y = f(b); return (x > y ? 1 : x < y ? -1 : 0) * dir; };
+
+/* ---------- dates (local, ISO yyyy-mm-dd strings) ---------- */
+const pad = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parse = s => { if (!s) return null; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const todayISO = () => iso(new Date());
+const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return iso(d); };
+const addMonths = (s, n, anchorDay) => { const d = parse(s); const day = anchorDay || d.getDate(); const t = new Date(d.getFullYear(), d.getMonth() + n, 1); const last = new Date(t.getFullYear(), t.getMonth() + 1, 0).getDate(); t.setDate(Math.min(day, last)); return iso(t); };
+const diffDays = (a, b) => Math.round((parse(b) - parse(a)) / 864e5); // b - a
+const dow = s => parse(s).getDay();
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const DOWS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const monthStart = s => s.slice(0, 8) + '01';
+const monthEnd = s => { const d = parse(s); return iso(new Date(d.getFullYear(), d.getMonth() + 1, 0)); };
+const weekStartOf = (s, ws) => { const d = dow(s); return addDays(s, -((d - ws + 7) % 7)); };
+function workDays(a, b) { if (!a || !b || b < a) return 0; let n = 0, d = parse(a); const e = parse(b); let guard = 0; while (d <= e && guard++ < 4000) { const w = d.getDay(); if (w !== 0 && w !== 6) n++; d.setDate(d.getDate() + 1); } return n; }
+function fmtDate(s, style) {
+  if (!s) return '';
+  const d = parse(s), f = (S.settings && S.settings.dateFmt) || 'MDY';
+  if (style === 'short') return `${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}`;
+  if (style === 'long') return `${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}, ${d.getFullYear()}`;
+  if (f === 'DMY') return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+  if (f === 'YMD') return s;
+  return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+}
+
+/* ---------- constants ---------- */
+const STATUSES = ['Not Started', 'Pending', 'In Progress', 'On Hold', 'Delayed', 'Completed', 'Cancelled'];
+const STATUS_META = {
+  'Not Started': { c: '#e05a5a', i: '✕', soft: 'var(--bad-soft)' },
+  'Pending': { c: '#e6a23c', i: '⏳', soft: 'var(--warn-soft)' },
+  'In Progress': { c: '#4a8ad9', i: '↻', soft: 'var(--p-blue)' },
+  'On Hold': { c: '#9a7fe0', i: '❚❚', soft: 'var(--p-lav)' },
+  'Delayed': { c: '#ef7d3c', i: '!', soft: 'var(--p-peach)' },
+  'Completed': { c: '#3f9a5a', i: '✓', soft: 'var(--ok-soft)' },
+  'Cancelled': { c: '#8f97aa', i: '–', soft: 'var(--panel3)' },
+};
+const PRIORITIES = ['Very High', 'High', 'Medium', 'Low', 'Very Low'];
+const PRI_META = {
+  'Very High': { c: '#8b6be0', card: 'var(--p-lav)' },
+  'High': { c: '#e5534b', card: 'var(--p-pink)' },
+  'Medium': { c: '#f0a03c', card: 'var(--p-yellow)' },
+  'Low': { c: '#4caf6a', card: 'var(--p-green)' },
+  'Very Low': { c: '#4a90d9', card: 'var(--p-blue)' },
+};
+const COLORS = {
+  blue: { bg: '#bcd6f5', label: 'Blue' }, green: { bg: '#c3e2bf', label: 'Green' }, pink: { bg: '#f6c3d2', label: 'Pink' },
+  lavender: { bg: '#cbc3f3', label: 'Lavender' }, yellow: { bg: '#f8e1a1', label: 'Yellow' }, peach: { bg: '#f7cfae', label: 'Peach' },
+  teal: { bg: '#b6e3df', label: 'Teal' }, gray: { bg: '#d5d9e3', label: 'Gray' },
+};
+const STAGE_COLORS = ['lavender', 'blue', 'yellow', 'green', 'pink', 'peach', 'teal', 'gray'];
+const FREQS = [
+  { k: 'w1', label: 'Every Week', days: 7, c: '#f6c3c3' }, { k: 'w2', label: 'Every 2 Weeks', days: 14, c: '#f8d9b0' },
+  { k: 'w4', label: 'Every 4 Weeks', days: 28, c: '#f8e7a8' }, { k: 'm1', label: 'Every Month', months: 1, c: '#cde8c4' },
+  { k: 'm2', label: 'Every 2 Months', months: 2, c: '#c4ddf3' }, { k: 'm3', label: 'Every 3 Months', months: 3, c: '#c9d0f3' },
+  { k: 'm6', label: 'Every 6 Months', months: 6, c: '#dccaf3' }, { k: 'y1', label: 'Every Year', months: 12, c: '#e3e5ec' },
+  { k: 'd1', label: 'Every Day', days: 1, c: '#f3cde0' }, { k: 'wd', label: 'Every Weekday', weekday: true, c: '#d7ecea' },
+];
+const FREQ = Object.fromEntries(FREQS.map(f => [f.k, f]));
+const QUADS = {
+  do: { label: 'Do First', sub: 'Tasks with deadlines or consequences', cls: 'q-do', card: 'qc-do', c: 'var(--pd-green)', ring: '#8cc58a' },
+  sch: { label: 'Schedule', sub: 'Tasks with unclear deadlines that contribute to long-term success', cls: 'q-sch', card: 'qc-sch', c: 'var(--pd-blue)', ring: '#86b6e8' },
+  del: { label: 'Delegate', sub: 'Tasks that must get done but don’t require your specific skill set', cls: 'q-del', card: 'qc-del', c: 'var(--pd-peach)', ring: '#f0b07e' },
+  dont: { label: 'Don’t Do', sub: 'Distractions and unnecessary tasks', cls: 'q-dont', card: 'qc-dont', c: 'var(--pd-lav)', ring: '#a99be8' },
+};
+const quadOf = t => t.important ? (t.urgent ? 'do' : 'sch') : (t.urgent ? 'del' : 'dont');
+const CHART_COLS = ['#bcd6f5', '#f6c3d2', '#c3e2bf', '#f8e1a1', '#cbc3f3', '#f7cfae', '#b6e3df', '#d5d9e3', '#a9c4ef', '#efb3c6'];
+
+/* ---------- state ---------- */
+let S = null;
+function defaults() {
+  return {
+    v: 1,
+    settings: {
+      theme: 'light', weekStart: 1, dateFmt: 'MDY', owner: '',
+      members: [], categories: ['Planning', 'Design', 'Development', 'Marketing', 'Operations', 'Admin'],
+      phases: ['Phase 1', 'Phase 2', 'Phase 3', 'Phase 4', 'Phase 5'],
+      stages: [
+        { id: 'backlog', name: 'Backlog', color: 'gray' }, { id: 'todo', name: 'To Do', color: 'lavender' },
+        { id: 'progress', name: 'In Progress', color: 'blue' }, { id: 'hold', name: 'On Hold', color: 'yellow' },
+        { id: 'review', name: 'Review', color: 'pink' }, { id: 'done', name: 'Done', color: 'green', done: true },
+      ],
+      weekNotes: {},
+    },
+    projects: [], tasks: [], recurring: [], occ: {},
+    meta: { created: todayISO(), sample: false },
+  };
+}
+function load() {
+  if (DEMO) { S = sampleData(); return; }
+  try { const raw = localStorage.getItem(STORE_KEY); if (raw) { S = migrate(JSON.parse(raw)); return; } } catch (e) { console.warn('load failed', e); }
+  S = sampleData();
+  save(true);
+}
+function migrate(d) {
+  const base = defaults();
+  d.settings = Object.assign({}, base.settings, d.settings || {});
+  ['projects', 'tasks', 'recurring'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
+  if (!d.occ || typeof d.occ !== 'object') d.occ = {};
+  if (!d.meta) d.meta = base.meta;
+  if (!Array.isArray(d.settings.stages) || !d.settings.stages.length) d.settings.stages = base.settings.stages;
+  if (!d.settings.weekNotes) d.settings.weekNotes = {};
+  return d;
+}
+let saveTimer = null;
+function save(now) {
+  if (DEMO) return;
+  clearTimeout(saveTimer);
+  const doit = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch (e) { toast('Could not save — storage is full or blocked'); } };
+  if (now) doit(); else saveTimer = setTimeout(doit, 150);
+}
+window.addEventListener('beforeunload', () => { if (saveTimer) { clearTimeout(saveTimer); save(true); } });
+
+/* UI prefs (filters etc.) */
+let UI = {};
+try { UI = JSON.parse(localStorage.getItem(UI_KEY) || '{}') || {}; } catch (e) { UI = {}; }
+function saveUI() { try { localStorage.setItem(UI_KEY, JSON.stringify(UI)); } catch (e) { } }
+function ui(view) { return UI[view] || (UI[view] = {}); }
+
+/* ---------- lookups ---------- */
+const proj = id => S.projects.find(p => p.id === id);
+const projName = id => { const p = proj(id); return p ? p.name : '—'; };
+const projCode = id => { const p = proj(id); return p ? p.code : ''; };
+const stage = id => S.settings.stages.find(s => s.id === id) || S.settings.stages[0];
+const doneStage = () => S.settings.stages.find(s => s.done);
+const isDone = t => t.status === 'Completed';
+const isClosed = t => t.status === 'Completed' || t.status === 'Cancelled';
+const isOverdue = t => !isClosed(t) && t.due && t.due < todayISO();
+function allMembers() {
+  const set = new Set(S.settings.members);
+  S.tasks.forEach(t => t.assignee && set.add(t.assignee));
+  S.recurring.forEach(t => t.assignee && set.add(t.assignee));
+  S.projects.forEach(p => p.lead && set.add(p.lead));
+  return [...set].filter(Boolean).sort((a, b) => a.localeCompare(b));
+}
+function nextProjectCode() {
+  let n = 1; const used = new Set(S.projects.map(p => p.code));
+  while (used.has('P' + pad(n))) n++;
+  return 'P' + pad(n);
+}
+
+/* ---------- recurring engine ---------- */
+function occDates(r, until) {
+  const out = []; if (!r.first) return out;
+  const f = FREQ[r.freq] || FREQ.w1;
+  const end = r.end && r.end < until ? r.end : until;
+  let d = r.first, i = 0;
+  const anchor = parse(r.first).getDate();
+  while (d <= end && i < 1200) {
+    if (!f.weekday || (dow(d) !== 0 && dow(d) !== 6)) out.push(d);
+    i++;
+    if (f.days) d = addDays(r.first, f.days * i);
+    else if (f.weekday) d = addDays(r.first, i);
+    else d = addMonths(r.first, f.months * i, anchor);
+  }
+  return out;
+}
+function horizon() { return addMonths(todayISO(), 12); }
+let _occCache = null, _occSig = '';
+function occurrences() {
+  const sig = _occStamp + '|' + todayISO() + '|' + S.recurring.length;
+  if (_occCache && sig === _occSig) return _occCache;
+  const until = horizon(), list = [];
+  for (const r of S.recurring) {
+    for (const d of occDates(r, until)) {
+      const key = r.id + '|' + d, o = S.occ[key] || {};
+      list.push({
+        id: key, kind: 'occ', recId: r.id, projectId: r.projectId, name: r.name, desc: r.desc, category: r.category || '',
+        origDate: d, due: o.date || d, start: o.date || d,
+        priority: o.priority || r.priority, assignee: o.assignee || r.assignee,
+        important: o.important != null ? o.important : r.important, urgent: o.urgent != null ? o.urgent : r.urgent,
+        status: o.status || 'Not Started', progress: o.status === 'Completed' ? 100 : 0, color: r.color || 'blue', notes: o.notes || '',
+        varied: !!(o.date || o.priority || o.assignee || o.important != null || o.urgent != null),
+      });
+    }
+  }
+  list.sort(by(t => t.due));
+  _occCache = list; _occSig = sig;
+  return list;
+}
+let _occStamp = 0;
+function touchOcc() { _occStamp++; _occCache = null; }
+function setOcc(key, patch) {
+  const o = Object.assign({}, S.occ[key] || {}, patch);
+  Object.keys(o).forEach(k => { if (o[k] === '' || o[k] === undefined || o[k] === null) delete o[k]; });
+  if (Object.keys(o).length) S.occ[key] = o; else delete S.occ[key];
+  touchOcc(); save();
+}
+/* everything with a date: variable tasks + recurring occurrences */
+function allItems(opts = {}) {
+  const tasks = S.tasks.map(t => Object.assign({ kind: 'task' }, t));
+  if (opts.tasksOnly) return tasks;
+  return tasks.concat(occurrences());
+}
+function applyFilter(list, f = {}) {
+  return list.filter(t => (!f.project || t.projectId === f.project) && (!f.assignee || t.assignee === f.assignee) && (!f.incomplete || !isClosed(t)));
+}
+
+/* ---------- task ops ---------- */
+function newTask(p = {}) {
+  const t = todayISO();
+  return Object.assign({
+    id: uid(), projectId: (S.projects[0] || {}).id || '', phase: S.settings.phases[0] || '', name: '', desc: '',
+    important: false, urgent: false, status: 'Not Started', priority: 'Medium', assignee: '', category: '',
+    start: t, due: addDays(t, 7), stage: (S.settings.stages[1] || S.settings.stages[0]).id, progress: 0, notes: '', color: 'blue', created: t,
+  }, p);
+}
+function setTaskStatus(t, status) {
+  t.status = status;
+  const ds = doneStage();
+  if (status === 'Completed') { t.progress = 100; t.doneAt = todayISO(); if (ds) t.stage = ds.id; }
+  else { delete t.doneAt; if (ds && t.stage === ds.id) t.stage = (S.settings.stages.find(s => s.id === 'progress') || S.settings.stages[0]).id; if (t.progress === 100) t.progress = 90; }
+}
+function toggleDoneItem(id) {
+  if (id.includes('|')) {
+    const o = occurrences().find(x => x.id === id); if (!o) return;
+    setOcc(id, { status: o.status === 'Completed' ? '' : 'Completed' });
+  } else {
+    const t = S.tasks.find(x => x.id === id); if (!t) return;
+    setTaskStatus(t, t.status === 'Completed' ? 'In Progress' : 'Completed'); save();
+  }
+}
+
+/* ---------- icons (inline svg) ---------- */
+const ICONS = {
+  dash: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  list: '<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
+  repeat: '<path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/>',
+  sched: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 15l2 2 4-4"/>',
+  gantt: '<path d="M3 3v18h18"/><rect x="7" y="6" width="8" height="3" rx="1"/><rect x="10" y="11" width="9" height="3" rx="1"/><rect x="6" y="16" width="6" height="3" rx="1"/>',
+  kanban: '<rect x="3" y="3" width="5" height="18" rx="1.5"/><rect x="10" y="3" width="5" height="12" rx="1.5"/><rect x="17" y="3" width="4" height="8" rx="1.5"/>',
+  matrix: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/>',
+  week: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M8 10v11M13 10v11M18 10v11"/>',
+  month: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M7 14h2M11 14h2M15 14h2M7 18h2M11 18h2"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  x: '<path d="M18 6L6 18M6 6l12 12"/>',
+  check: '<path d="M5 12l5 5L20 7"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  trash: '<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>',
+  left: '<path d="M15 18l-6-6 6-6"/>', right: '<path d="M9 18l6-6-6-6"/>',
+  menu: '<path d="M3 6h18M3 12h18M3 18h18"/>',
+  moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+  more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
+  filter: '<path d="M3 5h18l-7 8v6l-4 2v-8z"/>',
+  copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  print: '<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+  up: '<path d="M18 15l-6-6-6 6"/>', down: '<path d="M6 9l6 6 6-6"/>',
+  grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>',
+  phone: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+};
+const icon = (n, s = 16, sw = 1.9) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+
+/* ---------- small renderers ---------- */
+const statusHTML = s => { const m = STATUS_META[s] || STATUS_META['Not Started']; return `<span class="st"><span class="si" style="background:${m.c}">${m.i}</span>${esc(s)}</span>`; };
+const priHTML = p => p ? `<span class="tag pri-tag"><span class="dot" style="background:${(PRI_META[p] || {}).c || '#ccc'}"></span>${esc(p)}</span>` : '';
+const progHTML = v => `<div class="prog"><div class="pb"><i style="width:${clamp(+v || 0, 0, 100)}%"></i></div><span>${clamp(+v || 0, 0, 100)}%</span></div>`;
+function daysLeftHTML(t) {
+  if (!t.due) return '';
+  if (isClosed(t)) return '<span class="days ok">–</span>';
+  const n = diffDays(todayISO(), t.due);
+  return `<span class="days ${n < 0 ? 'over' : n <= 3 ? 'soon' : 'ok'}">${n}</span>`;
+}
+const cbxHTML = (on, id, extra = '') => `<button class="cbx ${on ? 'on' : ''}" data-act="toggle-done" data-id="${esc(id)}" aria-label="${on ? 'Mark as not done' : 'Mark as done'}" ${extra}>${icon('check', 12, 3)}</button>`;
+const freqHTML = k => { const f = FREQ[k]; return f ? `<span class="freq" style="background:${f.c};color:#1d2433">${f.label}</span>` : ''; };
+const quadTag = q => `<span class="qtag ${QUADS[q].cls}">${QUADS[q].label}</span>`;
+function opts(list, sel, blank) {
+  return (blank != null ? `<option value="">${esc(blank)}</option>` : '') + list.map(o => { const v = typeof o === 'object' ? o.v : o, l = typeof o === 'object' ? o.l : o; return `<option value="${esc(v)}" ${String(v) === String(sel) ? 'selected' : ''}>${esc(l)}</option>`; }).join('');
+}
+const projOpts = (sel, blank) => opts(S.projects.map(p => ({ v: p.id, l: `${p.code} · ${p.name}` })), sel, blank);
+
+/* ---------- charts (svg) ---------- */
+function donut(segs, { size = 120, thick = 16, center = '', sub = '' } = {}) {
+  const r = (size - thick) / 2, C = 2 * Math.PI * r, total = segs.reduce((a, s) => a + s.v, 0);
+  let off = 0;
+  const arcs = total ? segs.filter(s => s.v > 0).map(s => { const len = s.v / total * C; const a = `<circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${s.c}" stroke-width="${thick}" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${size / 2} ${size / 2})"><title>${esc(s.l || '')}: ${s.v}</title></circle>`; off += len; return a; }).join('') : '';
+  return `<div class="donut-wrap" style="width:${size}px;height:${size}px;margin:auto"><svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--panel3)" stroke-width="${thick}"/>${arcs}</svg>${center !== '' ? `<div class="center"><div><b style="font-size:${Math.round(size / 5.2)}px">${center}</b>${sub ? `<div class="tiny muted">${sub}</div>` : ''}</div></div>` : ''}</div>`;
+}
+function ring(p, color, size = 110, thick = 13) { return donut([{ v: p, c: color, l: 'Done' }, { v: 100 - p, c: 'transparent', l: 'Left' }], { size, thick, center: p + '%' }); }
+function bars(data, { h = 150, color } = {}) {
+  if (!data.length) return '<div class="empty small" style="padding:30px 0">No data yet</div>';
+  const max = Math.max(1, ...data.map(d => d.v)), W = Math.max(220, data.length * 40), bw = Math.min(26, (W - 30) / data.length - 10);
+  const step = (W - 30) / data.length; const ticks = 4; const niceMax = Math.ceil(max / ticks) * ticks || ticks;
+  let g = '';
+  for (let i = 0; i <= ticks; i++) { const y = 10 + (h - 40) * (1 - i / ticks); g += `<line x1="26" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/><text x="20" y="${y + 3}" font-size="9" text-anchor="end" fill="var(--muted)">${Math.round(niceMax * i / ticks)}</text>`; }
+  data.forEach((d, i) => {
+    const bh = (h - 40) * d.v / niceMax, x = 30 + i * step + (step - bw) / 2, y = 10 + (h - 40) - bh;
+    g += `<rect x="${x}" y="${y}" width="${bw}" height="${Math.max(bh, d.v ? 2 : 0)}" rx="3" fill="${d.c || color || CHART_COLS[i % CHART_COLS.length]}"><title>${esc(d.l)}: ${d.v}</title></rect>`;
+    g += `<text x="${x + bw / 2}" y="${h - 16}" font-size="9" text-anchor="middle" fill="var(--ink2)">${esc(String(d.l).length > 9 ? String(d.l).slice(0, 8) + '…' : d.l)}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${h}" width="100%" height="${h}" preserveAspectRatio="xMidYMid meet" role="img">${g}</svg>`;
+}
+const legendHTML = segs => `<div class="legend">${segs.filter(s => s.v > 0).map(s => `<span><i class="dot" style="background:${s.c}"></i>${esc(s.l)} (${s.v})</span>`).join('')}</div>`;
+function countBy(list, f) { const m = new Map(); list.forEach(t => { const k = f(t) || '—'; m.set(k, (m.get(k) || 0) + 1); }); return m; }
+
+/* ---------- toast & confirm ---------- */
+let toastTimer;
+function toast(msg, undo) {
+  $$('.toast').forEach(t => t.remove());
+  const el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status');
+  el.innerHTML = `<span>${esc(msg)}</span>${undo ? '<button>Undo</button>' : ''}`;
+  if (undo) el.querySelector('button').onclick = () => { undo(); el.remove(); };
+  document.body.appendChild(el); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.remove(), undo ? 6000 : 2600);
+}
+let undoSnap = null;
+function snapshot() { undoSnap = JSON.stringify(S); }
+function restoreSnap() { if (!undoSnap) return; S = migrate(JSON.parse(undoSnap)); touchOcc(); save(true); render(); }
+function download(name, text, type = 'application/json') {
+  const blob = new Blob([text], { type }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ===================== sample data ===================== */
+function sampleData() {
+  const d = defaults();
+  const T = todayISO();
+  const D = n => addDays(T, n);
+  d.meta.sample = true;
+  d.settings.members = ['Sophie', 'Emily', 'Michael', 'Alice', 'David'];
+  const P = [
+    ['Website Redesign', 'Sophie', 'Northwind Co.', -24, 30, 'blue'],
+    ['Mobile App Development', 'Michael', 'Brightside Health', -10, 60, 'lavender'],
+    ['Marketing Campaign', 'Emily', 'Bloom & Co.', -5, 25, 'pink'],
+    ['CRM Implementation', 'David', 'Internal', 3, 45, 'green'],
+    ['E-commerce Launch', 'Alice', 'Luna Goods', -15, 20, 'yellow'],
+    ['Cybersecurity Audit', 'Michael', 'Internal', 7, 38, 'teal'],
+  ].map((p, i) => ({ id: 'p' + (i + 1), code: 'P' + pad(i + 1), name: p[0], lead: p[1], client: p[2], start: D(p[3]), end: D(p[4]), color: p[5], notes: '' }));
+  d.projects = P;
+  // [project, phase, name, desc, imp, urg, status, priority, who, cat, startOffset, len, stage, progress, color]
+  const rows = [
+    [0, 1, 'Kickoff meeting with client', 'Align on goals, scope and timeline', 1, 1, 'Completed', 'High', 'Sophie', 'Planning', -24, 1, 'done', 100, 'blue'],
+    [0, 1, 'Research competitors', 'Review 5 competitor websites', 1, 0, 'Completed', 'Medium', 'Emily', 'Planning', -22, 4, 'done', 100, 'blue'],
+    [0, 1, 'Analyze project budget', 'Confirm hours and costs per phase', 1, 1, 'Completed', 'High', 'David', 'Admin', -20, 3, 'done', 100, 'blue'],
+    [0, 2, 'Create sitemap & wireframes', 'Low-fi wireframes for 8 key pages', 1, 1, 'In Progress', 'Very High', 'Sophie', 'Design', -12, 14, 'progress', 70, 'lavender'],
+    [0, 2, 'Design homepage mockups', 'Two visual directions for review', 1, 1, 'In Progress', 'High', 'Alice', 'Design', -6, 10, 'progress', 45, 'lavender'],
+    [0, 2, 'Update brand style guide', 'Colors, type and components', 0, 1, 'Delayed', 'Medium', 'Emily', 'Design', -9, 6, 'hold', 30, 'lavender'],
+    [0, 3, 'Develop landing pages', 'Build responsive templates', 1, 0, 'Not Started', 'High', 'Michael', 'Development', 4, 12, 'todo', 0, 'green'],
+    [0, 3, 'Implement SEO improvements', 'Meta tags, schema, speed', 1, 0, 'Not Started', 'Medium', 'Michael', 'Development', 10, 8, 'backlog', 0, 'green'],
+    [0, 4, 'Final QA & launch', 'Cross-browser testing and go-live', 1, 1, 'Not Started', 'Very High', 'Sophie', 'Operations', 22, 7, 'backlog', 0, 'pink'],
+    [1, 1, 'Define app requirements', 'User stories & feature list', 1, 1, 'Completed', 'Very High', 'Michael', 'Planning', -10, 4, 'done', 100, 'blue'],
+    [1, 1, 'Organize client meetings', 'Weekly check-in schedule', 0, 1, 'Completed', 'Low', 'Emily', 'Admin', -9, 2, 'done', 100, 'blue'],
+    [1, 2, 'Design onboarding flow', 'Screens for sign-up & tutorial', 1, 0, 'In Progress', 'High', 'Alice', 'Design', -4, 9, 'progress', 55, 'lavender'],
+    [1, 2, 'Develop training materials', 'Docs for client team', 0, 0, 'Pending', 'Low', 'David', 'Operations', -1, 6, 'todo', 10, 'yellow'],
+    [1, 3, 'Build authentication', 'Email + social login', 1, 1, 'In Progress', 'Very High', 'Michael', 'Development', -2, 8, 'progress', 35, 'green'],
+    [1, 3, 'Coordinate team workflow', 'Sprint board & rituals', 0, 1, 'Pending', 'Medium', 'Sophie', 'Operations', 0, 3, 'todo', 0, 'green'],
+    [1, 4, 'Beta testing round', 'Recruit 20 testers', 1, 0, 'Not Started', 'Medium', 'Emily', 'Operations', 20, 10, 'backlog', 0, 'peach'],
+    [2, 1, 'Plan campaign strategy', 'Channels, budget and KPIs', 1, 1, 'Completed', 'High', 'Emily', 'Marketing', -5, 3, 'done', 100, 'pink'],
+    [2, 2, 'Write project proposal', 'Pitch deck for stakeholders', 1, 1, 'In Progress', 'High', 'Emily', 'Marketing', -2, 4, 'review', 80, 'pink'],
+    [2, 2, 'Create email marketing campaign', '4-email welcome sequence', 1, 0, 'Not Started', 'Medium', 'Alice', 'Marketing', 2, 6, 'todo', 0, 'pink'],
+    [2, 2, 'Design social media assets', '12 posts + 6 stories', 0, 1, 'On Hold', 'Low', 'Sophie', 'Design', -3, 7, 'hold', 20, 'yellow'],
+    [2, 3, 'Launch paid ads', 'Meta + Google test budget', 1, 1, 'Not Started', 'Very High', 'David', 'Marketing', 8, 10, 'backlog', 0, 'peach'],
+    [2, 3, 'Review campaign milestones', 'Mid-campaign report', 0, 0, 'Not Started', 'Very Low', 'Emily', 'Admin', 15, 2, 'backlog', 0, 'gray'],
+    [3, 1, 'Map current sales process', 'Interview the sales team', 1, 0, 'Pending', 'Medium', 'David', 'Planning', 3, 5, 'todo', 0, 'green'],
+    [3, 2, 'Configure CRM pipelines', 'Stages, fields and automations', 1, 0, 'Not Started', 'High', 'Michael', 'Development', 9, 10, 'backlog', 0, 'green'],
+    [3, 2, 'Migrate customer data', 'Clean & import 4,000 contacts', 1, 1, 'Not Started', 'Very High', 'David', 'Operations', 15, 8, 'backlog', 0, 'teal'],
+    [3, 3, 'Staff training session', 'Two 1-hour workshops', 0, 1, 'Not Started', 'Medium', 'Alice', 'Operations', 30, 3, 'backlog', 0, 'yellow'],
+    [4, 1, 'Set up online store', 'Theme, payments, shipping', 1, 1, 'Completed', 'Very High', 'Alice', 'Development', -15, 6, 'done', 100, 'yellow'],
+    [4, 2, 'Write product descriptions', '40 SKUs', 0, 1, 'Delayed', 'Medium', 'Emily', 'Marketing', -8, 6, 'progress', 60, 'pink'],
+    [4, 2, 'Product photography', 'Flat lays & lifestyle shots', 1, 0, 'In Progress', 'High', 'Sophie', 'Design', -5, 7, 'progress', 50, 'lavender'],
+    [4, 3, 'Configure shipping rules', 'Zones, rates & labels', 1, 1, 'Pending', 'High', 'Alice', 'Operations', -1, 3, 'todo', 0, 'peach'],
+    [4, 3, 'Test checkout process', 'Payments, coupons, emails', 1, 1, 'Not Started', 'Very High', 'Michael', 'Development', 2, 4, 'todo', 0, 'green'],
+    [4, 4, 'Launch social ads', 'Launch-week promotion', 0, 1, 'Not Started', 'Medium', 'David', 'Marketing', 12, 6, 'backlog', 0, 'peach'],
+    [5, 1, 'Scope the audit', 'Systems, owners and access', 1, 0, 'Not Started', 'High', 'Michael', 'Planning', 7, 3, 'backlog', 0, 'teal'],
+    [5, 2, 'Scan for vulnerabilities', 'Automated + manual review', 1, 1, 'Not Started', 'Very High', 'David', 'Development', 11, 9, 'backlog', 0, 'teal'],
+    [5, 2, 'Review access permissions', 'Least-privilege cleanup', 1, 0, 'Not Started', 'Medium', 'Alice', 'Admin', 14, 6, 'backlog', 0, 'gray'],
+    [5, 3, 'Write audit report', 'Findings & remediation plan', 1, 0, 'Not Started', 'Low', 'Michael', 'Admin', 28, 6, 'backlog', 0, 'blue'],
+  ];
+  d.tasks = rows.map((r, i) => ({
+    id: 't' + (i + 1), projectId: P[r[0]].id, phase: 'Phase ' + r[1], name: r[2], desc: r[3], important: !!r[4], urgent: !!r[5],
+    status: r[6], priority: r[7], assignee: r[8], category: r[9], start: D(r[10]), due: D(r[10] + r[11]), stage: r[12], progress: r[13],
+    notes: '', color: r[14], created: D(-25), doneAt: r[6] === 'Completed' ? D(r[10] + r[11]) : undefined,
+  }));
+  // a couple due today / overdue for a lively dashboard
+  d.tasks[13].due = T; d.tasks[14].due = T; d.tasks[29].due = T; d.tasks[5].due = D(-2); d.tasks[27].due = D(-1);
+  const R = [
+    [0, 'w1', 'UX consistency check', 'Review UI components for consistency', 'Medium', 'Sophie', 'Design', -21, 50, 1, 1, 'blue'],
+    [0, 'w2', 'Content refresh cycle', 'Update homepage text and images', 'Low', 'Emily', 'Marketing', -18, 60, 0, 1, 'pink'],
+    [1, 'w2', 'Sprint planning review', 'Plan tasks for next sprint', 'High', 'Alice', 'Planning', -9, 80, 1, 0, 'lavender'],
+    [2, 'w1', 'KPI tracking', 'Collect ad and campaign performance', 'Low', 'Emily', 'Marketing', -4, 40, 0, 1, 'yellow'],
+    [3, 'm1', 'Database backup', 'Perform secure backup of CRM data', 'Medium', 'David', 'Operations', -12, 200, 1, 0, 'green'],
+    [4, 'm1', 'Product catalog update', 'Review pricing, tags and stock', 'Low', 'Michael', 'Operations', -16, 150, 0, 0, 'peach'],
+    [5, 'm3', 'Security scan', 'Scan for vulnerabilities in storefront', 'Very High', 'David', 'Development', -40, 300, 1, 1, 'teal'],
+    [1, 'w4', 'Performance audit', 'Check fps, load time and memory', 'Medium', 'Michael', 'Development', -6, 120, 1, 0, 'gray'],
+  ];
+  d.recurring = R.map((r, i) => ({ id: 'r' + (i + 1), projectId: P[r[0]].id, freq: r[1], name: r[2], desc: r[3], priority: r[4], assignee: r[5], category: r[6], first: D(r[7]), end: D(r[8]), important: !!r[9], urgent: !!r[10], color: r[11] }));
+  // mark past occurrences completed (mostly) for realism
+  d.recurring.forEach((r, i) => {
+    occDates(r, T).forEach((dt, j) => { if (dt < T && (i + j) % 5 !== 0) d.occ[r.id + '|' + dt] = { status: 'Completed' }; });
+  });
+  // one example variation
+  const r0 = occDates(d.recurring[0], addDays(T, 30)).find(x => x > T);
+  if (r0) d.occ[d.recurring[0].id + '|' + r0] = { date: addDays(r0, 1), assignee: 'Alice', priority: 'High' };
+  return d;
+}
+
+/* ===================== shell, router & events ===================== */
+const NAV = [
+  { k: 'dashboard', label: 'Dashboard', ic: 'dash', sub: 'All your projects at a glance' },
+  { k: 'projects', label: 'Projects', ic: 'folder', sub: 'Setup · projects, leads & clients' },
+  { k: 'tasks', label: 'Task Tracker', ic: 'list', sub: 'Variable tasks · one-time work' },
+  { k: 'recurring', label: 'Recurring', ic: 'repeat', sub: 'Set routines once — they repeat on their own' },
+  { k: 'scheduled', label: 'Task Schedule', ic: 'sched', sub: 'Every recurring occurrence, auto-generated' },
+  { k: 'gantt', label: 'Gantt Chart', ic: 'gantt', sub: 'Project timeline tracker' },
+  { k: 'kanban', label: 'Kanban Board', ic: 'kanban', sub: 'Drag cards across your workflow' },
+  { k: 'eisenhower', label: 'Eisenhower', ic: 'matrix', sub: 'Decide what matters most' },
+  { k: 'weekly', label: 'Weekly Calendar', ic: 'week', sub: 'Plan your week day by day' },
+  { k: 'monthly', label: 'Monthly Calendar', ic: 'month', sub: 'Every task, mapped on its day' },
+  { k: 'setup', label: 'Setup', ic: 'gear', sub: 'Team, lists, stages & your data' },
+];
+const BOTTOM = ['dashboard', 'tasks', 'kanban', 'monthly', 'more'];
+let VIEW = 'dashboard';
+const VIEWS = {};
+
+function shell() {
+  document.body.innerHTML = `
+  ${DEMO ? `<div class="demo-bar"><span>✨ <b>Demo</b> — explore freely, nothing is saved.</span><a href="${esc(BUY_URL)}" target="_blank" rel="noopener">Get the full app</a></div>` : ''}
+  <div class="mob-head"><button class="btn icon ghost" data-act="menu" aria-label="Menu">${icon('menu', 20)}</button>${brandHTML()}<span class="spacer"></span><button class="btn icon ghost" data-act="theme" aria-label="Toggle dark mode">${icon(S.settings.theme === 'dark' ? 'sun' : 'moon', 18)}</button></div>
+  <div class="app">
+    <aside class="side" id="side">
+      ${brandHTML()}
+      <div class="today-box"><div class="lbl">Today's date</div><div class="val" id="todayVal"></div></div>
+      <div class="jump">Jump to</div>
+      <nav class="nav" id="nav">${NAV.map(n => `<button data-nav="${n.k}"><span class="ic">${icon(n.ic, 15)}</span>${n.label}</button>`).join('')}</nav>
+      <div class="side-foot">
+        <button class="btn sm" data-act="theme">${icon(S.settings.theme === 'dark' ? 'sun' : 'moon', 14)} ${S.settings.theme === 'dark' ? 'Light mode' : 'Dark mode'}</button>
+        <div class="tiny muted" style="text-align:center">Saved on this device · works offline</div>
+      </div>
+    </aside>
+    <main class="main" id="main"></main>
+  </div>
+  <nav class="bottom-nav">${BOTTOM.map(k => { const n = NAV.find(x => x.k === k); return n ? `<button data-nav="${k}">${icon(n.ic, 20)}<span>${{ dashboard: 'Home', tasks: 'Tasks', kanban: 'Kanban', monthly: 'Calendar' }[k]}</span></button>` : `<button data-act="menu">${icon('more', 20)}<span>More</span></button>`; }).join('')}</nav>
+  <button class="fab" data-act="new-task" aria-label="Add task">${icon('plus', 24, 2.4)}</button>`;
+}
+function brandHTML() {
+  return `<div class="brand"><div class="brand-logo"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="4" width="4.5" height="16" rx="1.6" fill="#cde2f6"/><rect x="9.75" y="4" width="4.5" height="11" rx="1.6" fill="#f8d3dd"/><rect x="16.5" y="4" width="4.5" height="7" rx="1.6" fill="#d2e8cf"/></svg></div><div><div class="brand-name">The Workflow</div><div class="brand-sub">Project Manager</div></div></div>`;
+}
+function applyTheme() { document.documentElement.dataset.theme = S.settings.theme === 'dark' ? 'dark' : 'light'; const m = $('meta[name=theme-color]'); if (m) m.content = S.settings.theme === 'dark' ? '#161a2b' : '#ece4fb'; }
+
+function go(k, push = true) {
+  if (!VIEWS[k]) k = 'dashboard';
+  VIEW = k;
+  if (push && location.hash !== '#' + k) history.replaceState(null, '', '#' + k);
+  closeMenu();
+  render();
+  window.scrollTo(0, 0);
+}
+function render() {
+  const n = NAV.find(x => x.k === VIEW);
+  $$('[data-nav]').forEach(b => b.classList.toggle('on', b.dataset.nav === VIEW));
+  const tv = $('#todayVal'); if (tv) tv.textContent = fmtDate(todayISO());
+  const main = $('#main');
+  const keepScroll = main.dataset.view === VIEW ? captureScroll() : null;
+  main.dataset.view = VIEW;
+  try { main.innerHTML = VIEWS[VIEW](n); }
+  catch (e) { console.error(e); main.innerHTML = `<div class="panel empty"><div class="big">Something went wrong on this page</div><div>${esc(e.message)}</div></div>`; }
+  if (VIEWS[VIEW].after) VIEWS[VIEW].after();
+  if (keepScroll) restoreScroll(keepScroll);
+  document.title = `${n.label} · The Workflow`;
+}
+function captureScroll() { return $$('[data-keep-scroll]').map(el => [el.dataset.keepScroll, el.scrollLeft, el.scrollTop]); }
+function restoreScroll(list) { list.forEach(([k, l, t]) => { const el = $(`[data-keep-scroll="${k}"]`); if (el) { el.scrollLeft = l; el.scrollTop = t; } }); }
+function header(n, actions = '') {
+  return `<div class="topbar"><div><h1 class="page-title">${n.label === 'Eisenhower' ? 'Eisenhower Matrix' : n.label === 'Recurring' ? 'Recurring Tasks' : n.label === 'Task Schedule' ? 'Scheduled Tasks' : n.label === 'Task Tracker' ? 'Variable Tasks' : n.label === 'Weekly Calendar' ? 'Weekly Schedule' : n.label === 'Dashboard' ? 'Project Dashboard' : n.label}</h1><div class="page-sub">${n.sub}</div></div><div class="top-actions">${actions}</div></div>`;
+}
+function openMenu() { $('#side').classList.add('open'); if (!$('.side-scrim')) { const s = document.createElement('div'); s.className = 'side-scrim'; s.onclick = closeMenu; document.body.appendChild(s); } }
+function closeMenu() { const s = $('#side'); if (s) s.classList.remove('open'); $$('.side-scrim').forEach(x => x.remove()); }
+
+/* ---------- global event delegation ---------- */
+const ACTIONS = {
+  menu: () => openMenu(),
+  theme: () => { S.settings.theme = S.settings.theme === 'dark' ? 'light' : 'dark'; save(); applyTheme(); shell(); render(); },
+  'new-task': (el) => openTaskModal(null, { projectId: el.dataset.project || ui(VIEW).project || undefined, due: el.dataset.date, start: el.dataset.date ? el.dataset.date : undefined, stage: el.dataset.stage }),
+  'edit-task': el => openItem(el.dataset.id),
+  'toggle-done': el => { toggleDoneItem(el.dataset.id); render(); },
+  'new-project': () => openProjectModal(),
+  'edit-project': el => openProjectModal(el.dataset.id),
+  'new-rec': () => openRecModal(),
+  'edit-rec': el => openRecModal(el.dataset.id),
+};
+function openItem(id) {
+  if (!id) return;
+  if (id.includes('|')) openOccModal(id); else openTaskModal(id);
+}
+document.addEventListener('click', e => {
+  const nav = e.target.closest('[data-nav]');
+  if (nav) { go(nav.dataset.nav); return; }
+  const el = e.target.closest('[data-act]');
+  if (el && !el.disabled) {
+    const f = ACTIONS[el.dataset.act] || (VIEWS[VIEW].acts || {})[el.dataset.act];
+    if (f) { e.preventDefault(); e.stopPropagation(); f(el, e); }
+  }
+});
+/* filter controls: data-f="key" writes to ui(VIEW)[key] */
+function onFilter(e) {
+  const el = e.target.closest('[data-f]'); if (!el) return;
+  const v = el.type === 'checkbox' ? el.checked : el.value;
+  const u = ui(el.dataset.view || VIEW); u[el.dataset.f] = v;
+  if (el.dataset.reset) u[el.dataset.reset] = 0;
+  saveUI();
+  if (e.type === 'input' && el.dataset.live == null) return;
+  if (e.type === 'input') { clearTimeout(onFilter.t); onFilter.t = setTimeout(() => { render(); const s = $(`[data-f="${el.dataset.f}"]`); if (s) { s.focus(); const L = s.value.length; try { s.setSelectionRange(L, L); } catch (_) { } } }, 180); return; }
+  render();
+}
+document.addEventListener('change', e => { if (e.target.closest('.modal')) return; onFilter(e); const h = VIEWS[VIEW].change; if (h) h(e); });
+document.addEventListener('input', e => { if (e.target.closest('.modal')) return; if (e.target.matches('[data-f][data-live]')) onFilter(e); const h = VIEWS[VIEW].input; if (h) h(e); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { const m = $$('.overlay').pop(); if (m) { closeModal(m); return; } closeMenu(); }
+  if (e.target.matches('input,textarea,select')) return;
+  if ((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey && !$('.overlay')) { e.preventDefault(); openTaskModal(); }
+});
+let wasNarrow = window.innerWidth <= 980;
+window.addEventListener('resize', () => { const n = window.innerWidth <= 980; if (n !== wasNarrow) { wasNarrow = n; clearTimeout(window._rz); window._rz = setTimeout(() => { if (!$('.overlay')) render(); }, 150); } });
+window.addEventListener('hashchange', () => { const k = location.hash.slice(1); if (k && k !== VIEW && VIEWS[k]) go(k, false); });
+/* refresh "today" when the app is reopened on a new day */
+let lastDay = todayISO();
+document.addEventListener('visibilitychange', () => { if (!document.hidden && todayISO() !== lastDay) { lastDay = todayISO(); touchOcc(); render(); } });
+
+function init() {
+  load();
+  applyTheme();
+  shell();
+  const k = location.hash.slice(1);
+  const q = new URLSearchParams(location.search);
+  go(VIEWS[k] ? k : 'dashboard', false);
+  if (q.get('add') === '1') openTaskModal();
+  if (!DEMO && 'serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => { });
+}
+
+/* ===================== modals ===================== */
+function modal({ title, body, foot, cls = '', onMount }) {
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = `<div class="modal ${cls}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="mh"><h3>${esc(title)}</h3><button class="btn icon ghost" data-close aria-label="Close">${icon('x', 18)}</button></div><div class="mb">${body}</div>${foot ? `<div class="mf">${foot}</div>` : ''}</div>`;
+  ov.addEventListener('mousedown', e => { if (e.target === ov) ov._down = true; });
+  ov.addEventListener('click', e => { if (e.target === ov && ov._down) closeModal(ov); ov._down = false; if (e.target.closest('[data-close]')) closeModal(ov); });
+  document.body.appendChild(ov);
+  const first = ov.querySelector('[autofocus]'); if (first && window.innerWidth > 640) setTimeout(() => first.focus(), 30);
+  if (onMount) onMount(ov);
+  return ov;
+}
+function closeModal(ov) { if (ov) ov.remove(); }
+function confirmBox(msg, okLabel = 'Delete', danger = true) {
+  return new Promise(res => {
+    const ov = modal({ title: 'Are you sure?', cls: 'sm', body: `<p style="margin:4px 0 6px">${msg}</p>`, foot: `<span class="spacer"></span><button class="btn" data-no>Cancel</button><button class="btn ${danger ? 'pri' : 'pri'}" data-yes style="${danger ? 'background:var(--bad);border-color:var(--bad)' : ''}">${esc(okLabel)}</button>` });
+    ov.querySelector('[data-no]').onclick = () => { closeModal(ov); res(false); };
+    ov.querySelector('[data-yes]').onclick = () => { closeModal(ov); res(true); };
+    ov.querySelector('[data-close]').addEventListener('click', () => res(false));
+  });
+}
+const val = (ov, n) => { const el = ov.querySelector(`[name="${n}"]`); if (!el) return undefined; return el.type === 'checkbox' ? el.checked : el.value.trim(); };
+function colorPicker(name, sel) {
+  return `<div class="swatches" data-swatches="${name}">${Object.entries(COLORS).map(([k, c]) => `<button type="button" class="sw ${k === sel ? 'on' : ''}" data-color="${k}" title="${c.label}" style="background:${c.bg}"></button>`).join('')}<input type="hidden" name="${name}" value="${esc(sel)}"></div>`;
+}
+function wireSwatches(ov) {
+  ov.querySelectorAll('[data-swatches]').forEach(box => box.addEventListener('click', e => {
+    const b = e.target.closest('[data-color]'); if (!b) return;
+    box.querySelectorAll('.sw').forEach(x => x.classList.toggle('on', x === b)); box.querySelector('input').value = b.dataset.color;
+  }));
+}
+function memberInput(name, value) {
+  return `<input class="inp" name="${name}" value="${esc(value || '')}" list="dl-members" placeholder="Name" autocomplete="off"><datalist id="dl-members">${allMembers().map(m => `<option value="${esc(m)}">`).join('')}</datalist>`;
+}
+function ensureMember(name) { if (name && !S.settings.members.includes(name)) S.settings.members.push(name); }
+function ensureCategory(c) { if (c && !S.settings.categories.includes(c)) S.settings.categories.push(c); }
+function ensurePhase(p) { if (p && !S.settings.phases.includes(p)) S.settings.phases.push(p); }
+
+/* ---------- task ---------- */
+function openTaskModal(id, preset = {}) {
+  if (!S.projects.length) { toast('Add a project first'); openProjectModal(); return; }
+  const existing = id ? S.tasks.find(t => t.id === id) : null;
+  const clean = {}; Object.keys(preset).forEach(k => { if (preset[k] != null && preset[k] !== '') clean[k] = preset[k]; });
+  if (clean.due && !clean.start) clean.start = clean.due;
+  if (clean.start && !clean.due) clean.due = clean.start;
+  const t = existing ? Object.assign({}, existing) : newTask(clean);
+  const q = quadOf(t);
+  const body = `
+  <div class="fgrid">
+    <label class="fld s4">Task name *<input class="inp" name="name" value="${esc(t.name)}" placeholder="e.g. Design homepage mockups" autofocus maxlength="140"></label>
+    <label class="fld s2">Project *<select class="inp" name="projectId">${projOpts(t.projectId)}</select></label>
+    <label class="fld">Phase<input class="inp" name="phase" value="${esc(t.phase)}" list="dl-phases"><datalist id="dl-phases">${S.settings.phases.map(p => `<option value="${esc(p)}">`).join('')}</datalist></label>
+    <label class="fld">Category<input class="inp" name="category" value="${esc(t.category)}" list="dl-cats"><datalist id="dl-cats">${S.settings.categories.map(p => `<option value="${esc(p)}">`).join('')}</datalist></label>
+    <label class="fld s4">Description<input class="inp" name="desc" value="${esc(t.desc)}" placeholder="Short description"></label>
+    <label class="fld">Assigned to${memberInput('assignee', t.assignee)}</label>
+    <label class="fld">Priority<select class="inp" name="priority">${opts(PRIORITIES, t.priority)}</select></label>
+    <label class="fld">Status<select class="inp" name="status">${opts(STATUSES, t.status)}</select></label>
+    <label class="fld">Kanban stage<select class="inp" name="stage">${opts(S.settings.stages.map(s => ({ v: s.id, l: s.name })), t.stage)}</select></label>
+    <label class="fld">Start date<input class="inp" type="date" name="start" value="${esc(t.start)}"></label>
+    <label class="fld">Due date<input class="inp" type="date" name="due" value="${esc(t.due)}"></label>
+    <label class="fld s2">Progress <span class="muted" id="progVal" style="text-transform:none;letter-spacing:0">${t.progress}%</span><input type="range" name="progress" min="0" max="100" step="5" value="${t.progress}" style="accent-color:var(--navy)"></label>
+    <div class="fld s2">Eisenhower
+      <div class="row" style="text-transform:none;letter-spacing:0;font-weight:500">
+        <label class="check"><input type="checkbox" name="important" ${t.important ? 'checked' : ''}> Important</label>
+        <label class="check"><input type="checkbox" name="urgent" ${t.urgent ? 'checked' : ''}> Urgent</label>
+        <span id="quadPrev">${quadTag(q)}</span>
+      </div>
+    </div>
+    <div class="fld s2">Gantt bar color${colorPicker('color', t.color)}</div>
+    <label class="fld s4">Notes<textarea class="inp" name="notes" rows="2" placeholder="Anything to remember…">${esc(t.notes)}</textarea></label>
+  </div>`;
+  const foot = `${existing ? `<button class="btn danger" data-del>${icon('trash', 15)} Delete</button><button class="btn ghost" data-dup title="Duplicate">${icon('copy', 15)}<span class="hide-m">Duplicate</span></button>` : ''}<span class="spacer"></span><button class="btn" data-close>Cancel</button><button class="btn pri" data-save>${existing ? 'Save changes' : 'Add task'}</button>`;
+  const ov = modal({ title: existing ? 'Edit task' : 'New task', body, foot });
+  wireSwatches(ov);
+  const rng = ov.querySelector('[name=progress]'), st = ov.querySelector('[name=status]');
+  rng.oninput = () => { $('#progVal', ov).textContent = rng.value + '%'; };
+  st.onchange = () => { if (st.value === 'Completed') { rng.value = 100; rng.oninput(); const ds = doneStage(); if (ds) ov.querySelector('[name=stage]').value = ds.id; } };
+  ov.querySelector('[name=stage]').onchange = e => { const s = stage(e.target.value); if (s && s.done) { st.value = 'Completed'; rng.value = 100; rng.oninput(); } };
+  const qp = () => { $('#quadPrev', ov).innerHTML = quadTag(quadOf({ important: val(ov, 'important'), urgent: val(ov, 'urgent') })); };
+  ov.querySelector('[name=important]').onchange = qp; ov.querySelector('[name=urgent]').onchange = qp;
+  ov.querySelector('[name=start]').onchange = e => { const due = ov.querySelector('[name=due]'); if (e.target.value && (!due.value || due.value < e.target.value)) due.value = e.target.value; };
+  ov.querySelector('[data-save]').onclick = () => {
+    const name = val(ov, 'name');
+    if (!name) { ov.querySelector('[name=name]').focus(); ov.querySelector('[name=name]').style.borderColor = 'var(--bad)'; toast('Please give the task a name'); return; }
+    let start = val(ov, 'start'), due = val(ov, 'due');
+    if (start && due && due < start) { toast('Due date can’t be before the start date'); return; }
+    const data = { name, projectId: val(ov, 'projectId'), phase: val(ov, 'phase'), category: val(ov, 'category'), desc: val(ov, 'desc'), assignee: val(ov, 'assignee'), priority: val(ov, 'priority'), stage: val(ov, 'stage'), start, due, progress: +val(ov, 'progress'), important: val(ov, 'important'), urgent: val(ov, 'urgent'), color: val(ov, 'color') || 'blue', notes: val(ov, 'notes') };
+    const newStatus = val(ov, 'status');
+    ensureMember(data.assignee); ensureCategory(data.category); ensurePhase(data.phase);
+    let target;
+    if (existing) { target = existing; const was = existing.status; Object.assign(existing, data); if (newStatus !== was) setTaskStatus(existing, newStatus); else existing.status = newStatus; }
+    else { target = newTask(data); target.status = newStatus; if (newStatus === 'Completed') setTaskStatus(target, 'Completed'); S.tasks.push(target); }
+    if (target.status === 'Completed') target.progress = 100;
+    save(); closeModal(ov); render(); toast(existing ? 'Task updated' : 'Task added');
+  };
+  if (existing) {
+    ov.querySelector('[data-del]').onclick = async () => {
+      if (!await confirmBox(`Delete “${esc(existing.name)}”?`)) return;
+      snapshot(); S.tasks = S.tasks.filter(x => x.id !== existing.id); save(); closeModal(ov); render(); toast('Task deleted', restoreSnap);
+    };
+    ov.querySelector('[data-dup]').onclick = () => {
+      const copy = Object.assign({}, existing, { id: uid(), name: existing.name + ' (copy)', created: todayISO() });
+      S.tasks.push(copy); save(); closeModal(ov); render(); toast('Task duplicated'); openTaskModal(copy.id);
+    };
+  }
+  ov.addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) ov.querySelector('[data-save]').click(); if (e.key === 'Enter' && e.target.name === 'name') { e.preventDefault(); ov.querySelector('[data-save]').click(); } });
+}
+
+/* ---------- project ---------- */
+function openProjectModal(id) {
+  const ex = id ? proj(id) : null;
+  const T = todayISO();
+  const p = ex ? Object.assign({}, ex) : { id: uid(), code: nextProjectCode(), name: '', lead: '', client: '', start: T, end: addDays(T, 30), color: Object.keys(COLORS)[S.projects.length % 7], notes: '' };
+  const count = ex ? S.tasks.filter(t => t.projectId === ex.id).length + S.recurring.filter(t => t.projectId === ex.id).length : 0;
+  const body = `<div class="fgrid">
+    <label class="fld">Code<input class="inp" name="code" value="${esc(p.code)}" maxlength="8"></label>
+    <label class="fld s3">Project name *<input class="inp" name="name" value="${esc(p.name)}" placeholder="e.g. Website Redesign" autofocus maxlength="80"></label>
+    <label class="fld s2">Project lead${memberInput('lead', p.lead)}</label>
+    <label class="fld s2">Client<input class="inp" name="client" value="${esc(p.client)}" placeholder="Client or team"></label>
+    <label class="fld s2">Start date<input class="inp" type="date" name="start" value="${esc(p.start)}"></label>
+    <label class="fld s2">Deadline<input class="inp" type="date" name="end" value="${esc(p.end)}"></label>
+    <div class="fld s4">Color${colorPicker('color', p.color)}</div>
+    <label class="fld s4">Notes<textarea class="inp" name="notes" rows="2">${esc(p.notes)}</textarea></label>
+  </div>`;
+  const foot = `${ex ? `<button class="btn danger" data-del>${icon('trash', 15)} Delete</button>` : ''}<span class="spacer"></span><button class="btn" data-close>Cancel</button><button class="btn pri" data-save>${ex ? 'Save' : 'Add project'}</button>`;
+  const ov = modal({ title: ex ? 'Edit project' : 'New project', body, foot, cls: '' });
+  wireSwatches(ov);
+  ov.querySelector('[data-save]').onclick = () => {
+    const name = val(ov, 'name'); if (!name) { toast('Please name the project'); ov.querySelector('[name=name]').focus(); return; }
+    const code = val(ov, 'code') || nextProjectCode();
+    if (S.projects.some(x => x.code.toLowerCase() === code.toLowerCase() && x.id !== p.id)) { toast(`Code ${code} is already used`); return; }
+    const start = val(ov, 'start'), end = val(ov, 'end');
+    if (start && end && end < start) { toast('Deadline can’t be before the start date'); return; }
+    const data = { code, name, lead: val(ov, 'lead'), client: val(ov, 'client'), start, end, color: val(ov, 'color'), notes: val(ov, 'notes') };
+    ensureMember(data.lead);
+    if (ex) Object.assign(ex, data); else S.projects.push(Object.assign({ id: p.id }, data));
+    save(); closeModal(ov); render(); toast(ex ? 'Project saved' : 'Project added');
+  };
+  if (ex) ov.querySelector('[data-del]').onclick = async () => {
+    if (!await confirmBox(`Delete <b>${esc(ex.name)}</b>${count ? ` and its ${plural(count, 'task')}` : ''}?`)) return;
+    snapshot();
+    const recIds = S.recurring.filter(r => r.projectId === ex.id).map(r => r.id);
+    S.projects = S.projects.filter(x => x.id !== ex.id);
+    S.tasks = S.tasks.filter(t => t.projectId !== ex.id);
+    S.recurring = S.recurring.filter(r => r.projectId !== ex.id);
+    Object.keys(S.occ).forEach(k => { if (recIds.includes(k.split('|')[0])) delete S.occ[k]; });
+    Object.values(UI).forEach(u => { if (u && u.project === ex.id) u.project = ''; }); saveUI();
+    touchOcc(); save(); closeModal(ov); render(); toast('Project deleted', restoreSnap);
+  };
+}
+
+/* ---------- recurring template ---------- */
+function openRecModal(id) {
+  if (!S.projects.length) { toast('Add a project first'); openProjectModal(); return; }
+  const ex = id ? S.recurring.find(r => r.id === id) : null;
+  const T = todayISO();
+  const r = ex ? Object.assign({}, ex) : { id: uid(), projectId: ui('recurring').project || S.projects[0].id, freq: 'w1', name: '', desc: '', priority: 'Medium', assignee: '', category: '', first: T, end: addMonths(T, 6), important: false, urgent: false, color: 'blue' };
+  const body = `<div class="fgrid">
+    <label class="fld s4">Task name *<input class="inp" name="name" value="${esc(r.name)}" placeholder="e.g. Weekly KPI report" autofocus maxlength="140"></label>
+    <label class="fld s2">Project *<select class="inp" name="projectId">${projOpts(r.projectId)}</select></label>
+    <label class="fld s2">Frequency *<select class="inp" name="freq">${opts(FREQS.map(f => ({ v: f.k, l: f.label })), r.freq)}</select></label>
+    <label class="fld s4">Description<input class="inp" name="desc" value="${esc(r.desc)}"></label>
+    <label class="fld">Assigned to${memberInput('assignee', r.assignee)}</label>
+    <label class="fld">Priority<select class="inp" name="priority">${opts(PRIORITIES, r.priority)}</select></label>
+    <label class="fld s2">Category<input class="inp" name="category" value="${esc(r.category)}" list="dl-cats2"><datalist id="dl-cats2">${S.settings.categories.map(p => `<option value="${esc(p)}">`).join('')}</datalist></label>
+    <label class="fld s2">1st date *<input class="inp" type="date" name="first" value="${esc(r.first)}"></label>
+    <label class="fld s2">End date <span class="muted" style="text-transform:none;letter-spacing:0">(empty = 12 months ahead)</span><input class="inp" type="date" name="end" value="${esc(r.end)}"></label>
+    <div class="fld s2">Eisenhower<div class="row" style="text-transform:none;letter-spacing:0;font-weight:500"><label class="check"><input type="checkbox" name="important" ${r.important ? 'checked' : ''}> Important</label><label class="check"><input type="checkbox" name="urgent" ${r.urgent ? 'checked' : ''}> Urgent</label></div></div>
+    <div class="fld s2">Color${colorPicker('color', r.color)}</div>
+    <div class="s4 help" id="recPrev"></div>
+  </div>`;
+  const foot = `${ex ? `<button class="btn danger" data-del>${icon('trash', 15)} Delete</button>` : ''}<span class="spacer"></span><button class="btn" data-close>Cancel</button><button class="btn pri" data-save>${ex ? 'Save' : 'Add recurring task'}</button>`;
+  const ov = modal({ title: ex ? 'Edit recurring task' : 'New recurring task', body, foot });
+  wireSwatches(ov);
+  const prev = () => {
+    const tmp = { first: val(ov, 'first'), end: val(ov, 'end'), freq: val(ov, 'freq') };
+    const ds = tmp.first ? occDates(tmp, horizon()) : [];
+    $('#recPrev', ov).innerHTML = ds.length ? `${icon('info', 13)} <b>${plural(ds.length, 'occurrence')}</b> will be scheduled: ${ds.slice(0, 5).map(d => fmtDate(d, 'short')).join(', ')}${ds.length > 5 ? '…' : ''}` : 'Pick a 1st date to preview the schedule.';
+  };
+  ['first', 'end', 'freq'].forEach(n => ov.querySelector(`[name=${n}]`).addEventListener('change', prev)); prev();
+  ov.querySelector('[data-save]').onclick = () => {
+    const name = val(ov, 'name'); if (!name) { toast('Please name the recurring task'); ov.querySelector('[name=name]').focus(); return; }
+    const first = val(ov, 'first'); if (!first) { toast('Please choose the 1st date'); return; }
+    const end = val(ov, 'end'); if (end && end < first) { toast('End date can’t be before the 1st date'); return; }
+    const data = { name, projectId: val(ov, 'projectId'), freq: val(ov, 'freq'), desc: val(ov, 'desc'), assignee: val(ov, 'assignee'), priority: val(ov, 'priority'), category: val(ov, 'category'), first, end, important: val(ov, 'important'), urgent: val(ov, 'urgent'), color: val(ov, 'color') };
+    ensureMember(data.assignee); ensureCategory(data.category);
+    if (ex) Object.assign(ex, data); else S.recurring.push(Object.assign({ id: r.id }, data));
+    touchOcc(); save(); closeModal(ov); render(); toast(ex ? 'Recurring task saved' : 'Recurring task added — occurrences scheduled');
+  };
+  if (ex) ov.querySelector('[data-del]').onclick = async () => {
+    if (!await confirmBox(`Delete “${esc(ex.name)}” and all its scheduled occurrences?`)) return;
+    snapshot(); S.recurring = S.recurring.filter(x => x.id !== ex.id); Object.keys(S.occ).forEach(k => { if (k.startsWith(ex.id + '|')) delete S.occ[k]; });
+    touchOcc(); save(); closeModal(ov); render(); toast('Recurring task deleted', restoreSnap);
+  };
+}
+
+/* ---------- single occurrence (variation) ---------- */
+function openOccModal(key) {
+  const o = occurrences().find(x => x.id === key);
+  if (!o) { toast('This occurrence no longer exists'); return; }
+  const r = S.recurring.find(x => x.id === o.recId);
+  const cur = S.occ[key] || {};
+  const body = `
+  <div class="help" style="margin-bottom:12px">${freqHTML(r.freq)} &nbsp;<b>${esc(r.name)}</b> · ${esc(projName(r.projectId))}<br>Scheduled for <b>${fmtDate(o.origDate, 'long')}</b>. Changes here affect <b>only this occurrence</b> — future repeats stay the same.</div>
+  <div class="fgrid">
+    <label class="fld s2">Status<select class="inp" name="status">${opts(STATUSES, o.status)}</select></label>
+    <label class="fld s2">New date<input class="inp" type="date" name="date" value="${esc(cur.date || '')}"></label>
+    <label class="fld s2">New priority<select class="inp" name="priority">${opts(PRIORITIES, cur.priority || '', `Same (${r.priority})`)}</select></label>
+    <label class="fld s2">New assigned to<input class="inp" name="assignee" value="${esc(cur.assignee || '')}" list="dl-members" placeholder="Same (${esc(r.assignee || '—')})"><datalist id="dl-members">${allMembers().map(m => `<option value="${esc(m)}">`).join('')}</datalist></label>
+    <label class="fld s2">New importance<select class="inp" name="important">${opts([{ v: 'true', l: 'Important' }, { v: 'false', l: 'Not important' }], cur.important == null ? '' : String(cur.important), `Same (${r.important ? 'Important' : 'Not important'})`)}</select></label>
+    <label class="fld s2">New urgency<select class="inp" name="urgent">${opts([{ v: 'true', l: 'Urgent' }, { v: 'false', l: 'Not urgent' }], cur.urgent == null ? '' : String(cur.urgent), `Same (${r.urgent ? 'Urgent' : 'Not urgent'})`)}</select></label>
+    <label class="fld s4">Notes<textarea class="inp" name="notes" rows="2">${esc(cur.notes || '')}</textarea></label>
+  </div>`;
+  const foot = `<button class="btn ghost" data-editrec>${icon('repeat', 15)} Edit the whole series</button><span class="spacer"></span>${o.varied || cur.status ? '<button class="btn" data-reset>Reset</button>' : ''}<button class="btn pri" data-save>Save</button>`;
+  const ov = modal({ title: 'Scheduled occurrence', body, foot });
+  ov.querySelector('[data-save]').onclick = () => {
+    const st = val(ov, 'status'), imp = val(ov, 'important'), urg = val(ov, 'urgent');
+    setOcc(key, { status: st === 'Not Started' ? '' : st, date: val(ov, 'date') && val(ov, 'date') !== o.origDate ? val(ov, 'date') : '', priority: val(ov, 'priority'), assignee: val(ov, 'assignee'), important: imp === '' ? null : imp === 'true', urgent: urg === '' ? null : urg === 'true', notes: val(ov, 'notes') });
+    ensureMember(val(ov, 'assignee')); save(); closeModal(ov); render(); toast('Occurrence updated');
+  };
+  const rs = ov.querySelector('[data-reset]'); if (rs) rs.onclick = () => { delete S.occ[key]; touchOcc(); save(); closeModal(ov); render(); toast('Occurrence reset'); };
+  ov.querySelector('[data-editrec]').onclick = () => { closeModal(ov); openRecModal(r.id); };
+}
+
+/* ===================== Dashboard · Projects · Tasks ===================== */
+
+/* ---------- shared filter widgets ---------- */
+function fProject(view, label = 'All projects') { return `<select class="inp sm" data-f="project" data-view="${view}" data-reset="page" aria-label="Filter by project" style="width:auto;max-width:220px">${projOpts(ui(view).project || '', label)}</select>`; }
+function fMember(view, key = 'assignee', label = 'All assignees') { return `<select class="inp sm" data-f="${key}" data-view="${view}" data-reset="page" aria-label="Filter by assignee" style="width:auto">${opts(allMembers(), ui(view)[key] || '', label)}</select>`; }
+function fIncomplete(view) { return `<label class="check small"><input type="checkbox" data-f="incomplete" data-view="${view}" ${ui(view).incomplete ? 'checked' : ''}> Incomplete only</label>`; }
+function validProject(view) { const u = ui(view); if (u.project && !proj(u.project)) u.project = ''; return u.project || ''; }
+
+/* ---------- DASHBOARD ---------- */
+VIEWS.dashboard = function (n) {
+  const pid = validProject('dashboard');
+  const T = todayISO();
+  const p = pid ? proj(pid) : null;
+  const items = allItems().filter(t => !pid || t.projectId === pid);
+  const realized = items.filter(t => t.kind === 'task' || t.due <= T);
+  const done = realized.filter(isDone).length;
+  const dueToday = items.filter(t => t.due === T && !isClosed(t)).sort(by(t => PRIORITIES.indexOf(t.priority)));
+  const overdue = items.filter(isOverdue).sort(by(t => t.due));
+  const projs = pid ? [p] : S.projects;
+  const pStart = projs.map(x => x.start).filter(Boolean).sort()[0] || '', pEnd = projs.map(x => x.end).filter(Boolean).sort().pop() || '';
+
+  // charts
+  const persons = [...countBy(realized, t => t.assignee)].sort(by(x => x[0])).map(([l, v], i) => ({ l, v }));
+  const stSegs = STATUSES.map(s => ({ l: s, v: realized.filter(t => t.status === s).length, c: STATUS_META[s].c + 'aa' }));
+  const priBars = PRIORITIES.map(pr => ({ l: pr, v: realized.filter(t => t.priority === pr).length, c: PRI_META[pr].c + '88' }));
+  const cats = [...countBy(realized, t => t.category)].sort(by(x => -x[1]));
+  const catSegs = cats.map(([l, v], i) => ({ l, v, c: CHART_COLS[i % CHART_COLS.length] }));
+
+  // quadrants (current month, like the template)
+  const mS = monthStart(T), mE = monthEnd(T);
+  const monthItems = items.filter(t => t.due >= mS && t.due <= mE);
+  const quads = Object.keys(QUADS).map(q => { const l = monthItems.filter(t => quadOf(t) === q); const d = l.filter(isDone).length; return { q, total: l.length, done: d, p: pct(d, l.length) }; });
+
+  const strip = `<div class="proj-strip">
+    ${[['#', pid ? p.code : S.projects.length], ['Project', pid ? p.name : 'All projects'], ['Project lead', pid ? (p.lead || '—') : [...new Set(S.projects.map(x => x.lead).filter(Boolean))].length + ' leads'], ['Start date', fmtDate(pStart) || '—'], ['End date', fmtDate(pEnd) || '—'], ['Duration', pStart && pEnd ? diffDays(pStart, pEnd) + 1 + ' d' : '—'], ['Work days', pStart && pEnd ? workDays(pStart, pEnd) : '—'], ['Client name', pid ? (p.client || '—') : [...new Set(S.projects.map(x => x.client).filter(Boolean))].length + ' clients']].map(([h, b]) => `<div><div class="h">${h}</div><div class="b" title="${esc(b)}">${esc(b)}</div></div>`).join('')}
+  </div>`;
+
+  const cal = miniCal(items);
+  const listRows = (l, kind) => l.length ? `<table class="list-mini"><thead><tr><th>#</th><th>Task</th><th>Owner</th><th>${kind === 'over' ? 'Due date' : 'Status'}</th></tr></thead><tbody>${l.slice(0, 12).map(t => `<tr data-act="edit-task" data-id="${esc(t.id)}"><td class="code">${esc(projCode(t.projectId))}</td><td title="${esc(t.name)}">${t.kind === 'occ' ? icon('repeat', 11) + ' ' : ''}${esc(t.name)}</td><td>${esc(t.assignee || '—')}</td><td>${kind === 'over' ? `<span style="color:var(--bad);font-weight:700">${fmtDate(t.due)}</span>` : statusHTML(t.status)}</td></tr>`).join('')}</tbody></table>${l.length > 12 ? `<div class="tiny muted" style="padding:6px 8px">+ ${l.length - 12} more</div>` : ''}` : `<div class="empty small">${kind === 'over' ? '🎉 Nothing overdue' : 'Nothing due today'}</div>`;
+
+  return header(n, `${fProject('dashboard')}<button class="btn pri" data-act="new-task">${icon('plus', 15)} New task</button>`) + strip + `
+  <div class="panel" style="margin-bottom:14px"><div class="kpis" style="justify-content:space-around">
+    <div class="kpi"><div class="k">Projects</div><div class="v">${pid ? 1 : S.projects.length}</div></div>
+    <div class="kpi"><div class="k">Tasks</div><div class="v">${realized.length}</div></div>
+    <div class="kpi"><div class="k">Completed</div><div class="v">${done}</div></div>
+    <div class="kpi"><div class="k">Completion</div><div class="v">${pct(done, realized.length)}%</div></div>
+    <div class="kpi"><div class="k">Due today</div><div class="v">${dueToday.length}</div></div>
+    <div class="kpi ${overdue.length ? 'bad' : ''}"><div class="k">Overdue</div><div class="v">${overdue.length}</div></div>
+  </div></div>
+  <div class="dash">
+    <div class="grid">
+      <div class="panel"><div class="ptitle">Person in charge</div>${bars(persons, { h: 150 })}</div>
+      <div class="panel"><div class="ptitle">Status</div>${donut(stSegs, { size: 130, thick: 22 })}${legendHTML(stSegs)}</div>
+      <div class="panel"><div class="ptitle">Priority</div>${bars(priBars, { h: 150 })}</div>
+      <div class="panel"><div class="ptitle">Category</div>${donut(catSegs, { size: 130, thick: 22 })}${legendHTML(catSegs)}</div>
+    </div>
+    <div class="grid">
+      <div class="panel flush"><div class="bar-title">Open tasks due today · ${dueToday.length}</div>${listRows(dueToday, 'today')}</div>
+      <div class="panel flush"><div class="bar-title" style="background:var(--p-peach);color:var(--pd-peach)">Overdue tasks · ${overdue.length}</div>${listRows(overdue, 'over')}</div>
+      <div class="panel flush"><div class="bar-title">Projects overview</div>${projOverview(pid)}</div>
+    </div>
+    <div class="grid col3">
+      <div class="panel">${cal}</div>
+      <div class="panel"><div class="ptitle">Overall task progress</div>${ring(pct(done, realized.length), '#a9b8f0', 128, 15)}<div class="tiny muted" style="text-align:center;margin-top:6px">${done} of ${realized.length} completed</div></div>
+      <div class="grid g2" style="gap:10px">${quads.map(x => `<div class="quad-card ${QUADS[x.q].card}"><div class="qh">${QUADS[x.q].label}</div><div style="padding:10px 6px 8px">${ring(x.p, QUADS[x.q].ring, 84, 10)}<div class="qs">${x.done} of ${x.total} done</div></div></div>`).join('')}</div>
+      <div class="tiny muted" style="text-align:center;margin-top:-6px">Eisenhower · ${MONTHS[parse(T).getMonth()]}</div>
+    </div>
+  </div>`;
+};
+VIEWS.dashboard.acts = {
+  'cal-prev': () => { const u = ui('dashboard'); u.cal = addMonths(u.cal || monthStart(todayISO()), -1); saveUI(); render(); },
+  'cal-next': () => { const u = ui('dashboard'); u.cal = addMonths(u.cal || monthStart(todayISO()), 1); saveUI(); render(); },
+  'cal-day': el => { const u = ui('monthly'); u.month = monthStart(el.dataset.date); saveUI(); go('monthly'); },
+  'open-project': el => { ui('dashboard').project = el.dataset.id; saveUI(); render(); },
+};
+function miniCal(items) {
+  const u = ui('dashboard'); const m = u.cal || monthStart(todayISO()); const T = todayISO(); const ws = S.settings.weekStart;
+  const start = weekStartOf(m, ws); const counts = {}; const over = {};
+  items.forEach(t => { if (t.due) { counts[t.due] = (counts[t.due] || 0) + 1; if (isOverdue(t)) over[t.due] = 1; } });
+  let html = `<div class="row" style="justify-content:space-between;margin-bottom:6px"><button class="btn icon ghost sm" data-act="cal-prev" aria-label="Previous month">${icon('left', 14)}</button><div class="ptitle" style="margin:0">${MONTHS[parse(m).getMonth()]} ${parse(m).getFullYear()}</div><button class="btn icon ghost sm" data-act="cal-next" aria-label="Next month">${icon('right', 14)}</button></div>`;
+  html += `<table class="mini-cal"><thead><tr>${[0, 1, 2, 3, 4, 5, 6].map(i => `<th>${DOWS[(i + ws) % 7][0]}</th>`).join('')}</tr></thead><tbody>`;
+  for (let w = 0; w < 6; w++) { html += '<tr>'; for (let i = 0; i < 7; i++) { const d = addDays(start, w * 7 + i); const cls = d === T ? 'tod' : d.slice(0, 7) !== m.slice(0, 7) ? 'out' : over[d] ? 'over' : counts[d] ? 'has' : ''; html += `<td class="${cls}" data-act="cal-day" data-date="${d}" style="cursor:pointer" title="${counts[d] ? plural(counts[d], 'task') : ''}">${parse(d).getDate()}</td>`; } html += '</tr>'; }
+  html += `</tbody></table><div class="legend" style="margin-top:8px"><span><i class="dot" style="background:var(--today)"></i>Today</span><span><i class="dot" style="background:var(--p-peach)"></i>Scheduled</span><span><i class="dot" style="background:var(--bad)"></i>Overdue</span></div>`;
+  return html;
+}
+function projStats(pid) {
+  const ts = S.tasks.filter(t => t.projectId === pid);
+  const d = ts.filter(isDone).length;
+  const avg = ts.length ? Math.round(ts.reduce((a, t) => a + (+t.progress || 0), 0) / ts.length) : 0;
+  return { total: ts.length, done: d, overdue: ts.filter(isOverdue).length, progress: avg };
+}
+function projOverview(pid) {
+  const list = pid ? [proj(pid)] : S.projects;
+  if (!list.length) return `<div class="empty small">No projects yet. <a href="#projects" data-nav="projects">Add one</a></div>`;
+  return `<table class="list-mini"><thead><tr><th>#</th><th>Project</th><th>Progress</th><th>Late</th></tr></thead><tbody>${list.map(p => { const s = projStats(p.id); return `<tr data-act="open-project" data-id="${p.id}"><td class="code">${esc(p.code)}</td><td title="${esc(p.name)}"><span class="dot" style="background:${(COLORS[p.color] || COLORS.blue).bg};margin-right:5px"></span>${esc(p.name)}</td><td style="min-width:110px">${progHTML(s.progress)}</td><td>${s.overdue ? `<span class="days over">${s.overdue}</span>` : '–'}</td></tr>`; }).join('')}</tbody></table>`;
+}
+
+/* ---------- PROJECTS ---------- */
+VIEWS.projects = function (n) {
+  const T = todayISO();
+  const cards = S.projects.map(p => {
+    const s = projStats(p.id); const c = COLORS[p.color] || COLORS.blue;
+    const left = p.end ? diffDays(T, p.end) : null;
+    const rec = S.recurring.filter(r => r.projectId === p.id).length;
+    return `<div class="pcard" data-act="edit-project" data-id="${p.id}">
+      <div class="pc-top" style="background:${c.bg}"></div>
+      <div class="pc-b">
+        <div class="row"><span class="code">${esc(p.code)}</span><span class="spacer"></span>${left != null ? `<span class="days ${left < 0 && s.done < s.total ? 'over' : left <= 7 ? 'soon' : 'ok'}" title="Days to deadline">${left < 0 ? Math.abs(left) + 'd late' : left + 'd left'}</span>` : ''}</div>
+        <h3>${esc(p.name)}</h3>
+        <div class="small muted">${esc(p.client || 'No client')}</div>
+        <div class="meta"><div><b>Lead</b>${esc(p.lead || '—')}</div><div><b>Tasks</b>${s.done}/${s.total} done${rec ? ` · ${rec} ↻` : ''}</div><div><b>Start</b>${fmtDate(p.start) || '—'}</div><div><b>Deadline</b>${fmtDate(p.end) || '—'}</div></div>
+        ${progHTML(s.progress)}
+        <div style="margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <button class="btn sm" style="justify-content:center" data-act="proj-tasks" data-id="${p.id}">Tasks</button>
+          <button class="btn sm" style="justify-content:center" data-act="proj-gantt" data-id="${p.id}">Gantt</button>
+          <button class="btn sm" style="justify-content:center" data-act="proj-dash" data-id="${p.id}">Overview</button>
+        </div>
+      </div></div>`;
+  }).join('');
+  return header(n, `<button class="btn pri" data-act="new-project">${icon('plus', 15)} New project</button>`) +
+    (S.projects.length ? `<div class="proj-cards">${cards}</div>` : `<div class="panel empty"><div class="big">No projects yet</div><p>Projects group your tasks, timelines and boards.</p><button class="btn pri" data-act="new-project">${icon('plus', 15)} Add your first project</button></div>`) +
+    `<p class="help" style="margin-top:16px">Tip: up to 100+ projects in one app. Select a project on any page to filter the dashboard, Gantt, Kanban and calendars.</p>`;
+};
+VIEWS.projects.acts = {
+  'proj-tasks': el => { const u = ui('tasks'); u.project = el.dataset.id; u.page = 0; saveUI(); go('tasks'); },
+  'proj-gantt': el => { ui('gantt').project = el.dataset.id; saveUI(); go('gantt'); },
+  'proj-dash': el => { ui('dashboard').project = el.dataset.id; saveUI(); go('dashboard'); },
+};
+
+/* ---------- TASKS (Variable tasks) ---------- */
+const TASK_COLS = [
+  { k: 'done', l: '✓', c: true },
+  { k: 'project', l: 'Project', s: t => projCode(t.projectId) + projName(t.projectId) },
+  { k: 'phase', l: 'Phase', s: t => t.phase },
+  { k: 'name', l: 'Task name', s: t => t.name.toLowerCase() },
+  { k: 'desc', l: 'Description', s: t => t.desc },
+  { k: 'important', l: 'Important', s: t => t.important ? 0 : 1, c: true },
+  { k: 'urgent', l: 'Urgent', s: t => t.urgent ? 0 : 1, c: true },
+  { k: 'status', l: 'Status', s: t => STATUSES.indexOf(t.status) },
+  { k: 'priority', l: 'Priority', s: t => PRIORITIES.indexOf(t.priority) },
+  { k: 'assignee', l: 'Assigned to', s: t => t.assignee },
+  { k: 'start', l: 'Start date', s: t => t.start || '9' },
+  { k: 'due', l: 'Due date', s: t => t.due || '9' },
+  { k: 'days', l: 'Days left', s: t => isClosed(t) ? 99999 : t.due ? diffDays(todayISO(), t.due) : 99998, c: true },
+  { k: 'stage', l: 'Kanban stage', s: t => S.settings.stages.findIndex(x => x.id === t.stage) },
+  { k: 'progress', l: 'Progress', s: t => +t.progress },
+  { k: 'category', l: 'Category', s: t => t.category },
+  { k: 'notes', l: 'Notes', s: t => t.notes },
+];
+function filterTasks(u) {
+  const q = (u.q || '').toLowerCase().trim();
+  return S.tasks.filter(t =>
+    (!u.project || t.projectId === u.project) && (!u.assignee || t.assignee === u.assignee) && (!u.status || t.status === u.status) &&
+    (!u.priority || t.priority === u.priority) && (!u.category || t.category === u.category) && (!u.stage || t.stage === u.stage) &&
+    (!u.incomplete || !isClosed(t)) && (!u.overdue || isOverdue(t)) && (!u.from || (t.due && t.due >= u.from)) && (!u.to || (t.due && t.due <= u.to)) &&
+    (!q || [t.name, t.desc, t.notes, t.assignee, t.category, t.phase, projName(t.projectId), projCode(t.projectId)].join(' ').toLowerCase().includes(q)));
+}
+VIEWS.tasks = function (n) {
+  validProject('tasks');
+  const u = ui('tasks'); const T = todayISO();
+  const list = filterTasks(u);
+  const col = TASK_COLS.find(c => c.k === (u.sort || 'due')) || TASK_COLS[11];
+  list.sort(by(col.s || (t => t.due), u.dir === -1 ? -1 : 1));
+  const per = 50, pages = Math.max(1, Math.ceil(list.length / per)); u.page = clamp(u.page || 0, 0, pages - 1);
+  const rows = list.slice(u.page * per, u.page * per + per);
+  const done = list.filter(isDone).length;
+  const pending = list.filter(t => !isClosed(t)).length;
+  const showCharts = u.charts !== false;
+  const persons = [...countBy(list, t => t.assignee)].sort(by(x => x[0])).map(([l, v]) => ({ l, v }));
+  const stSegs = STATUSES.map(s => ({ l: s, v: list.filter(t => t.status === s).length, c: STATUS_META[s].c + 'aa' }));
+  const cats = [...countBy(list, t => t.category)].sort(by(x => -x[1])).map(([l, v], i) => ({ l, v, c: CHART_COLS[i % CHART_COLS.length] }));
+  const priBars = PRIORITIES.map(pr => ({ l: pr, v: list.filter(t => t.priority === pr).length, c: PRI_META[pr].c + '88' }));
+  const anyFilter = ['project', 'assignee', 'status', 'priority', 'category', 'stage', 'q', 'from', 'to', 'incomplete', 'overdue'].some(k => u[k]);
+  const th = c => c.k === 'done' ? `<th class="c">✓</th>` : `<th class="sort ${c.c ? 'c' : ''}" data-act="sort" data-k="${c.k}">${c.l}${u.sort === c.k || (!u.sort && c.k === 'due') ? (u.dir === -1 ? ' ▾' : ' ▴') : ''}</th>`;
+  const tr = t => `<tr class="clickable ${isDone(t) ? 'done' : ''}" data-act="edit-task" data-id="${t.id}">
+    <td class="c">${cbxHTML(isDone(t), t.id)}</td>
+    <td><span class="code">${esc(projCode(t.projectId))}</span> <span class="muted small">${esc(projName(t.projectId))}</span></td>
+    <td>${esc(t.phase)}</td>
+    <td class="tname" title="${esc(t.name)}">${esc(t.name)}</td>
+    <td class="muted" title="${esc(t.desc)}" style="max-width:200px">${esc(t.desc)}</td>
+    <td class="c"><span class="flag ${t.important ? 'on' : ''}">${t.important ? '✓' : ''}</span></td>
+    <td class="c"><span class="flag ${t.urgent ? 'on' : ''}">${t.urgent ? '✓' : ''}</span></td>
+    <td><select class="inp sm" data-inline="status" data-id="${t.id}" style="width:132px;padding-left:6px" aria-label="Status">${opts(STATUSES, t.status)}</select></td>
+    <td>${priHTML(t.priority)}</td>
+    <td>${esc(t.assignee || '—')}</td>
+    <td>${fmtDate(t.start)}</td>
+    <td>${fmtDate(t.due)}</td>
+    <td class="c">${daysLeftHTML(t)}</td>
+    <td><span class="tag" style="background:${(COLORS[stage(t.stage).color] || COLORS.gray).bg};color:#1d2433">${esc(stage(t.stage).name)}</span></td>
+    <td>${progHTML(t.progress)}</td>
+    <td>${esc(t.category)}</td>
+    <td class="muted" title="${esc(t.notes)}" style="max-width:180px">${esc(t.notes)}</td></tr>`;
+  return header(n, `<button class="btn hide-m" data-act="export-csv">${icon('download', 15)} Export CSV</button><button class="btn pri" data-act="new-task">${icon('plus', 15)} New task</button>`) + `
+  <div class="panel" style="margin-bottom:14px"><div class="row" style="justify-content:space-between">
+    <div class="kpis">
+      <div class="kpi"><div class="k">Total</div><div class="v">${list.length}</div></div>
+      <div class="kpi"><div class="k">Completed</div><div class="v">${done}</div></div>
+      <div class="kpi"><div class="k">Completed %</div><div class="v">${pct(done, list.length)}%</div></div>
+      <div class="kpi"><div class="k">Pending</div><div class="v">${pending}</div></div>
+      <div class="kpi ${list.filter(isOverdue).length ? 'bad' : ''}"><div class="k">Overdue</div><div class="v">${list.filter(isOverdue).length}</div></div>
+      <div class="kpi"><div class="k">Due today</div><div class="v">${list.filter(t => t.due === T && !isClosed(t)).length}</div></div>
+    </div>
+    <button class="btn sm ghost" data-act="toggle-charts">${icon(showCharts ? 'up' : 'down', 14)} ${showCharts ? 'Hide' : 'Show'} charts</button>
+  </div>
+  ${showCharts ? `<div class="chart-row" style="margin-top:12px">
+    <div class="panel" style="box-shadow:none;background:var(--panel2)"><div class="ptitle">Person in charge</div>${bars(persons, { h: 140 })}</div>
+    <div class="panel" style="box-shadow:none;background:var(--panel2)"><div class="ptitle">Overall completion</div>${ring(pct(done, list.length), '#a9c6f0', 120, 15)}</div>
+    <div class="panel" style="box-shadow:none;background:var(--panel2)"><div class="ptitle">Status</div>${donut(stSegs, { size: 120, thick: 20 })}</div>
+    <div class="panel" style="box-shadow:none;background:var(--panel2)"><div class="ptitle">Category</div>${donut(cats, { size: 120, thick: 20 })}</div>
+    <div class="panel" style="box-shadow:none;background:var(--panel2)"><div class="ptitle">Priority</div>${bars(priBars, { h: 140 })}</div>
+  </div>` : ''}</div>
+  <div class="toolbar">
+    <div class="search">${icon('search', 15)}<input class="inp" placeholder="Search tasks…" data-f="q" data-live data-reset="page" value="${esc(u.q || '')}" aria-label="Search tasks"></div>
+    ${fProject('tasks')}${fMember('tasks')}
+    <select class="inp sm" data-f="status" data-reset="page" aria-label="Status filter" style="width:auto">${opts(STATUSES, u.status || '', 'All statuses')}</select>
+    <select class="inp sm" data-f="priority" data-reset="page" aria-label="Priority filter" style="width:auto">${opts(PRIORITIES, u.priority || '', 'All priorities')}</select>
+    <select class="inp sm" data-f="category" data-reset="page" aria-label="Category filter" style="width:auto">${opts(S.settings.categories, u.category || '', 'All categories')}</select>
+    <select class="inp sm" data-f="stage" data-reset="page" aria-label="Stage filter" style="width:auto">${opts(S.settings.stages.map(s => ({ v: s.id, l: s.name })), u.stage || '', 'All stages')}</select>
+    <span class="row nowrap" style="gap:6px;flex-wrap:nowrap"><span class="small muted">Due</span><input type="date" class="inp sm" data-f="from" data-reset="page" value="${esc(u.from || '')}" aria-label="Due from" style="width:auto"><span class="small muted">to</span><input type="date" class="inp sm" data-f="to" data-reset="page" value="${esc(u.to || '')}" aria-label="Due to" style="width:auto"></span>
+    ${fIncomplete('tasks')}<label class="check small"><input type="checkbox" data-f="overdue" ${u.overdue ? 'checked' : ''}> Overdue</label>
+    ${anyFilter ? `<button class="btn sm ghost" data-act="clear-filters">${icon('x', 13)} Clear</button>` : ''}
+  </div>
+  ${list.length ? `<div class="tbl-wrap" style="max-height:calc(100vh - 160px)" data-keep-scroll="tasks"><table class="tbl"><thead><tr>${TASK_COLS.map(th).join('')}</tr></thead><tbody>${rows.map(tr).join('')}</tbody></table></div>
+  <div class="pager"><span>${list.length ? `${u.page * per + 1}–${Math.min(list.length, u.page * per + per)} of ${list.length}` : ''}</span>${pages > 1 ? `<button class="btn sm" data-act="page" data-d="-1" ${u.page === 0 ? 'disabled' : ''}>${icon('left', 13)}</button><span>Page ${u.page + 1} / ${pages}</span><button class="btn sm" data-act="page" data-d="1" ${u.page >= pages - 1 ? 'disabled' : ''}>${icon('right', 13)}</button>` : ''}</div>`
+      : `<div class="panel empty"><div class="big">${anyFilter ? 'No tasks match these filters' : 'No tasks yet'}</div>${anyFilter ? '<button class="btn" data-act="clear-filters">Clear filters</button>' : `<button class="btn pri" data-act="new-task">${icon('plus', 15)} Add your first task</button>`}</div>`}`;
+};
+VIEWS.tasks.acts = {
+  sort: el => { const u = ui('tasks'); const k = el.dataset.k; if ((u.sort || 'due') === k) u.dir = u.dir === -1 ? 1 : -1; else { u.sort = k; u.dir = 1; } saveUI(); render(); },
+  page: el => { const u = ui('tasks'); u.page = (u.page || 0) + +el.dataset.d; saveUI(); render(); },
+  'toggle-charts': () => { const u = ui('tasks'); u.charts = u.charts === false; saveUI(); render(); },
+  'clear-filters': () => { const u = ui('tasks'); ['project', 'assignee', 'status', 'priority', 'category', 'stage', 'q', 'from', 'to', 'incomplete', 'overdue'].forEach(k => delete u[k]); u.page = 0; saveUI(); render(); },
+  'export-csv': () => exportCSV(),
+};
+VIEWS.tasks.change = e => {
+  const el = e.target.closest('[data-inline]'); if (!el) return;
+  const t = S.tasks.find(x => x.id === el.dataset.id); if (!t) return;
+  if (el.dataset.inline === 'status') { setTaskStatus(t, el.value); save(); render(); toast(`Status → ${el.value}`); }
+};
+/* stop row-click when using inline controls */
+document.addEventListener('click', e => { if (e.target.closest('[data-inline]')) e.stopPropagation(); }, true);
+
+function csvCell(v) { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function exportCSV() {
+  const head = ['Project code', 'Project', 'Phase', 'Task', 'Description', 'Important', 'Urgent', 'Quadrant', 'Status', 'Priority', 'Assigned to', 'Start date', 'Due date', 'Days left', 'Kanban stage', 'Progress %', 'Category', 'Notes', 'Type'];
+  const T = todayISO();
+  const rows = allItems().map(t => [projCode(t.projectId), projName(t.projectId), t.phase || '', t.name, t.desc || '', t.important ? 'Yes' : 'No', t.urgent ? 'Yes' : 'No', QUADS[quadOf(t)].label, t.status, t.priority, t.assignee || '', t.start || '', t.due || '', t.due && !isClosed(t) ? diffDays(T, t.due) : '', t.kind === 'task' ? stage(t.stage).name : '', t.progress || 0, t.category || '', t.notes || '', t.kind === 'task' ? 'Task' : 'Recurring']);
+  download(`the-workflow-tasks-${T}.csv`, '﻿' + [head, ...rows].map(r => r.map(csvCell).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
+  toast('CSV exported — opens in Excel & Google Sheets');
+}
+
+/* ===================== Recurring · Schedule · Gantt · Kanban ===================== */
+
+/* ---------- RECURRING TASKS ---------- */
+VIEWS.recurring = function (n) {
+  validProject('recurring');
+  const u = ui('recurring'); const T = todayISO(); const q = (u.q || '').toLowerCase();
+  const occ = occurrences();
+  const list = S.recurring.filter(r => (!u.project || r.projectId === u.project) && (!u.assignee || r.assignee === u.assignee) && (!u.freq || r.freq === u.freq) && (!q || (r.name + ' ' + r.desc + ' ' + projName(r.projectId)).toLowerCase().includes(q)))
+    .sort(by(r => projCode(r.projectId) + r.name));
+  const rows = list.map(r => {
+    const mine = occ.filter(o => o.recId === r.id);
+    const next = mine.find(o => o.due >= T && !isClosed(o));
+    const past = mine.filter(o => o.due <= T);
+    const d = past.filter(isDone).length;
+    return `<tr class="clickable" data-act="edit-rec" data-id="${r.id}">
+      <td><span class="code">${esc(projCode(r.projectId))}</span> <span class="small muted">${esc(projName(r.projectId))}</span></td>
+      <td>${freqHTML(r.freq)}</td>
+      <td class="tname">${esc(r.name)}</td>
+      <td class="muted" style="max-width:220px" title="${esc(r.desc)}">${esc(r.desc)}</td>
+      <td>${priHTML(r.priority)}</td>
+      <td>${esc(r.assignee || '—')}</td>
+      <td>${fmtDate(r.first)}</td>
+      <td>${r.end ? fmtDate(r.end) : '<span class="muted">Ongoing</span>'}</td>
+      <td class="c"><span class="flag ${r.important ? 'on' : ''}">${r.important ? '✓' : ''}</span></td>
+      <td class="c"><span class="flag ${r.urgent ? 'on' : ''}">${r.urgent ? '✓' : ''}</span></td>
+      <td>${next ? `<b>${fmtDate(next.due, 'short')}</b>` : '<span class="muted">—</span>'}</td>
+      <td style="min-width:110px">${progHTML(pct(d, past.length))}</td>
+      <td class="c small">${mine.length}</td></tr>`;
+  }).join('');
+  return header(n, `<button class="btn" data-nav="scheduled">${icon('sched', 15)} View schedule</button><button class="btn pri" data-act="new-rec">${icon('plus', 15)} New recurring task</button>`) + `
+  <div class="panel" style="margin-bottom:14px;background:var(--accent-soft);box-shadow:none"><div class="row small" style="flex-wrap:nowrap;align-items:flex-start">${icon('repeat', 16)} <span style="flex:1;min-width:0">List each routine <b>only once</b> — The Workflow schedules every repeat automatically and feeds them into the Task Schedule, calendars, Eisenhower matrix and dashboard. Tick them off in the <a href="#scheduled" data-nav="scheduled">Task Schedule</a>.</span></div></div>
+  <div class="toolbar">
+    <div class="search">${icon('search', 15)}<input class="inp" placeholder="Search recurring tasks…" data-f="q" data-live value="${esc(u.q || '')}" aria-label="Search"></div>
+    ${fProject('recurring')}${fMember('recurring')}
+    <select class="inp sm" data-f="freq" style="width:auto" aria-label="Frequency">${opts(FREQS.map(f => ({ v: f.k, l: f.label })), u.freq || '', 'All frequencies')}</select>
+  </div>
+  ${list.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Project</th><th>Frequency</th><th>Task name</th><th>Description</th><th>Priority</th><th>Assigned to</th><th>1st date</th><th>End date</th><th class="c">Important</th><th class="c">Urgent</th><th>Next</th><th>Done so far</th><th class="c">#</th></tr></thead><tbody>${rows}</tbody></table></div>`
+      : `<div class="panel empty"><div class="big">No recurring tasks${q || u.project ? ' match' : ' yet'}</div><p>Weekly reports, monthly backups, sprint reviews… add them once.</p><button class="btn pri" data-act="new-rec">${icon('plus', 15)} Add a recurring task</button></div>`}
+  <p class="help" style="margin-top:12px">Supports up to 100+ recurring tasks. Occurrences are scheduled up to the end date, or 12 months ahead when no end date is set.</p>`;
+};
+
+/* ---------- SCHEDULED TASKS ---------- */
+VIEWS.scheduled = function (n) {
+  validProject('scheduled');
+  const u = ui('scheduled'); const T = todayISO();
+  const range = u.range || 'month';
+  let from = '', to = '';
+  if (range === 'week') { from = weekStartOf(T, S.settings.weekStart); to = addDays(from, 6); }
+  else if (range === 'month') { from = monthStart(T); to = monthEnd(T); }
+  else if (range === 'upcoming') { from = T; to = addDays(T, 30); }
+  else if (range === 'past') { to = addDays(T, -1); }
+  else if (range === 'custom') { from = u.from || ''; to = u.to || ''; }
+  const list = occurrences().filter(o => (!u.project || o.projectId === u.project) && (!u.assignee || o.assignee === u.assignee) && (!u.status || o.status === u.status) && (!from || o.due >= from) && (!to || o.due <= to) && (!u.incomplete || !isClosed(o)));
+  if (range === 'past') list.reverse();
+  const per = 60, pages = Math.max(1, Math.ceil(list.length / per)); u.page = clamp(u.page || 0, 0, pages - 1);
+  const rows = list.slice(u.page * per, u.page * per + per);
+  const d = list.filter(isDone).length;
+  const r = o => { const rec = S.recurring.find(x => x.id === o.recId) || {}; const v = S.occ[o.id] || {}; return `<tr class="clickable ${isDone(o) ? 'done' : ''}" data-act="edit-task" data-id="${esc(o.id)}">
+    <td class="c">${cbxHTML(isDone(o), o.id)}</td>
+    <td><select class="inp sm" data-occ-status="${esc(o.id)}" style="width:128px;padding-left:6px" aria-label="Status">${opts(STATUSES, o.status)}</select></td>
+    <td><span class="code">${esc(projCode(o.projectId))}</span> <span class="small muted">${esc(projName(o.projectId))}</span></td>
+    <td><b>${fmtDate(o.due)}</b> <span class="tiny muted">${DOWS[dow(o.due)].slice(0, 3)}</span></td>
+    <td class="tname">${esc(o.name)}</td>
+    <td class="muted" style="max-width:200px">${esc(o.desc)}</td>
+    <td>${priHTML(o.priority)}</td>
+    <td>${esc(o.assignee || '—')}</td>
+    <td>${o.important ? 'Important' : '<span class="muted">Not important</span>'}</td>
+    <td>${o.urgent ? 'Urgent' : '<span class="muted">Not urgent</span>'}</td>
+    <td class="c">${daysLeftHTML(o)}</td>
+    <td style="border-left:2px solid var(--line2)">${v.date ? `<span class="tag" style="background:var(--p-yellow);color:#1d2433">${fmtDate(v.date, 'short')}</span>` : ''}</td>
+    <td>${v.priority ? priHTML(v.priority) : ''}</td>
+    <td>${esc(v.assignee || '')}</td>
+    <td>${v.important != null ? (v.important ? 'Important' : 'Not important') : ''}</td>
+    <td>${v.urgent != null ? (v.urgent ? 'Urgent' : 'Not urgent') : ''}</td></tr>`; };
+  return header(n, `<button class="btn" data-nav="recurring">${icon('repeat', 15)} Recurring list</button>`) + `
+  <div class="toolbar">
+    <div class="pill-tabs">${[['week', 'This week'], ['month', 'This month'], ['upcoming', 'Next 30 days'], ['past', 'Past'], ['all', 'All'], ['custom', 'Custom']].map(([k, l]) => `<button class="${range === k ? 'on' : ''}" data-act="range" data-k="${k}">${l}</button>`).join('')}</div>
+    ${range === 'custom' ? `<input type="date" class="inp sm" data-f="from" value="${esc(u.from || '')}" style="width:auto" aria-label="From"><span class="small muted">to</span><input type="date" class="inp sm" data-f="to" value="${esc(u.to || '')}" style="width:auto" aria-label="To">` : ''}
+  </div>
+  <div class="toolbar">${fProject('scheduled')}${fMember('scheduled')}<select class="inp sm" data-f="status" data-reset="page" style="width:auto" aria-label="Status">${opts(STATUSES, u.status || '', 'All statuses')}</select>${fIncomplete('scheduled')}
+    <span class="spacer"></span><span class="small muted"><b>${d}</b> of <b>${list.length}</b> completed · ${pct(d, list.length)}%</span></div>
+  ${S.recurring.length ? (list.length ? `<div class="tbl-wrap" style="max-height:calc(100vh - 200px)" data-keep-scroll="sched"><table class="tbl"><thead>
+      <tr><th colspan="11" style="text-align:center;letter-spacing:.24em">Recurring task schedule</th><th colspan="5" style="text-align:center;letter-spacing:.24em;border-left:2px solid var(--line2);background:var(--p-yellow);color:var(--pd-yellow)">Variation · this occurrence only</th></tr>
+      <tr><th class="c" style="top:31px">✓</th><th style="top:31px">Status</th><th style="top:31px">Project</th><th style="top:31px">Date</th><th style="top:31px">Task name</th><th style="top:31px">Description</th><th style="top:31px">Priority</th><th style="top:31px">Assigned to</th><th style="top:31px">Importance</th><th style="top:31px">Urgency</th><th class="c" style="top:31px">Days left</th><th style="top:31px;border-left:2px solid var(--line2)">New date</th><th style="top:31px">New priority</th><th style="top:31px">New assigned</th><th style="top:31px">New importance</th><th style="top:31px">New urgency</th></tr></thead><tbody>${rows.map(r).join('')}</tbody></table></div>
+      <div class="pager"><span>${u.page * per + 1}–${Math.min(list.length, u.page * per + per)} of ${list.length}</span>${pages > 1 ? `<button class="btn sm" data-act="spage" data-d="-1" ${u.page === 0 ? 'disabled' : ''}>${icon('left', 13)}</button><span>Page ${u.page + 1} / ${pages}</span><button class="btn sm" data-act="spage" data-d="1" ${u.page >= pages - 1 ? 'disabled' : ''}>${icon('right', 13)}</button>` : ''}</div>
+      <p class="help">Click any row to adjust that single occurrence (new date, priority, owner, importance or urgency) without changing future repeats.</p>`
+      : `<div class="panel empty"><div class="big">Nothing scheduled in this range</div><p>Try another range or clear the filters.</p></div>`)
+      : `<div class="panel empty"><div class="big">No recurring tasks yet</div><p>Add routines in the Recurring tab and they appear here automatically.</p><button class="btn pri" data-act="new-rec">${icon('plus', 15)} Add a recurring task</button></div>`}`;
+};
+VIEWS.scheduled.acts = {
+  range: el => { const u = ui('scheduled'); u.range = el.dataset.k; u.page = 0; saveUI(); render(); },
+  spage: el => { const u = ui('scheduled'); u.page = (u.page || 0) + +el.dataset.d; saveUI(); render(); },
+};
+VIEWS.scheduled.change = e => { const el = e.target.closest('[data-occ-status]'); if (!el) return; setOcc(el.dataset.occStatus, { status: el.value === 'Not Started' ? '' : el.value }); render(); };
+document.addEventListener('click', e => { if (e.target.closest('[data-occ-status]')) e.stopPropagation(); }, true);
+
+/* ---------- GANTT ---------- */
+VIEWS.gantt = function (n) {
+  validProject('gantt');
+  const u = ui('gantt'); const T = todayISO(); const ws = S.settings.weekStart;
+  const pid = u.project || '';
+  const dw = u.zoom === 'compact' ? 12 : u.zoom === 'wide' ? 32 : 22;
+  let tasks = S.tasks.filter(t => (!pid || t.projectId === pid) && t.start && t.due && (!u.incomplete || !isClosed(t)) && (!u.assignee || t.assignee === u.assignee));
+  const p = pid ? proj(pid) : null;
+  const stat = s => pct(tasks.filter(t => t.status === s).length, tasks.length);
+  const avg = tasks.length ? Math.round(tasks.reduce((a, t) => a + (+t.progress || 0), 0) / tasks.length) : 0;
+  const chips = [['Completed', 'var(--p-green)', 'var(--pd-green)'], ['Delayed', 'var(--p-pink)', 'var(--pd-pink)'], ['On Hold', 'var(--p-yellow)', 'var(--pd-yellow)'], ['Pending', 'var(--p-lav)', 'var(--pd-lav)'], ['Not Started', 'var(--p-blue)', 'var(--pd-blue)'], ['In Progress', 'var(--p-green)', 'var(--pd-green)']];
+  const top = `<div class="panel" style="margin-bottom:14px"><div class="row" style="justify-content:space-between;gap:16px">
+    <div style="flex:1;min-width:240px"><div class="ptitle left" style="margin-bottom:6px">Overall progress ${p ? '· ' + esc(p.name) : ''}</div><div class="prog" style="max-width:520px"><div class="pb" style="height:12px;background:var(--p-lav)"><i style="width:${avg}%;background:#9d8ee8"></i></div><span style="font-size:14px">${avg}%</span></div>
+    ${p ? `<div class="small muted" style="margin-top:6px">Lead: <b>${esc(p.lead || '—')}</b> · ${fmtDate(p.start)} → <b style="color:var(--deadline)">${fmtDate(p.end)}</b> · ${p.client ? esc(p.client) : ''}</div>` : ''}</div>
+    <div class="chips">${chips.map(([s, bg, fg]) => `<div class="chip-stat" style="background:${bg};color:${fg}"><div class="k">${s}</div><div class="v">${stat(s)}%</div></div>`).join('')}</div>
+  </div></div>`;
+  const controls = `<div class="toolbar">${fProject('gantt', 'All projects')}${fMember('gantt')}${fIncomplete('gantt')}
+    <div class="seg" role="group" aria-label="Zoom">${[['compact', 'Compact'], ['', 'Normal'], ['wide', 'Wide']].map(([k, l]) => `<button class="${(u.zoom || '') === k ? 'on' : ''}" data-act="zoom" data-k="${k}">${l}</button>`).join('')}</div>
+    <button class="btn sm" data-act="g-today">Today</button><span class="spacer"></span><button class="btn sm pri" data-act="new-task" ${pid ? `data-project="${pid}"` : ''}>${icon('plus', 13)} Task</button></div>`;
+  if (!tasks.length) return header(n) + top + controls + `<div class="panel empty"><div class="big">No tasks with dates to chart</div><p>Add tasks with a start and due date — they appear here automatically.</p><button class="btn pri" data-act="new-task">${icon('plus', 15)} Add task</button></div>`;
+
+  // range
+  let minD = tasks.reduce((a, t) => t.start < a ? t.start : a, T), maxD = tasks.reduce((a, t) => t.due > a ? t.due : a, T);
+  if (p) { if (p.start && p.start < minD) minD = p.start; if (p.end && p.end > maxD) maxD = p.end; }
+  let start = weekStartOf(addDays(minD, -2), ws);
+  let days = diffDays(start, addDays(maxD, 8)); days = Math.ceil(days / 7) * 7; if (days > 735) { days = 735; }
+  const end = addDays(start, days - 1);
+  const W = days * dw;
+  // headers
+  let r1 = '', r2 = '', r3 = '';
+  for (let w = 0; w < days / 7; w++) { const d0 = addDays(start, w * 7); r1 += `<th class="wk" colspan="7"><span style="font-style:normal;font-family:var(--sans);font-size:8.5px;letter-spacing:.14em;font-weight:700">WEEK ${w + 1}</span>&nbsp; ${MONTHS[parse(d0).getMonth()]}</th>`; }
+  const deadline = p && p.end;
+  for (let i = 0; i < days; i++) { const d = addDays(start, i); const wd = dow(d); const cls = `day ${wd === 0 || wd === 6 ? 'we' : ''} ${d === T ? 'tod' : ''} ${d === deadline ? 'dl' : ''}`; r2 += `<th class="${cls}">${dw >= 18 ? 'SMTWTFS'[wd] : ''}</th>`; r3 += `<th class="${cls}" title="${fmtDate(d)}">${dw >= 18 || parse(d).getDate() % 2 ? parse(d).getDate() : ''}</th>`; }
+  // weekend background
+  const weBg = (() => { const stops = []; for (let i = 0; i < 7; i++) { const wd = (ws + i) % 7; const c = wd === 0 || wd === 6 ? 'var(--panel2)' : 'transparent'; stops.push(`${c} ${i * dw}px ${(i + 1) * dw}px`); } return `repeating-linear-gradient(90deg,${stops.join(',')}),repeating-linear-gradient(90deg,transparent 0 ${dw - 1}px,var(--line) ${dw - 1}px ${dw}px)`; })();
+  const todayX = T >= start && T <= end ? diffDays(start, T) * dw : -1;
+  const dlX = deadline && deadline >= start && deadline <= end ? diffDays(start, deadline) * dw : -1;
+  const lines = `${todayX >= 0 ? `<div style="position:absolute;top:0;bottom:0;left:${todayX}px;width:${dw}px;background:var(--today);opacity:.85"></div>` : ''}${dlX >= 0 ? `<div style="position:absolute;top:0;bottom:0;left:${dlX}px;width:${dw}px;background:var(--deadline);opacity:.85"></div>` : ''}`;
+  // group rows
+  const groups = [];
+  const CAP = 300; let shown = 0, hidden = 0;
+  const projList = pid ? [p] : S.projects;
+  projList.forEach(pr => {
+    const pts = tasks.filter(t => t.projectId === pr.id); if (!pts.length) return;
+    const phases = [...new Set(pts.map(t => t.phase || 'No phase'))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    groups.push({ type: 'proj', pr, pts });
+    phases.forEach(ph => { let list = pts.filter(t => (t.phase || 'No phase') === ph).sort(by(t => t.start)); const room = Math.max(0, CAP - shown); if (list.length > room) { hidden += list.length - room; list = list.slice(0, room); } shown += list.length; if (list.length) groups.push({ type: 'phase', ph, list }); });
+  });
+  const WD = [230, 74, 88, 62, 62, 46]; const L = WD.map((_, i) => WD.slice(0, i).reduce((a, b) => a + b, 0)); // sticky offsets
+  const info = (c, i, extra = '') => `class="info fx gx${i}" style="left:${L[i]}px;max-width:${WD[i]}px;width:${WD[i]}px;overflow:hidden;text-overflow:ellipsis;${extra}"`;
+  let body = '';
+  groups.forEach(g => {
+    if (g.type === 'proj' && !pid) { const s = projStats(g.pr.id); body += `<tr class="phase"><td ${info('', 0)}><span class="code">${esc(g.pr.code)}</span> ${esc(g.pr.name)}</td><td ${info('', 1)}></td><td ${info('', 2)}>${s.progress}%</td><td ${info('', 3)}>${fmtDate(g.pr.start, 'short')}</td><td ${info('', 4, 'color:var(--deadline)')}>${fmtDate(g.pr.end, 'short')}</td><td ${info('', 5)}></td><td style="padding:0" colspan="${days}"><div style="position:relative;width:${W}px;height:26px">${g.pr.end >= start && g.pr.end <= end ? `<div style="position:absolute;top:0;bottom:0;left:${diffDays(start, g.pr.end) * dw}px;width:${dw}px;background:var(--deadline);opacity:.6"></div>` : ''}</div></td></tr>`; }
+    if (g.type === 'phase') {
+      body += `<tr class="phase"><td ${info('', 0)}>${esc(g.ph)}</td><td ${info('', 1)}></td><td ${info('', 2)}></td><td ${info('', 3)}></td><td ${info('', 4)}></td><td ${info('', 5)}></td><td style="padding:0" colspan="${days}"><div style="width:${W}px;height:26px"></div></td></tr>`;
+      g.list.forEach(t => {
+        const s0 = t.start < start ? start : t.start, e0 = t.due > end ? end : t.due;
+        const x = diffDays(start, s0) * dw, w = Math.max(dw, (diffDays(s0, e0) + 1) * dw);
+        const c = (COLORS[t.color] || COLORS.blue).bg;
+        body += `<tr data-act="edit-task" data-id="${t.id}" style="cursor:pointer" class="${isDone(t) ? 'done' : ''}">
+          <td ${info('', 0)}><span class="info-name" title="${esc(t.name)}" style="${isDone(t) ? 'text-decoration:line-through;color:var(--muted)' : ''}">${esc(t.name)}</span></td>
+          <td ${info('', 1)}>${esc(t.assignee || '')}</td>
+          <td ${info('', 2)}><div class="prog" style="min-width:70px"><div class="pb"><i style="width:${t.progress}%"></i></div><span>${t.progress}%</span></div></td>
+          <td ${info('', 3)}>${fmtDate(t.start, 'short')}</td>
+          <td ${info('', 4, isOverdue(t) ? 'color:var(--bad);font-weight:700' : '')}>${fmtDate(t.due, 'short')}</td>
+          <td ${info('', 5, 'text-align:center')}>${diffDays(t.start, t.due) + 1}</td>
+          <td style="padding:0" colspan="${days}"><div style="position:relative;width:${W}px;height:26px;background:${weBg}">${lines}<div class="bar" title="${esc(t.name)} · ${fmtDate(t.start)} → ${fmtDate(t.due)} · ${t.progress}%" style="position:absolute;top:5px;left:${x}px;width:${w - 2}px;background:${c}"><i style="width:${t.progress}%"></i></div></div></td></tr>`;
+      });
+    }
+  });
+  const heads = ['Task', 'Owner', 'Progress', 'Start', 'End', 'Days'];
+  const hdr = (row, cls) => heads.map((h, i) => row === 1 ? `<th rowspan="3" class="fx gx${i}" style="left:${L[i]}px;text-align:${i ? 'center' : 'left'};padding:0 8px;min-width:${WD[i]}px;width:${WD[i]}px;max-width:${WD[i]}px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;border-right:1px solid var(--line2)">${h}</th>` : '').join('');
+  return header(n) + top + controls + `
+  <div class="gantt" id="ganttBox" data-keep-scroll="gantt"><table class="gt"><thead>
+    <tr class="r1">${hdr(1)}${r1}</tr><tr class="r2">${r2}</tr><tr class="r3">${r3}</tr>
+  </thead><tbody>${body}</tbody></table></div>
+  ${hidden ? `<div class="help" style="margin-top:8px">${icon('info', 13)} Showing the first ${CAP} tasks — ${hidden} more. Pick a project or assignee above to see the rest.</div>` : ''}
+  <div class="legend" style="justify-content:flex-start;margin-top:10px"><span><i class="dot" style="background:var(--today)"></i>Today</span>${p ? '<span><i class="dot" style="background:var(--deadline)"></i>Project deadline</span>' : '<span><i class="dot" style="background:var(--deadline)"></i>Project deadlines</span>'}<span>Bar colors are set per task · darker fill = progress</span></div>`;
+};
+VIEWS.gantt.after = function () {
+  const box = $('#ganttBox'); if (!box) return;
+  const u = ui('gantt');
+  if (u._scrollToday || !box.dataset.scrolled) {
+    const tod = box.querySelector('thead .day.tod');
+    if (tod && (u._scrollToday || box.scrollLeft === 0)) { const fixedW = window.innerWidth > 980 ? 562 : 160; box.scrollLeft = Math.max(0, tod.offsetLeft - fixedW - 80); }
+    u._scrollToday = false;
+  }
+  box.dataset.scrolled = '1';
+};
+VIEWS.gantt.acts = {
+  zoom: el => { ui('gantt').zoom = el.dataset.k; saveUI(); ui('gantt')._scrollToday = true; render(); },
+  'g-today': () => { ui('gantt')._scrollToday = true; VIEWS.gantt.after(); },
+};
+
+/* ---------- KANBAN ---------- */
+function kanbanList() {
+  const u = ui('kanban');
+  let l = S.tasks.filter(t => (!u.project || t.projectId === u.project) && (!u.status || t.status === u.status) && (!u.priority || t.priority === u.priority) && (!u.assignee || t.assignee === u.assignee) && (!u.incomplete || !isClosed(t)) &&
+    (u.pmin == null || u.pmin === '' || +t.progress >= +u.pmin) && (u.pmax == null || u.pmax === '' || +t.progress <= +u.pmax) &&
+    (!u.sfrom || (t.start && t.start >= u.sfrom)) && (!u.sto || (t.start && t.start <= u.sto)) && (!u.dfrom || (t.due && t.due >= u.dfrom)) && (!u.dto || (t.due && t.due <= u.dto)));
+  const keys = { due: t => t.due || '9999', priority: t => PRIORITIES.indexOf(t.priority), progress: t => +t.progress, name: t => t.name.toLowerCase(), start: t => t.start || '9999', assignee: t => t.assignee || 'zzz' };
+  l.sort(by(keys[u.sortBy || 'due'] || keys.due, u.order === 'desc' ? -1 : 1));
+  return l;
+}
+VIEWS.kanban = function (n) {
+  validProject('kanban');
+  const u = ui('kanban');
+  const list = kanbanList();
+  const stages = S.settings.stages;
+  const cols = stages.map(s => {
+    const cards = list.filter(t => (stages.some(x => x.id === t.stage) ? t.stage : stages[0].id) === s.id);
+    return `<div class="kb-col" data-stage="${s.id}"><div class="kh"><span class="dot" style="background:${(COLORS[s.color] || COLORS.gray).bg};width:11px;height:11px"></span>${esc(s.name)}<span class="cnt">${cards.length}</span></div>
+      <div class="kbody">${cards.slice(0, 120).map(cardHTML).join('')}${cards.length > 120 ? `<div class="tiny muted" style="text-align:center;padding:6px">+ ${cards.length - 120} more — use the filters to narrow down</div>` : ''}<button class="btn sm ghost" data-act="new-task" data-stage="${s.id}" ${u.project ? `data-project="${u.project}"` : ''} style="justify-content:center;color:var(--muted)">${icon('plus', 13)} Add</button></div></div>`;
+  }).join('');
+  const fld = (label, inner) => `<div class="filter-box" style="box-shadow:none;border:1px solid var(--line)"><div class="fb-h">${label}</div><div class="fb-b">${inner}</div></div>`;
+  const panel = `<div class="panel" style="padding:0;overflow:hidden"><div class="bar-title">Smart filter & sort</div><div style="padding:10px;display:flex;flex-direction:column;gap:8px">
+    <label class="check small">${`<input type="checkbox" data-f="incomplete" ${u.incomplete ? 'checked' : ''}>`} Show incomplete tasks only</label>
+    ${fld('Sort', `<div class="row" style="gap:6px;flex-wrap:nowrap"><select class="inp sm" data-f="sortBy" aria-label="Sort by">${opts([{ v: 'due', l: 'Due date' }, { v: 'priority', l: 'Priority' }, { v: 'progress', l: 'Progress' }, { v: 'start', l: 'Start date' }, { v: 'name', l: 'Name' }, { v: 'assignee', l: 'Assigned to' }], u.sortBy || 'due')}</select><select class="inp sm" data-f="order" aria-label="Order" style="width:92px">${opts([{ v: 'asc', l: 'Asc' }, { v: 'desc', l: 'Desc' }], u.order || 'asc')}</select></div>`)}
+    ${fld('Project name', `<select class="inp sm" data-f="project" aria-label="Project">${projOpts(u.project || '', 'All')}</select>`)}
+    <div class="row" style="gap:8px;flex-wrap:nowrap">${fld('Status', `<select class="inp sm" data-f="status" aria-label="Status">${opts(STATUSES, u.status || '', 'All')}</select>`)}${fld('Priority', `<select class="inp sm" data-f="priority" aria-label="Priority">${opts(PRIORITIES, u.priority || '', 'All')}</select>`)}</div>
+    ${fld('Assigned to', `<select class="inp sm" data-f="assignee" aria-label="Assigned to">${opts(allMembers(), u.assignee || '', 'All')}</select>`)}
+    ${fld('Progress', `<div class="row" style="gap:6px;flex-wrap:nowrap"><span class="tiny muted">From</span><input class="inp sm" type="number" min="0" max="100" data-f="pmin" value="${esc(u.pmin ?? '')}" placeholder="0%"><span class="tiny muted">To</span><input class="inp sm" type="number" min="0" max="100" data-f="pmax" value="${esc(u.pmax ?? '')}" placeholder="100%"></div>`)}
+    ${fld('Start date', `<div style="display:grid;gap:5px"><input class="inp sm" type="date" data-f="sfrom" value="${esc(u.sfrom || '')}" aria-label="Start from"><input class="inp sm" type="date" data-f="sto" value="${esc(u.sto || '')}" aria-label="Start to"></div>`)}
+    ${fld('Due date', `<div style="display:grid;gap:5px"><input class="inp sm" type="date" data-f="dfrom" value="${esc(u.dfrom || '')}" aria-label="Due from"><input class="inp sm" type="date" data-f="dto" value="${esc(u.dto || '')}" aria-label="Due to"></div>`)}
+    <button class="btn sm" data-act="kb-clear">${icon('x', 13)} Reset filters</button>
+  </div></div>`;
+  const narrow = window.innerWidth <= 980;
+  return header(n, `${narrow ? `<button class="btn" data-act="kb-filters">${icon('filter', 15)} Filter & sort</button>` : ''}<button class="btn pri" data-act="new-task" ${u.project ? `data-project="${u.project}"` : ''}>${icon('plus', 15)} New task</button>`) + `
+  <div class="kb-wrap"><div class="kb" id="kb" data-keep-scroll="kb">${cols}</div>${narrow ? (u._showFilters ? panel : '') : panel}</div>
+  <div class="legend" style="justify-content:flex-start;margin-top:4px">${PRIORITIES.map(p => `<span><i class="dot" style="background:${PRI_META[p].card};border:1px solid var(--line2)"></i>${p}</span>`).join('')}<span class="muted">· Drag cards between columns${'ontouchstart' in window ? ' (press & hold)' : ''}</span></div>`;
+};
+function cardHTML(t) {
+  return `<div class="kcard" data-card="${t.id}" style="background:${(PRI_META[t.priority] || PRI_META.Medium).card}" tabindex="0" role="button" aria-label="${esc(t.name)}">
+    <div class="row" style="gap:4px;margin-bottom:4px"><span class="kside">${esc(projCode(t.projectId))}</span><span class="spacer"></span><span class="kside">${esc(t.assignee || '')}</span></div>
+    <div class="kt">${esc(t.name)}</div>
+    <div class="kp"><i style="width:${t.progress}%"></i></div><div style="text-align:right;font-size:9.5px;font-weight:700;opacity:.7">${t.progress}%</div>
+    ${t.desc ? `<div class="kd">${esc(t.desc)}</div>` : ''}
+    <div class="km"><b>Due date</b><span style="${isOverdue(t) ? 'color:var(--bad);font-weight:700' : ''}">${fmtDate(t.due) || '—'}</span><b>Status</b><span>${statusHTML(t.status)}</span></div>
+  </div>`;
+}
+VIEWS.kanban.acts = {
+  'kb-clear': () => { const u = ui('kanban'); ['incomplete', 'project', 'status', 'priority', 'assignee', 'pmin', 'pmax', 'sfrom', 'sto', 'dfrom', 'dto'].forEach(k => delete u[k]); saveUI(); render(); },
+  'kb-filters': () => { const u = ui('kanban'); u._showFilters = !u._showFilters; render(); },
+};
+/* drag & drop (mouse + touch, via pointer events) */
+const DRAG = { el: null, id: null, sx: 0, sy: 0, active: false, ghost: null, timer: null, over: null, type: '' };
+document.addEventListener('pointerdown', e => {
+  const c = e.target.closest('.kcard'); if (!c || e.button > 0) return;
+  Object.assign(DRAG, { el: c, id: c.dataset.card, sx: e.clientX, sy: e.clientY, active: false, type: e.pointerType });
+  if (e.pointerType === 'touch') DRAG.timer = setTimeout(() => startDrag(DRAG.sx, DRAG.sy), 320);
+});
+function startDrag(x, y) {
+  if (!DRAG.el) return; DRAG.active = true;
+  const r = DRAG.el.getBoundingClientRect();
+  const g = DRAG.el.cloneNode(true); g.classList.add('kghost'); g.style.width = r.width + 'px'; g.style.left = (x - (DRAG.sx - r.left)) + 'px'; g.style.top = (y - (DRAG.sy - r.top)) + 'px';
+  DRAG.offX = DRAG.sx - r.left; DRAG.offY = DRAG.sy - r.top;
+  document.body.appendChild(g); DRAG.ghost = g; DRAG.el.classList.add('dragging');
+  if (navigator.vibrate && DRAG.type === 'touch') try { navigator.vibrate(15); } catch (_) { }
+}
+document.addEventListener('pointermove', e => {
+  if (!DRAG.el) return;
+  const dx = e.clientX - DRAG.sx, dy = e.clientY - DRAG.sy;
+  if (!DRAG.active) {
+    if (DRAG.type === 'touch') { if (Math.hypot(dx, dy) > 10) { clearTimeout(DRAG.timer); DRAG.el = null; } return; }
+    if (Math.hypot(dx, dy) > 6) startDrag(e.clientX, e.clientY); else return;
+  }
+  DRAG.ghost.style.left = (e.clientX - DRAG.offX) + 'px'; DRAG.ghost.style.top = (e.clientY - DRAG.offY) + 'px';
+  DRAG.ghost.style.display = 'none'; const under = document.elementFromPoint(e.clientX, e.clientY); DRAG.ghost.style.display = '';
+  const col = under && under.closest('.kb-col');
+  if (DRAG.over && DRAG.over !== col) DRAG.over.classList.remove('over');
+  if (col) col.classList.add('over'); DRAG.over = col;
+  // auto-scroll board horizontally near edges
+  const kb = $('#kb'); if (kb) { const r = kb.getBoundingClientRect(); if (e.clientX > r.right - 40) kb.scrollLeft += 12; else if (e.clientX < r.left + 40) kb.scrollLeft -= 12; }
+});
+document.addEventListener('touchmove', e => { if (DRAG.active) e.preventDefault(); }, { passive: false });
+function endDrag(e, cancel) {
+  clearTimeout(DRAG.timer);
+  if (!DRAG.el) return;
+  const wasActive = DRAG.active, id = DRAG.id;
+  let col = DRAG.over;
+  if (wasActive && e && e.type === 'pointerup' && e.clientX != null) { if (DRAG.ghost) DRAG.ghost.style.display = 'none'; const u = document.elementFromPoint(e.clientX, e.clientY); const c = u && u.closest('.kb-col'); if (c) col = c; }
+  if (DRAG.ghost) DRAG.ghost.remove(); if (DRAG.el) DRAG.el.classList.remove('dragging'); $$('.kb-col.over').forEach(c => c.classList.remove('over'));
+  Object.assign(DRAG, { el: null, active: false, ghost: null, over: null });
+  if (cancel) return;
+  if (!wasActive) { if (e && e.type === 'pointerup') openTaskModal(id); return; }
+  if (col) {
+    const t = S.tasks.find(x => x.id === id); const st = stage(col.dataset.stage);
+    if (t && st && t.stage !== st.id) {
+      const prev = t.stage; t.stage = st.id;
+      if (st.done && t.status !== 'Completed') setTaskStatus(t, 'Completed');
+      else if (!st.done && t.status === 'Completed') { t.status = 'In Progress'; delete t.doneAt; if (t.progress === 100) t.progress = 90; }
+      else if (st.id === 'progress' && (t.status === 'Not Started' || t.status === 'Pending')) t.status = 'In Progress';
+      else if (st.id === 'hold') t.status = 'On Hold';
+      save(); render(); toast(`Moved to ${st.name}`, () => { t.stage = prev; save(); render(); });
+    }
+  }
+}
+document.addEventListener('pointerup', e => endDrag(e));
+document.addEventListener('pointercancel', e => endDrag(e, true));
+document.addEventListener('keydown', e => { const c = e.target.closest && e.target.closest('.kcard'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openTaskModal(c.dataset.card); } });
+document.addEventListener('contextmenu', e => { if (e.target.closest('.kcard') && DRAG.type === 'touch') e.preventDefault(); });
+
+/* ===================== Eisenhower · Weekly · Monthly · Setup ===================== */
+
+/* ---------- collapsible filter column (collapsed on phones) ---------- */
+function fcolOpen(view) {
+  const narrow = window.innerWidth <= 980; const u = ui(view);
+  const active = ['project', 'assignee', 'status', 'incomplete'].filter(k => u[k]).length;
+  return `<details class="fcol" data-fcol="${view}" ${!narrow || u._fopen ? 'open' : ''}><summary class="btn">${icon('filter', 15)} Filters & dates${active ? ` <span class="tag" style="background:var(--navy);color:#fff;padding:0 7px">${active}</span>` : ''}</summary><div class="grid" style="gap:8px">`;
+}
+document.addEventListener('toggle', e => { const d = e.target; if (d.dataset && d.dataset.fcol && window.innerWidth <= 980) ui(d.dataset.fcol)._fopen = d.open; }, true);
+
+/* ---------- EISENHOWER ---------- */
+VIEWS.eisenhower = function (n) {
+  validProject('eisenhower');
+  const u = ui('eisenhower'); const T = todayISO();
+  const m = u.month || monthStart(T); const all = u.month === 'all';
+  const from = all ? '' : monthStart(m), to = all ? '' : monthEnd(m);
+  const items = applyFilter(allItems(), u).filter(t => all || (t.due && t.due >= from && t.due <= to));
+  const done = items.filter(isDone).length;
+  const sel = u.quad || '';
+  const years = []; for (let y = parse(T).getFullYear() - 2; y <= parse(T).getFullYear() + 2; y++) years.push(y);
+  const mm = all ? parse(T) : parse(m);
+  const qdata = Object.keys(QUADS).map(q => { const l = items.filter(t => quadOf(t) === q).sort(by(t => t.due || '9')); const d = l.filter(isDone).length; return { q, l, d }; });
+  const table = items.filter(t => !sel || quadOf(t) === sel).sort(by(t => (isClosed(t) ? '1' : '0') + (t.due || '9')));
+  return header(n, `<button class="btn pri" data-act="new-task">${icon('plus', 15)} New task</button>`) + `
+  <div class="eis-top">
+    ${fcolOpen('eisenhower')}
+      <label class="check small panel" style="padding:9px 12px"><input type="checkbox" data-f="incomplete" ${u.incomplete ? 'checked' : ''}> Show incomplete tasks only</label>
+      <div class="filter-box"><div class="fb-h">Month · Year</div><div class="fb-b row" style="gap:6px;flex-wrap:nowrap">
+        <select class="inp sm" data-act-sel="emonth" aria-label="Month">${opts([{ v: 'all', l: 'All time' }].concat(MONTHS.map((x, i) => ({ v: i, l: x }))), all ? 'all' : mm.getMonth())}</select>
+        <select class="inp sm" data-act-sel="eyear" aria-label="Year" style="width:90px" ${all ? 'disabled' : ''}>${opts(years, mm.getFullYear())}</select></div></div>
+      <div class="filter-box"><div class="fb-h">Filter by project</div><div class="fb-b"><select class="inp sm" data-f="project" aria-label="Project">${projOpts(u.project || '', 'All')}</select></div></div>
+      <div class="filter-box"><div class="fb-h">Filter by assignee</div><div class="fb-b"><select class="inp sm" data-f="assignee" aria-label="Assignee">${opts(allMembers(), u.assignee || '', 'All')}</select></div></div>
+    </div></details>
+    <div class="panel"><div class="matrix">
+      <div></div><div class="ax">Urgent</div><div class="ax">Not urgent</div>
+      <div class="ax v">Important</div>
+      ${['do', 'sch'].map(q => `<div class="q ${QUADS[q].cls} ${sel === q ? 'sel' : ''}" data-act="quad" data-q="${q}"><b>${QUADS[q].label}</b><span>${QUADS[q].sub}</span></div>`).join('')}
+      <div class="ax v">Not important</div>
+      ${['del', 'dont'].map(q => `<div class="q ${QUADS[q].cls} ${sel === q ? 'sel' : ''}" data-act="quad" data-q="${q}"><b>${QUADS[q].label}</b><span>${QUADS[q].sub}</span></div>`).join('')}
+    </div></div>
+    <div class="panel eis-prog"><div class="ptitle left">Overall task progress · ${all ? 'All time' : MONTHS[mm.getMonth()] + ' ' + mm.getFullYear()}</div>
+      <div class="prog" style="margin:10px 0 14px"><div class="pb" style="height:16px;background:var(--panel3)"><i style="width:${pct(done, items.length)}%;background:#f3d68a"></i></div><span style="font-size:15px">${pct(done, items.length)}%</span></div>
+      <div class="kpis"><div class="kpi"><div class="k">Total</div><div class="v">${items.length}</div></div><div class="kpi"><div class="k">Done</div><div class="v">${done}</div></div><div class="kpi"><div class="k">Pending</div><div class="v">${items.length - done}</div></div><div class="kpi ${items.filter(isOverdue).length ? 'bad' : ''}"><div class="k">Overdue</div><div class="v">${items.filter(isOverdue).length}</div></div></div>
+      <p class="help" style="margin:12px 0 0">Tick <b>Important</b> and <b>Urgent</b> on any task — it lands in the right box automatically. Click a box above to filter the list.</p>
+    </div>
+  </div>
+  <div class="quads">${qdata.map(({ q, l, d }) => `<div class="quad-panel"><div class="bar-title ${QUADS[q].cls}" style="background:var(--${{ do: 'p-green', sch: 'p-blue', del: 'p-peach', dont: 'p-lav' }[q]});color:${QUADS[q].c}">${QUADS[q].label}</div>
+    <div class="qbody">${ring(pct(d, l.length), QUADS[q].ring, 104, 12)}<div class="qnums"><div><span>Total</span><b>${l.length}</b></div><div><span>Done</span><b>${d}</b></div><div><span>Pending</span><b>${l.length - d}</b></div></div></div>
+    <div class="qlist">${l.length ? `<table class="list-mini"><thead><tr><th></th><th>#</th><th>Task</th><th>Who</th><th>Days</th></tr></thead><tbody>${l.slice(0, 100).map(t => `<tr data-act="edit-task" data-id="${esc(t.id)}" class="${isDone(t) ? 'done' : ''}"><td style="width:24px">${cbxHTML(isDone(t), t.id)}</td><td class="code">${esc(projCode(t.projectId))}</td><td title="${esc(t.name)}" style="${isDone(t) ? 'text-decoration:line-through;color:var(--muted)' : ''}">${t.kind === 'occ' ? icon('repeat', 10) + ' ' : ''}${esc(t.name)}</td><td>${esc(t.assignee || '')}</td><td>${daysLeftHTML(t)}</td></tr>`).join('')}</tbody></table>` : '<div class="empty small">No tasks here</div>'}</div></div>`).join('')}</div>
+  <div class="row" style="margin:18px 0 8px"><div class="ptitle left" style="margin:0">All tasks ${sel ? '· ' + QUADS[sel].label : ''} (${table.length})</div><span class="spacer"></span>${sel ? `<button class="btn sm" data-act="quad" data-q="${sel}">${icon('x', 13)} Show all quadrants</button>` : ''}</div>
+  ${table.length ? `<div class="tbl-wrap" style="max-height:520px" data-keep-scroll="eis"><table class="tbl navyhead"><thead><tr><th class="c">✓</th><th>Project</th><th>Task</th><th>Assigned</th><th>Due date</th><th class="c">Important</th><th class="c">Urgent</th><th>Quadrant</th></tr></thead><tbody>${table.slice(0, 300).map(t => `<tr class="clickable ${isDone(t) ? 'done' : ''}" data-act="edit-task" data-id="${esc(t.id)}"><td class="c">${cbxHTML(isDone(t), t.id)}</td><td class="code">${esc(projCode(t.projectId))}</td><td class="tname">${t.kind === 'occ' ? icon('repeat', 11) + ' ' : ''}${esc(t.name)}</td><td>${esc(t.assignee || '—')}</td><td>${fmtDate(t.due)}</td><td class="c"><button class="flag ${t.important ? 'on' : ''}" data-act="eflag" data-k="important" data-id="${esc(t.id)}" aria-label="Toggle important" style="cursor:pointer">${t.important ? '✓' : ''}</button></td><td class="c"><button class="flag ${t.urgent ? 'on' : ''}" data-act="eflag" data-k="urgent" data-id="${esc(t.id)}" aria-label="Toggle urgent" style="cursor:pointer">${t.urgent ? '✓' : ''}</button></td><td>${quadTag(quadOf(t))}</td></tr>`).join('')}</tbody></table></div>${table.length > 300 ? `<p class="help">Showing 300 of ${table.length} — filter by project or assignee to see more.</p>` : ''}` : `<div class="panel empty"><div class="big">No tasks in this period</div><p>Pick another month or add a task.</p></div>`}`;
+};
+VIEWS.eisenhower.acts = {
+  quad: el => { const u = ui('eisenhower'); u.quad = u.quad === el.dataset.q ? '' : el.dataset.q; saveUI(); render(); },
+  eflag: el => {
+    const id = el.dataset.id, k = el.dataset.k;
+    if (id.includes('|')) { const o = occurrences().find(x => x.id === id); if (o) setOcc(id, { [k]: !o[k] }); }
+    else { const t = S.tasks.find(x => x.id === id); if (t) { t[k] = !t[k]; save(); } }
+    render();
+  },
+};
+VIEWS.eisenhower.change = e => {
+  const el = e.target.closest('[data-act-sel]'); if (!el) return;
+  const u = ui('eisenhower'); const cur = u.month && u.month !== 'all' ? parse(u.month) : parse(todayISO());
+  if (el.dataset.actSel === 'emonth') u.month = el.value === 'all' ? 'all' : `${cur.getFullYear()}-${pad(+el.value + 1)}-01`;
+  else u.month = `${el.value}-${pad(cur.getMonth() + 1)}-01`;
+  saveUI(); render();
+};
+
+/* ---------- WEEKLY ---------- */
+const DAY_COLORS = ['h-lav', 'h-blue', 'h-yellow', 'h-green', 'h-pink', 'h-peach', 'h-teal'];
+const DAY_RING = ['#a99be8', '#86b6e8', '#f0cc6a', '#8cc58a', '#ee9ab4', '#f0b07e', '#79cdc5'];
+VIEWS.weekly = function (n) {
+  validProject('weekly');
+  const u = ui('weekly'); const T = todayISO(); const ws = S.settings.weekStart;
+  const start = weekStartOf(u.start || T, ws); const end = addDays(start, 6);
+  const items = applyFilter(allItems(), u).filter(t => t.due >= start && t.due <= end);
+  const notesKey = start;
+  const days = [0, 1, 2, 3, 4, 5, 6].map(i => {
+    const d = addDays(start, i); const l = items.filter(t => t.due === d).sort(by(t => (isClosed(t) ? 1 : 0) * 10 + PRIORITIES.indexOf(t.priority)));
+    const dn = l.filter(isDone).length;
+    return `<div class="wday ${d === T ? 'tod' : ''}"><div class="wh ${DAY_COLORS[i]}"><b>${DOWS[dow(d)]}</b><span>${fmtDate(d, 'long')}</span></div>
+      <div class="wdonut">${ring(pct(dn, l.length), DAY_RING[i], 92, 11)}<div class="tiny muted" style="margin-top:4px">${l.length ? `${dn}/${l.length} done` : 'Free day'}</div></div>
+      <div class="wlist"><div class="wlh"><span>Task</span><span>✓</span></div>
+        ${l.map(t => `<div class="witem ${isDone(t) ? 'done' : ''}" data-act="edit-task" data-id="${esc(t.id)}"><span class="pc">${esc(projCode(t.projectId))}</span><span class="wn" title="${esc(t.name)}${t.assignee ? ' · ' + esc(t.assignee) : ''}">${t.kind === 'occ' ? icon('repeat', 10) + ' ' : ''}${esc(t.name)}</span>${cbxHTML(isDone(t), t.id)}</div>`).join('')}
+        <button class="btn sm ghost" data-act="new-task" data-date="${d}" style="width:100%;justify-content:center;color:var(--muted);border-radius:0">${icon('plus', 12)} Add</button>
+      </div></div>`;
+  }).join('');
+  const wDone = items.filter(isDone).length;
+  return header(n, `<button class="btn pri" data-act="new-task" data-date="${T >= start && T <= end ? T : start}">${icon('plus', 15)} New task</button>`) + `
+  <div class="week-wrap">
+    ${fcolOpen('weekly')}
+      <div class="filter-box"><div class="fb-h">Week start date</div><div class="fb-b"><input type="date" class="inp sm" data-act-date="wstart" value="${start}" aria-label="Week start date"><div class="row" style="gap:6px;margin-top:6px;flex-wrap:nowrap"><button class="btn sm" data-act="wk" data-d="-7" aria-label="Previous week">${icon('left', 13)}</button><button class="btn sm" data-act="wk" data-d="0" style="flex:1;justify-content:center">This week</button><button class="btn sm" data-act="wk" data-d="7" aria-label="Next week">${icon('right', 13)}</button></div></div></div>
+      <label class="check small panel" style="padding:9px 12px"><input type="checkbox" data-f="incomplete" ${u.incomplete ? 'checked' : ''}> Show incomplete tasks only</label>
+      <div class="filter-box"><div class="fb-h">Filter by project</div><div class="fb-b"><select class="inp sm" data-f="project" aria-label="Project">${projOpts(u.project || '', 'All')}</select></div></div>
+      <div class="filter-box"><div class="fb-h">Filter by assignee</div><div class="fb-b"><select class="inp sm" data-f="assignee" aria-label="Assignee">${opts(allMembers(), u.assignee || '', 'All')}</select></div></div>
+      <div class="panel" style="text-align:center"><div class="ptitle">This week</div>${ring(pct(wDone, items.length), '#a9b8f0', 96, 12)}<div class="tiny muted" style="margin-top:6px">${wDone} of ${items.length} tasks done</div></div>
+    </div></details>
+    <div class="week" data-keep-scroll="week">${days}
+      <div class="wday wnotes"><div class="wh h-lav" style="background:var(--head);color:var(--head-ink)"><b>Notes</b><span>Week of ${fmtDate(start, 'short')}</span></div><textarea data-week-notes="${notesKey}" placeholder="Priorities, reminders, wins…" aria-label="Week notes">${esc(S.settings.weekNotes[notesKey] || '')}</textarea></div>
+    </div>
+  </div>`;
+};
+VIEWS.weekly.acts = {
+  wk: el => { const u = ui('weekly'); const d = +el.dataset.d; u.start = d ? addDays(weekStartOf(u.start || todayISO(), S.settings.weekStart), d) : todayISO(); saveUI(); render(); },
+};
+VIEWS.weekly.change = e => { const el = e.target.closest('[data-act-date="wstart"]'); if (el && el.value) { ui('weekly').start = el.value; saveUI(); render(); } };
+VIEWS.weekly.input = e => { const el = e.target.closest('[data-week-notes]'); if (!el) return; const k = el.dataset.weekNotes; if (el.value.trim()) S.settings.weekNotes[k] = el.value; else delete S.settings.weekNotes[k]; save(); };
+
+/* ---------- MONTHLY ---------- */
+VIEWS.monthly = function (n) {
+  validProject('monthly');
+  const u = ui('monthly'); const T = todayISO(); const ws = S.settings.weekStart;
+  const m = u.month || monthStart(T); const md = parse(m);
+  const start = weekStartOf(m, ws); const weeks = Math.ceil((diffDays(start, monthEnd(m)) + 1) / 7);
+  const gridEnd = addDays(start, weeks * 7 - 1);
+  const items = applyFilter(allItems(), u).filter(t => t.due >= start && t.due <= gridEnd && (!u.status || t.status === u.status));
+  const byDay = {}; items.forEach(t => (byDay[t.due] = byDay[t.due] || []).push(t));
+  const max = window.innerWidth <= 640 ? 6 : 4;
+  let cells = '';
+  for (let i = 0; i < weeks * 7; i++) {
+    const d = addDays(start, i); const l = (byDay[d] || []).sort(by(t => (isClosed(t) ? 1 : 0) * 10 + PRIORITIES.indexOf(t.priority)));
+    const out = d.slice(0, 7) !== m.slice(0, 7);
+    const ic = t => isDone(t) ? `<span class="mi-ic" style="background:var(--ok)">✓</span>` : isOverdue(t) ? `<span class="mi-ic" style="background:var(--bad)">✕</span>` : `<span class="mi-ic" style="background:${(PRI_META[t.priority] || PRI_META.Medium).c}"></span>`;
+    cells += `<div class="mcell ${out ? 'out' : ''} ${d === T ? 'tod' : ''}" data-act="mday" data-date="${d}"><div class="dn"><span>${parse(d).getDate()}</span>${l.length ? `<span class="tiny" style="font-weight:600;opacity:.7">${l.length}</span>` : ''}</div><div class="mitems">
+      ${l.slice(0, max).map(t => `<div class="mi ${isDone(t) ? 'done' : ''}" data-act="edit-task" data-id="${esc(t.id)}" title="${esc(projCode(t.projectId) + ' · ' + t.name + (t.assignee ? ' · ' + t.assignee : ''))}">${ic(t)}<span class="t">${esc(t.name)}</span></div>`).join('')}
+      ${l.length > max ? `<div class="more">+${l.length - max} more</div>` : ''}</div></div>`;
+  }
+  const years = []; for (let y = parse(T).getFullYear() - 3; y <= parse(T).getFullYear() + 3; y++) years.push(y);
+  const inMonth = items.filter(t => t.due.slice(0, 7) === m.slice(0, 7)); const dn = inMonth.filter(isDone).length;
+  return header(n, `<button class="btn pri" data-act="new-task" data-date="${T.slice(0, 7) === m.slice(0, 7) ? T : m}">${icon('plus', 15)} New task</button>`) + `
+  <div class="month-wrap">
+    ${fcolOpen('monthly')}
+      <div class="filter-box"><div class="fb-h">Month · Year</div><div class="fb-b"><div class="row" style="gap:6px;flex-wrap:nowrap"><select class="inp sm" data-act-sel="mmonth" aria-label="Month">${opts(MONTHS.map((x, i) => ({ v: i, l: x })), md.getMonth())}</select><select class="inp sm" data-act-sel="myear" style="width:84px" aria-label="Year">${opts(years, md.getFullYear())}</select></div>
+        <div class="row" style="gap:6px;margin-top:6px;flex-wrap:nowrap"><button class="btn sm" data-act="mm" data-d="-1" aria-label="Previous month">${icon('left', 13)}</button><button class="btn sm" data-act="mm" data-d="0" style="flex:1;justify-content:center">Today</button><button class="btn sm" data-act="mm" data-d="1" aria-label="Next month">${icon('right', 13)}</button></div></div></div>
+      <label class="check small panel" style="padding:9px 12px"><input type="checkbox" data-f="incomplete" ${u.incomplete ? 'checked' : ''}> Show incomplete tasks only</label>
+      <div class="filter-box"><div class="fb-h">Filter by project</div><div class="fb-b"><select class="inp sm" data-f="project" aria-label="Project">${projOpts(u.project || '', 'All')}</select></div></div>
+      <div class="filter-box"><div class="fb-h">Filter by assignee</div><div class="fb-b"><select class="inp sm" data-f="assignee" aria-label="Assignee">${opts(allMembers(), u.assignee || '', 'All')}</select></div></div>
+      <div class="filter-box"><div class="fb-h">Filter by status</div><div class="fb-b"><select class="inp sm" data-f="status" aria-label="Status">${opts(STATUSES, u.status || '', 'All')}</select></div></div>
+      <div class="panel" style="text-align:center"><div class="ptitle">${MONTHS[md.getMonth()]}</div>${ring(pct(dn, inMonth.length), '#a9b8f0', 96, 12)}<div class="tiny muted" style="margin-top:6px">${dn} of ${inMonth.length} tasks done</div></div>
+    </div></details>
+    <div class="mcal"><div class="mhead"><h2>${MONTHS[md.getMonth()]} ${md.getFullYear()}</h2><div class="legend" style="margin:0"><span><i class="mi-ic" style="background:var(--ok)">✓</i>Done</span><span><i class="mi-ic" style="background:var(--bad)">✕</i>Overdue</span><span><i class="dot" style="background:var(--today)"></i>Today</span></div></div>
+      <div class="mgrid">${[0, 1, 2, 3, 4, 5, 6].map(i => `<div class="dow">${window.innerWidth <= 640 ? DOWS[(i + ws) % 7].slice(0, 3) : DOWS[(i + ws) % 7]}</div>`).join('')}${cells}</div></div>
+  </div>
+  <p class="help" style="margin-top:10px">Click a day to add a task on that date · click a task to open it. Recurring tasks appear automatically.</p>`;
+};
+VIEWS.monthly.acts = {
+  mm: el => { const u = ui('monthly'); const d = +el.dataset.d; u.month = d ? addMonths(u.month || monthStart(todayISO()), d) : monthStart(todayISO()); saveUI(); render(); },
+  mday: el => {
+    const d = el.dataset.date; const items = applyFilter(allItems(), ui('monthly')).filter(t => t.due === d);
+    if (window.innerWidth <= 640 && items.length) return dayListModal(d, items);
+    openTaskModal(null, { due: d, start: d, projectId: ui('monthly').project || undefined });
+  },
+};
+VIEWS.monthly.change = e => {
+  const el = e.target.closest('[data-act-sel]'); if (!el) return;
+  const u = ui('monthly'); const cur = parse(u.month || monthStart(todayISO()));
+  if (el.dataset.actSel === 'mmonth') u.month = `${cur.getFullYear()}-${pad(+el.value + 1)}-01`; else u.month = `${el.value}-${pad(cur.getMonth() + 1)}-01`;
+  saveUI(); render();
+};
+function dayListModal(d, items) {
+  const ov = modal({
+    title: fmtDate(d, 'long'), cls: 'sm', body: `<div>${items.map(t => `<div class="witem ${isDone(t) ? 'done' : ''}" data-open="${esc(t.id)}" style="padding:10px 4px"><span class="pc">${esc(projCode(t.projectId))}</span><span class="wn">${esc(t.name)}</span>${statusHTML(t.status)}</div>`).join('')}</div>`,
+    foot: `<span class="spacer"></span><button class="btn pri" data-add>${icon('plus', 14)} Add task</button>`
+  });
+  ov.addEventListener('click', e => { const it = e.target.closest('[data-open]'); if (it) { closeModal(ov); openItem(it.dataset.open); } });
+  ov.querySelector('[data-add]').onclick = () => { closeModal(ov); openTaskModal(null, { due: d, start: d }); };
+}
+
+/* ---------- SETUP ---------- */
+VIEWS.setup = function (n) {
+  const st = S.settings;
+  const listEditor = (key, title, help) => `<div class="panel"><div class="ptitle left">${title}</div><p class="help" style="margin-top:-4px">${help}</p>
+    <div class="list-edit">${st[key].map((v, i) => `<div class="li"><input class="inp sm" value="${esc(v)}" data-list="${key}" data-i="${i}" aria-label="${title} ${i + 1}"><button class="btn icon ghost sm" data-act="list-del" data-list="${key}" data-i="${i}" aria-label="Remove">${icon('x', 14)}</button></div>`).join('')}
+    <form class="li" data-list-add="${key}"><input class="inp sm" name="v" placeholder="Add…" aria-label="Add to ${title}"><button class="btn sm" type="submit">${icon('plus', 13)}</button></form></div></div>`;
+  const stages = `<div class="panel"><div class="ptitle left">Kanban stages <span class="muted" style="letter-spacing:0;text-transform:none;font-weight:500">(${st.stages.length}/10)</span></div><p class="help" style="margin-top:-4px">Rename, recolor and reorder your workflow. Cards moved to the <b>“done”</b> stage are marked Completed.</p>
+    <div class="list-edit">${st.stages.map((s, i) => `<div class="li"><span class="dot" style="background:${(COLORS[s.color] || COLORS.gray).bg};width:14px;height:14px;cursor:pointer" data-act="stage-color" data-i="${i}" title="Change color"></span><input class="inp sm" value="${esc(s.name)}" data-stage-name="${i}" aria-label="Stage name"><button class="btn icon ghost sm ${s.done ? '' : 'muted'}" data-act="stage-done" data-i="${i}" title="${s.done ? 'This is the done stage' : 'Make this the done stage'}" style="${s.done ? 'color:var(--ok)' : ''}">${icon('check', 14)}</button><button class="btn icon ghost sm" data-act="stage-move" data-i="${i}" data-d="-1" ${i === 0 ? 'disabled' : ''} aria-label="Move up">${icon('up', 14)}</button><button class="btn icon ghost sm" data-act="stage-move" data-i="${i}" data-d="1" ${i === st.stages.length - 1 ? 'disabled' : ''} aria-label="Move down">${icon('down', 14)}</button><button class="btn icon ghost sm" data-act="stage-del" data-i="${i}" ${st.stages.length <= 2 ? 'disabled' : ''} aria-label="Delete stage">${icon('x', 14)}</button></div>`).join('')}
+    ${st.stages.length < 10 ? `<form class="li" data-stage-add><input class="inp sm" name="v" placeholder="New stage…" aria-label="New stage"><button class="btn sm" type="submit">${icon('plus', 13)}</button></form>` : ''}</div></div>`;
+  const used = (() => { try { return Math.round((localStorage.getItem(STORE_KEY) || '').length / 1024); } catch (e) { return 0; } })();
+  return header(n) + `<div class="setup-grid">
+    <div class="panel"><div class="ptitle left">General</div>
+      <div class="grid" style="gap:12px">
+        <label class="fld">Week starts on<select class="inp" data-setting="weekStart">${opts([{ v: 1, l: 'Monday' }, { v: 0, l: 'Sunday' }, { v: 6, l: 'Saturday' }], st.weekStart)}</select></label>
+        <label class="fld">Date format<select class="inp" data-setting="dateFmt">${opts([{ v: 'MDY', l: 'MM/DD/YYYY (12/31/2026)' }, { v: 'DMY', l: 'DD/MM/YYYY (31/12/2026)' }, { v: 'YMD', l: 'YYYY-MM-DD (2026-12-31)' }], st.dateFmt)}</select></label>
+        <div class="fld">Appearance<div class="seg"><button class="${st.theme !== 'dark' ? 'on' : ''}" data-act="set-theme" data-v="light">${icon('sun', 13)} Light</button><button class="${st.theme === 'dark' ? 'on' : ''}" data-act="set-theme" data-v="dark">${icon('moon', 13)} Dark</button></div></div>
+      </div></div>
+    ${listEditor('members', 'Team members', 'People you assign tasks to. Renaming here updates every task.')}
+    ${stages}
+    ${listEditor('categories', 'Categories', 'Group tasks by type of work (charts use these).')}
+    ${listEditor('phases', 'Phases', 'Gantt rows are grouped by phase.')}
+    <div class="panel"><div class="ptitle left">Your data</div><p class="help" style="margin-top:-4px">Everything is saved privately on this device (${used} KB). Make a backup now and then — or to move to another device.</p>
+      <div class="grid" style="gap:8px">
+        ${DEMO ? '<p class="help">Backups are available in the full version.</p>' : `<button class="btn" data-act="backup">${icon('download', 15)} Download backup (.json)</button>
+        <label class="btn" style="justify-content:flex-start">${icon('upload', 15)} Restore a backup<input type="file" accept=".json,application/json" data-restore hidden></label>`}
+        <button class="btn" data-act="export-csv2">${icon('download', 15)} Export tasks to CSV (Excel / Sheets)</button>
+        <button class="btn" data-act="print">${icon('print', 15)} Print this page</button>
+        ${S.meta.sample ? `<button class="btn danger" data-act="clear-sample">${icon('trash', 15)} Remove sample data & start fresh</button>` : `<button class="btn" data-act="load-sample">${icon('copy', 15)} Load sample data</button>`}
+        <button class="btn danger" data-act="wipe">${icon('trash', 15)} Erase everything</button>
+      </div></div>
+    <div class="panel"><div class="ptitle left">Install the app</div>
+      <p class="help" style="margin-top:-4px">Add The Workflow to your home screen or desktop — it opens full-screen and works offline.</p>
+      <div class="small" style="line-height:1.7"><b>iPhone / iPad (Safari):</b> Share ⬆︎ → <i>Add to Home Screen</i><br><b>Android (Chrome):</b> menu ⋮ → <i>Install app</i><br><b>Computer (Chrome / Edge):</b> install icon ⊕ in the address bar</div>
+      ${window._installPrompt ? `<button class="btn pri" data-act="install" style="margin-top:10px">${icon('download', 15)} Install now</button>` : ''}
+      <p class="help" style="margin-top:12px">Keyboard: press <b>N</b> anywhere to add a task · <b>Esc</b> closes windows.</p>
+    </div>
+  </div>`;
+};
+VIEWS.setup.acts = {
+  'set-theme': el => { S.settings.theme = el.dataset.v; save(); applyTheme(); shell(); render(); },
+  'list-del': async el => {
+    const key = el.dataset.list, i = +el.dataset.i, v = S.settings[key][i];
+    if (key === 'members' && S.tasks.some(t => t.assignee === v) && !await confirmBox(`Remove <b>${esc(v)}</b> from the team list? Their tasks keep the name.`, 'Remove')) return;
+    S.settings[key].splice(i, 1); save(); render();
+  },
+  'stage-color': el => { const s = S.settings.stages[+el.dataset.i]; const i = STAGE_COLORS.indexOf(s.color); s.color = STAGE_COLORS[(i + 1) % STAGE_COLORS.length]; save(); render(); },
+  'stage-done': el => { S.settings.stages.forEach((s, i) => { s.done = i === +el.dataset.i ? !s.done : false; }); save(); render(); },
+  'stage-move': el => { const a = S.settings.stages, i = +el.dataset.i, j = i + +el.dataset.d; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; save(); render(); },
+  'stage-del': async el => {
+    const a = S.settings.stages, i = +el.dataset.i, s = a[i]; const cnt = S.tasks.filter(t => t.stage === s.id).length;
+    const to = a[i === 0 ? 1 : 0];
+    if (!await confirmBox(`Delete stage <b>${esc(s.name)}</b>?${cnt ? ` Its ${plural(cnt, 'card')} will move to <b>${esc(to.name)}</b>.` : ''}`)) return;
+    S.tasks.forEach(t => { if (t.stage === s.id) t.stage = to.id; }); a.splice(i, 1); save(); render();
+  },
+  backup: () => { download(`the-workflow-backup-${todayISO()}.json`, JSON.stringify(Object.assign({ app: 'the-workflow' }, S), null, 1)); toast('Backup downloaded'); },
+  'export-csv2': () => exportCSV(),
+  print: () => window.print(),
+  install: async () => { const p = window._installPrompt; if (!p) return; p.prompt(); try { await p.userChoice; } catch (e) { } window._installPrompt = null; render(); },
+  'clear-sample': async () => {
+    if (!await confirmBox('Remove all sample projects, tasks and recurring tasks? Your settings stay.', 'Remove sample data')) return;
+    snapshot(); S.projects = []; S.tasks = []; S.recurring = []; S.occ = {}; S.settings.members = []; S.settings.weekNotes = {}; S.meta.sample = false;
+    Object.keys(UI).forEach(k => delete UI[k]); saveUI(); touchOcc(); save(true); render(); toast('Sample data removed — add your first project!', restoreSnap);
+  },
+  'load-sample': async () => {
+    if ((S.tasks.length || S.projects.length) && !await confirmBox('Replace your current data with the sample data? Download a backup first if you want to keep it.', 'Replace with sample')) return;
+    snapshot(); const keep = S.settings.theme; S = sampleData(); S.settings.theme = keep; touchOcc(); save(true); render(); toast('Sample data loaded', restoreSnap);
+  },
+  wipe: async () => {
+    if (!await confirmBox('Erase <b>all</b> projects, tasks, recurring tasks and settings on this device? This can’t be undone unless you have a backup.', 'Erase everything')) return;
+    snapshot(); S = defaults(); Object.keys(UI).forEach(k => delete UI[k]); saveUI(); touchOcc(); save(true); applyTheme(); shell(); go('projects'); toast('All data erased', () => { restoreSnap(); applyTheme(); shell(); render(); });
+  },
+};
+VIEWS.setup.change = async e => {
+  const t = e.target;
+  if (t.dataset.setting) { const k = t.dataset.setting; S.settings[k] = k === 'weekStart' ? +t.value : t.value; save(); render(); toast('Saved'); return; }
+  if (t.dataset.list) {
+    const key = t.dataset.list, i = +t.dataset.i, old = S.settings[key][i], v = t.value.trim();
+    if (!v) { t.value = old; return; }
+    if (v === old) return;
+    S.settings[key][i] = v;
+    const field = { members: 'assignee', categories: 'category', phases: 'phase' }[key];
+    let changed = 0;
+    S.tasks.forEach(x => { if (x[field] === old) { x[field] = v; changed++; } });
+    S.recurring.forEach(x => { if (x[field] === old) { x[field] = v; changed++; } });
+    if (key === 'members') { S.projects.forEach(p => { if (p.lead === old) p.lead = v; }); Object.values(S.occ).forEach(o => { if (o.assignee === old) o.assignee = v; }); touchOcc(); }
+    save(); render(); toast(changed ? `Renamed — ${plural(changed, 'task')} updated` : 'Saved'); return;
+  }
+  if (t.dataset.stageName != null) { const s = S.settings.stages[+t.dataset.stageName]; const v = t.value.trim(); if (v) { s.name = v; save(); toast('Stage renamed'); } else t.value = s.name; return; }
+  if (t.matches('[data-restore]')) {
+    const f = t.files[0]; if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      if (!data || !Array.isArray(data.tasks) || !Array.isArray(data.projects)) throw new Error('bad');
+      if (!await confirmBox(`Restore this backup? It has <b>${plural(data.projects.length, 'project')}</b> and <b>${plural(data.tasks.length, 'task')}</b> and will replace what’s on this device.`, 'Restore', false)) { t.value = ''; return; }
+      snapshot(); delete data.app; S = migrate(data); touchOcc(); save(true); applyTheme(); shell(); go('dashboard'); toast('Backup restored', restoreSnap);
+    } catch (err) { toast('That file isn’t a valid The Workflow backup'); }
+    t.value = '';
+  }
+};
+document.addEventListener('submit', e => {
+  const f = e.target; e.preventDefault();
+  const v = (f.querySelector('[name=v]') || {}).value; const val = (v || '').trim(); if (!val) return;
+  if (f.dataset.listAdd) { const key = f.dataset.listAdd; if (S.settings[key].some(x => x.toLowerCase() === val.toLowerCase())) { toast('Already in the list'); return; } S.settings[key].push(val); save(); render(); setTimeout(() => { const i = $(`[data-list-add="${key}"] input`); if (i) i.focus(); }, 0); }
+  if (f.dataset.stageAdd != null) { if (S.settings.stages.length >= 10) return; S.settings.stages.push({ id: uid(), name: val, color: STAGE_COLORS[S.settings.stages.length % STAGE_COLORS.length] }); save(); render(); }
+});
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); window._installPrompt = e; });
+VIEWS.weekly.after = function () {
+  const wk = $('.week'); const t = wk && wk.querySelector('.wday.tod');
+  if (wk && t && window.innerWidth <= 640 && !wk.dataset.done && wk.scrollLeft === 0) { wk.scrollLeft = t.offsetLeft - wk.offsetLeft; }
+  if (wk) wk.dataset.done = '1';
+};
+
+init();
+
+</script>
+</body>
+</html>
