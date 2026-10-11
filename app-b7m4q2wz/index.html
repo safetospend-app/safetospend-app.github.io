@@ -1803,7 +1803,8 @@ const GS = (()=>{
     // chart data lives in the hidden sheet 19
     const data=[]; // rows of [label, v1, v2]
     data.push(["",t("plan"),t("actual")]); SECS.forEach(k=>data.push([t(k),c.plan[k],c.act[k]]));
-    sh.charts.push({id:1101, kind:"pva", anchor:[rCh[0],cs(0)], w:px(cs(0),ce(8))-12, h:chartH});
+    if(SECS.some(k=>c.plan[k]>0||c.act[k]>0)) sh.charts.push({id:1101, kind:"pva", anchor:[rCh[0],cs(0)], w:px(cs(0),ce(8))-12, h:chartH});
+    else setc(sh,rCh[3],cs(0),ce(8), sval(t("d.empty"), fmt(WHITE,{horizontalAlignment:"CENTER"},{italic:true,foregroundColorStyle:col(MUTED)})));
     // legends for the two donuts (cells), donut charts on the left half
     const legend=(u0,items,total,totLabel)=>{ items.forEach((it,i)=>{ if(i>6) return; const r=rCh[i+1];
         setc(sh,r,cs(u0+4),cs(u0+7), rval([["● ",{foregroundColorStyle:col(it.color),fontSize:11}],[it.name,{fontSize:9,foregroundColorStyle:col(INK2)}]], fmt(WHITE)));
