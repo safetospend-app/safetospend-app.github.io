@@ -413,13 +413,25 @@ table.log td.act{width:40px;text-align:right;color:var(--soft)}
 @media (min-width:861px){ table.log td.sub small{display:none} }
 @media (max-width:420px){ .mobile-top .brand div:last-child{display:none} }
 @media print{ aside.side,.tabbar,.mobile-top,.top .actions,.demo-bar{display:none!important} .app{display:block} }
+/* google sheets sync */
+a.btn{text-decoration:none}
+.gs-st{display:flex;align-items:center;gap:10px;margin:2px 0 14px}
+.gs-st b{display:block;font-size:13.5px;word-break:break-all}
+.gs-st small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;font-weight:600}
+.gs-dot{width:10px;height:10px;border-radius:50%;background:var(--sage-d);flex:none;display:inline-block}
+.gs-dot.wait{background:var(--butter-d)}
+.gs-dot.bad{background:var(--coral)}
+.chip.gs-chip{color:var(--ink2);gap:6px}
+.chip.gs-chip .gs-dot{width:7px;height:7px}
+svg.i.spin{animation:gsspin 1.4s linear infinite}
+@keyframes gsspin{50%{opacity:.35}}
 
 </style>
 </head>
 <body>
 <div id="app"></div>
 <noscript>Please enable JavaScript to use Bloom Budget.</noscript>
-<script>window.__DEMO__=false;window.__ETSY__="https://www.etsy.com/listing/4591322436";</script>
+<script>window.__DEMO__=false;window.__ETSY__="https://www.etsy.com/listing/4591322436";window.__GCLIENT__="10719147801-kpsr3frdthsf6m6shqa6it8iiivee2m0.apps.googleusercontent.com";</script>
 <script>
 const I18N = {
 en:{
@@ -500,7 +512,8 @@ en:{
   "st.bills":["Rent / mortgage","Electricity","Water","Internet","Phone","Insurance","Streaming"],
   "st.expenses":["Groceries","Eating out","Gas / transport","Personal care","Clothes","Fun money"],
   "st.debt":["Credit card","Car loan","Student loan"],
-  "demo.notes":["weekly shop","higher than usual — heater","pizza night","extra payment","birthday gift","tax refund"]
+  "demo.notes":["weekly shop","higher than usual — heater","pizza night","extra payment","birthday gift","tax refund"],
+  "gs.privacy":"Privacy","gs.title":"Google Sheets","gs.p":"Keep a live copy of your budget in your own Google Sheets — handy on a computer, to print or to share. Bloom Budget only sees the one sheet it creates, nothing else in your Google Drive.","gs.connect":"Connect Google Sheets","gs.as":"Connected · {e}","gs.asNoEmail":"Connected","gs.last":"Last sync: {d}","gs.never":"Not synced yet","gs.syncNow":"Sync now","gs.open":"Open my sheet","gs.disc":"Disconnect","gs.discQ":"Disconnect Google Sheets? Your sheet stays in your Google Drive — it just stops updating.","gs.syncing":"Syncing…","gs.pending":"New changes — tap “Sync now”","gs.offline":"You’re offline — it syncs when you’re back online","gs.err":"Sync didn’t work. Tap “Sync now” to try again.","gs.ok":"Synced to Google Sheets ✓","gs.connected":"Google Sheets connected ✓","gs.denied":"Not connected — Google access wasn’t given.","gs.chip":"Sync","gs.demo":"full version","gs.note":"Bloom Budget updates this sheet automatically. Changes made here are replaced at the next sync — edit your budget in the app.","gs.tOv":"Overview","gs.tPlan":"Plan","gs.tLog":"Money log","gs.tGoals":"Goals","gs.synced":"Updated {d}","gs.diff":"Difference","gs.left":"Left","gs.status":"Status","gs.saved":"Saved so far","gs.paidSoFar":"Paid so far","gs.progress":"Progress","gs.start":"Starting balance","gs.savGoals":"Savings goals","gs.debts":"Debt payoff","gs.noGoals":"No goals yet — add one in “Categories & plan”.","gs.sPaid":"Paid","gs.sPart":"Partly paid","gs.sDue":"Due {d}","gs.sLate":"Late","gs.sRecv":"Received","gs.sPartIn":"Partly received","gs.sExp":"Expected","gs.sOver":"Over plan","gs.sSaved":"Saved"
 },
 de:{
   appTag:"ADHS-freundliches Budget",
@@ -580,7 +593,8 @@ de:{
   "st.bills":["Miete / Kredit","Strom","Wasser","Internet","Handy","Versicherungen","Streaming"],
   "st.expenses":["Lebensmittel","Essen gehen","Tanken / ÖPNV","Drogerie","Kleidung","Freizeit"],
   "st.debt":["Kreditkarte","Autokredit","Studienkredit"],
-  "demo.notes":["Wocheneinkauf","höher als sonst – Heizlüfter","Pizzaabend","Sonderzahlung","Geburtstagsgeschenk","Steuererstattung"]
+  "demo.notes":["Wocheneinkauf","höher als sonst – Heizlüfter","Pizzaabend","Sonderzahlung","Geburtstagsgeschenk","Steuererstattung"],
+  "gs.privacy":"Datenschutz","gs.title":"Google Sheets","gs.p":"Eine immer aktuelle Kopie deines Budgets in deinem eigenen Google Sheets – praktisch am Computer, zum Drucken oder Teilen. Bloom Budget sieht nur die eine Tabelle, die es anlegt, sonst nichts in deinem Google Drive.","gs.connect":"Google Sheets verbinden","gs.as":"Verbunden · {e}","gs.asNoEmail":"Verbunden","gs.last":"Zuletzt synchronisiert: {d}","gs.never":"Noch nicht synchronisiert","gs.syncNow":"Jetzt synchronisieren","gs.open":"Meine Tabelle öffnen","gs.disc":"Trennen","gs.discQ":"Google Sheets trennen? Deine Tabelle bleibt in deinem Google Drive – sie wird nur nicht mehr aktualisiert.","gs.syncing":"Synchronisiere…","gs.pending":"Neue Änderungen – tippe auf „Jetzt synchronisieren“","gs.offline":"Du bist offline – es wird synchronisiert, sobald du wieder online bist","gs.err":"Synchronisieren hat nicht geklappt. Tippe auf „Jetzt synchronisieren“.","gs.ok":"Mit Google Sheets synchronisiert ✓","gs.connected":"Google Sheets verbunden ✓","gs.denied":"Nicht verbunden – kein Zugriff von Google erteilt.","gs.chip":"Sync","gs.demo":"Vollversion","gs.note":"Bloom Budget aktualisiert diese Tabelle automatisch. Änderungen hier werden beim nächsten Sync ersetzt – bearbeite dein Budget in der App.","gs.tOv":"Übersicht","gs.tPlan":"Plan","gs.tLog":"Geldbuch","gs.tGoals":"Ziele","gs.synced":"Aktualisiert {d}","gs.diff":"Differenz","gs.left":"Rest","gs.status":"Status","gs.saved":"Bisher gespart","gs.paidSoFar":"Bisher bezahlt","gs.progress":"Fortschritt","gs.start":"Startbetrag","gs.savGoals":"Sparziele","gs.debts":"Schulden abbauen","gs.noGoals":"Noch keine Ziele – füge eins unter „Kategorien & Plan“ hinzu.","gs.sPaid":"Bezahlt","gs.sPart":"Teilweise bezahlt","gs.sDue":"Fällig {d}","gs.sLate":"Überfällig","gs.sRecv":"Erhalten","gs.sPartIn":"Teilweise erhalten","gs.sExp":"Erwartet","gs.sOver":"Über Plan","gs.sSaved":"Gespart"
 },
 fr:{
   appTag:"Budget adapté TDAH",
@@ -660,7 +674,8 @@ fr:{
   "st.bills":["Loyer / crédit","Électricité","Eau","Internet","Téléphone","Assurances","Streaming"],
   "st.expenses":["Courses","Restaurants","Carburant / transports","Soins","Vêtements","Loisirs"],
   "st.debt":["Carte de crédit","Crédit auto","Prêt étudiant"],
-  "demo.notes":["courses de la semaine","plus élevé — chauffage","soirée pizza","paiement en plus","cadeau d’anniversaire","remboursement d’impôts"]
+  "demo.notes":["courses de la semaine","plus élevé — chauffage","soirée pizza","paiement en plus","cadeau d’anniversaire","remboursement d’impôts"],
+  "gs.privacy":"Confidentialité","gs.title":"Google Sheets","gs.p":"Une copie toujours à jour de votre budget dans votre propre Google Sheets — pratique sur ordinateur, pour imprimer ou partager. Bloom Budget ne voit que la feuille qu’il crée, rien d’autre dans votre Google Drive.","gs.connect":"Connecter Google Sheets","gs.as":"Connecté · {e}","gs.asNoEmail":"Connecté","gs.last":"Dernière synchro : {d}","gs.never":"Pas encore synchronisé","gs.syncNow":"Synchroniser","gs.open":"Ouvrir ma feuille","gs.disc":"Déconnecter","gs.discQ":"Déconnecter Google Sheets ? Votre feuille reste dans votre Google Drive — elle n’est simplement plus mise à jour.","gs.syncing":"Synchronisation…","gs.pending":"Nouveaux changements — touchez « Synchroniser »","gs.offline":"Vous êtes hors ligne — la synchro se fera au retour en ligne","gs.err":"La synchro n’a pas fonctionné. Touchez « Synchroniser » pour réessayer.","gs.ok":"Synchronisé avec Google Sheets ✓","gs.connected":"Google Sheets connecté ✓","gs.denied":"Non connecté — l’accès Google n’a pas été accordé.","gs.chip":"Synchro","gs.demo":"version complète","gs.note":"Bloom Budget met à jour cette feuille automatiquement. Les modifications faites ici sont remplacées à la prochaine synchro — modifiez votre budget dans l’app.","gs.tOv":"Aperçu","gs.tPlan":"Plan","gs.tLog":"Journal","gs.tGoals":"Objectifs","gs.synced":"Mis à jour {d}","gs.diff":"Écart","gs.left":"Reste","gs.status":"Statut","gs.saved":"Épargné","gs.paidSoFar":"Déjà payé","gs.progress":"Progression","gs.start":"Solde de départ","gs.savGoals":"Objectifs d’épargne","gs.debts":"Remboursement des dettes","gs.noGoals":"Pas encore d’objectif — ajoutez-en un dans « Catégories & budget ».","gs.sPaid":"Payé","gs.sPart":"Payé en partie","gs.sDue":"À payer le {d}","gs.sLate":"En retard","gs.sRecv":"Reçu","gs.sPartIn":"Reçu en partie","gs.sExp":"Attendu","gs.sOver":"Au-dessus du plan","gs.sSaved":"Épargné"
 }
 };
 
@@ -702,7 +717,9 @@ const IC = {
   cart:'<path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>',
   card:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
   install:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M12 8v7M9 12l3 3 3-3"/>',
-  refresh:'<path d="M20 12a8 8 0 11-2.3-5.7L20 8.5"/><path d="M20 3v5.5h-5.5"/>'
+  refresh:'<path d="M20 12a8 8 0 11-2.3-5.7L20 8.5"/><path d="M20 3v5.5h-5.5"/>',
+  cloud:'<path d="M7 18.5h10a4.2 4.2 0 00.6-8.36A6 6 0 006.3 9.7 4.4 4.4 0 007 18.5z"/><path d="M12 15.8v-5M9.8 12.8l2.2-2.2 2.2 2.2"/>',
+  sheet:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 9v12"/>'
 };
 const SIC = {income:"inc",savings:"sav",bills:"bill",expenses:"cart",debt:"card"};
 const icon = (n,cls)=>`<svg class="i ${cls||""}" viewBox="0 0 24 24" aria-hidden="true">${IC[n]||""}</svg>`;
@@ -785,6 +802,7 @@ function save(){
   if(DEMO) return;
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
   clearTimeout(saveT); saveT=setTimeout(()=>idbPut(S),500);
+  try{ GS.changed(); }catch(e){}
 }
 function idb(){ return new Promise((res,rej)=>{ if(!window.indexedDB) return rej(new Error("no idb")); const r=indexedDB.open("bloom-budget",1); r.onupgradeneeded=()=>r.result.createObjectStore("kv"); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
 function idbPut(v){ idb().then(db=>{ const x=db.transaction("kv","readwrite"); x.objectStore("kv").put(JSON.stringify(v),"state"); }).catch(()=>{}); }
@@ -936,7 +954,7 @@ function sideHTML(){
 }
 function mobileTopHTML(){
   return `<div class="mobile-top"><div class="brand"><div class="mark"></div><div><b>Bloom Budget</b></div></div>
-    <div style="display:flex;gap:6px;align-items:center"><button class="chip" data-a="periodPicker"><b>${esc(pLabel(P()))}</b>${icon("chev")}</button>
+    <div style="display:flex;gap:6px;align-items:center">${GS.on()?`<span id="gs-chip-m">${GS.chip(true)}</span>`:""}<button class="chip" data-a="periodPicker"><b>${esc(pLabel(P()))}</b>${icon("chev")}</button>
     <button class="chip" style="padding:8px" data-a="go" data-v="settings" aria-label="${t("nav.settings")}">${icon("gear")}</button></div></div>`;
 }
 function tabbarHTML(){
@@ -990,6 +1008,7 @@ function dashHTML(){
     <div class="actions">
       <button class="chip" data-a="editPeriod">${t(p.type)} · <b>${esc(fRange(p.start,p.end))}</b></button>
       <button class="chip" data-a="editPeriod">${t("rollover")} <b>${money0(p.rollover)}</b></button>
+      ${GS.on()?`<span id="gs-chip">${GS.chip(false)}</span>`:""}
       <button class="btn" data-a="addTx">${icon("plus")}${t("addMoney")}</button>
     </div>
   </div>
@@ -1427,6 +1446,7 @@ function settingsHTML(){
       <button class="btn ghost" data-a="restore" ${DEMO?"disabled":""}>${icon("up")}${t("restore")}</button>
       <button class="btn ghost" data-a="csv">${icon("list")}${t("csv")}</button></div>
       <p class="muted" style="margin:12px 0 0;font-size:12.5px">${t("lastBackup",{d:S.lastBackup?fLong(iso(new Date(S.lastBackup))):t("never")})}</p></div>
+    ${GS.avail()?`<div class="card set-card" id="gs-card">${GS.card()}</div>`:""}
     <div class="card set-card"><h3>${t("set.period")}</h3><p>${t("set.periodP")}</p>
       <div class="rowb"><button class="btn ghost" data-a="editPeriod">${icon("cal")}${t("editPeriod")} · ${esc(pLabel(p))}</button><button class="btn ghost" data-a="newPeriod">${t("newPeriod")}</button></div></div>
     <div class="card set-card"><h3>${t("set.install")}</h3><p>${t("set.installP")}</p>
@@ -1558,8 +1578,11 @@ const A = {
   backup(){ doBackup(); },
   restore(){ doRestore(); },
   csv(){ doCSV(); },
+  gsConnect(){ GS.connect(); },
+  gsSync(){ GS.syncNow(); },
+  gsDisc(){ GS.disconnect(); },
   install(){ const d=UI.deferredInstall; if(!d) return; d.prompt(); d.userChoice.finally(()=>{ UI.deferredInstall=null; render(); }); },
-  reset(){ if(DEMO) return; if(!confirm(t("resetQ"))) return; const l=S.lang; clearTimeout(saveT); localStorage.removeItem(KEY); idbClear(); S=blank(l); UI.view="dash"; UI.wiz=0; render(); }
+  reset(){ if(DEMO) return; if(!confirm(t("resetQ"))) return; const l=S.lang; clearTimeout(saveT); localStorage.removeItem(KEY); idbClear(); GS.forget(); S=blank(l); UI.view="dash"; UI.wiz=0; render(); }
 };
 document.addEventListener("click",e=>{
   const el=e.target.closest("[data-a]"); if(!el) return;
@@ -1628,6 +1651,272 @@ document.addEventListener("keydown",e=>{
 window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); UI.deferredInstall=e; if(UI.view==="settings" && S && S.setupDone) render(); });
 window.addEventListener("storage",e=>{ if(e.key===KEY && !DEMO){ const d=loadLS(); if(valid(d)){ S=d; migrate(); render(); } } });
 
+/* ---------------- Google Sheets sync ---------------- */
+const GS = (()=>{
+  const CID = window.__GCLIENT__ || "";
+  const MK=KEY+".gs", TK=KEY+".gst", SK=KEY+".gss";
+  const SCOPE = "https://www.googleapis.com/auth/drive.file";
+  const API = "https://sheets.googleapis.com/v4/spreadsheets";
+  const IDS = [11,12,13,14];            // overview, plan, money log, goals
+  const ld = k=>{ try{ return JSON.parse(localStorage.getItem(k)||"null"); }catch(e){ return null; } };
+  const put = (k,v)=>{ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v)); }catch(e){} };
+  let meta = ld(MK)||{}, tok = ld(TK), timer=null, busy=false, again=false;
+  const saveMeta = ()=>put(MK,meta);
+  const avail = ()=>!!CID || DEMO;
+  const on = ()=>!!CID && !DEMO && !!meta.sid && !!S && S.setupDone && !!P();
+  const tokenOK = ()=>!!(tok && tok.t && tok.exp > Date.now()+60e3);
+  const redirectUri = ()=>location.origin + location.pathname.replace(/index\.html$/,"");
+  const stamp = ms=>new Intl.DateTimeFormat(loc(),{dateStyle:"medium",timeStyle:"short"}).format(new Date(ms));
+
+  function auth(silent, then){
+    const st = uid()+uid()+uid();
+    put(SK,{st,then,silent:!!silent});
+    const q = new URLSearchParams({client_id:CID, redirect_uri:redirectUri(), response_type:"token", scope:SCOPE, state:st, include_granted_scopes:"true"});
+    if(silent) q.set("prompt","none");
+    if(meta.email) q.set("login_hint", meta.email);
+    location.assign("https://accounts.google.com/o/oauth2/v2/auth?"+q.toString());
+  }
+  function readReturn(){
+    const h = location.hash||"";
+    if(h.indexOf("state=")<0 || (h.indexOf("access_token=")<0 && h.indexOf("error=")<0)) return null;
+    const q = new URLSearchParams(h.slice(1)); const pend = ld(SK); put(SK,null);
+    try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+    if(!pend || q.get("state")!==pend.st) return {err:"state"};
+    if(q.get("error")) return {err:q.get("error"), then:pend.then, silent:pend.silent};
+    const at = q.get("access_token"); if(!at) return {err:"no_token"};
+    const sc = q.get("scope"); if(sc && sc.split(" ").indexOf(SCOPE)<0) return {err:"scope", then:pend.then};
+    tok = {t:at, exp:Date.now()+(parseInt(q.get("expires_in"),10)||3600)*1000}; put(TK,tok);
+    return {ok:true, then:pend.then};
+  }
+  async function api(method,url,body){
+    const r = await fetch(url,{method, headers:{Authorization:"Bearer "+tok.t,"Content-Type":"application/json"}, body:body?JSON.stringify(body):undefined});
+    if(r.status===401){ tok=null; put(TK,null); const e=new Error("auth"); e.code=401; throw e; }
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok){ const e=new Error((j.error&&j.error.message)||("HTTP "+r.status)); e.code=r.status; throw e; }
+    return j;
+  }
+
+  /* ---- sheet content ---- */
+  const RGB = h=>({red:parseInt(h.slice(1,3),16)/255, green:parseInt(h.slice(3,5),16)/255, blue:parseInt(h.slice(5,7),16)/255});
+  const PAL = {sage:"#d3e8cc",teal:"#d3eaee",peach:"#f8dac6",lav:"#e3d8f0",butter:"#fbeabd",pink:"#f3d6e3",peri:"#d3dbf7"};
+  const DARK = {sage:"#9cc792",teal:"#94cbd6",peach:"#f0b48e",lav:"#b9a5dc",butter:"#f1cf72",pink:"#e7a6c3",peri:"#9fb0ec"};
+  const light = k=>PAL[SC[k]||k]||"#f6f3ee";
+  const INK="#3b3a38", MUTED="#8a867f", LINE="#d9d3c9", GOOD="#5f8a57", CORAL="#b8604b";
+  const tf = o=>Object.assign({fontFamily:"Nunito", fontSize:10, foregroundColor:RGB(INK)}, o);
+  const base = o=>Object.assign({textFormat:tf(), verticalAlignment:"MIDDLE"}, o);
+  const curPat = ()=>{ const s='"'+String(S.cur||"").replace(/"/g,"")+'"'; return S.curPos==="after" ? `#,##0.00 ${s}` : `${s}#,##0.00`; };
+  const datePat = ()=>({en:"mmm d, yyyy",de:"dd.mm.yyyy",fr:"dd/mm/yyyy"})[S.lang]||"yyyy-mm-dd";
+  const gLocale = ()=>({en:"en_US",de:"de_DE",fr:"fr_FR"})[S.lang]||"en_US";
+  function fmts(){
+    const money = {type:"CURRENCY",pattern:curPat()};
+    const top = {top:{style:"SOLID",color:RGB(LINE)}};
+    return {
+      cell: base(),
+      h1: base({textFormat:tf({fontSize:18,bold:true})}),
+      h2: base({textFormat:tf({fontSize:14,bold:true})}),
+      sub: base({textFormat:tf({fontSize:11,foregroundColor:RGB(MUTED)})}),
+      muted: base({textFormat:tf({italic:true,foregroundColor:RGB(MUTED)})}),
+      note: base({textFormat:tf({italic:true,fontSize:9,foregroundColor:RGB(MUTED)})}),
+      th: k=>base({backgroundColor:RGB(light(k)), textFormat:tf({bold:true})}),
+      thN: k=>base({backgroundColor:RGB(light(k)), textFormat:tf({bold:true}), horizontalAlignment:"RIGHT"}),
+      sec: k=>base({backgroundColor:RGB(light(k)), textFormat:tf({bold:true})}),
+      money: base({numberFormat:money, horizontalAlignment:"RIGHT"}),
+      moneyIn: base({numberFormat:money, horizontalAlignment:"RIGHT", textFormat:tf({foregroundColor:RGB(GOOD)})}),
+      moneyMuted: base({numberFormat:money, horizontalAlignment:"RIGHT", textFormat:tf({foregroundColor:RGB(MUTED)})}),
+      totL: base({textFormat:tf({bold:true}), borders:top}),
+      totN: base({textFormat:tf({bold:true}), borders:top, numberFormat:money, horizontalAlignment:"RIGHT"}),
+      date: base({numberFormat:{type:"DATE",pattern:datePat()}, horizontalAlignment:"LEFT"}),
+      pct: base({numberFormat:{type:"PERCENT",pattern:"0%"}, horizontalAlignment:"RIGHT"}),
+      center: base({horizontalAlignment:"CENTER"}),
+      status: base({textFormat:tf({foregroundColor:RGB(MUTED)})}),
+      klab: k=>base({backgroundColor:RGB(light(k)), textFormat:tf({fontSize:8,bold:true,foregroundColor:RGB("#55524e")})}),
+      kval: (k,neg)=>base({backgroundColor:RGB(light(k)), numberFormat:money, horizontalAlignment:"LEFT", textFormat:tf({fontSize:16,bold:true,foregroundColor:RGB(neg?CORAL:INK)})})
+    };
+  }
+  const cS = (v,f)=>({userEnteredValue:{stringValue:String(v==null?"":v)}, userEnteredFormat:f});
+  const cN = (v,f)=>({userEnteredValue:{numberValue:r2(v)}, userEnteredFormat:f});
+  const cP = (v,f)=>({userEnteredValue:{numberValue:Math.round((+v||0)*10000)/10000}, userEnteredFormat:f});
+  const cD = (s,f)=>{ const [y,m,d]=s.split("-").map(Number); return {userEnteredValue:{numberValue:(Date.UTC(y,m-1,d)-Date.UTC(1899,11,30))/864e5}, userEnteredFormat:f}; };
+  function status(k,cat,a,pl,p){
+    if(k==="income") return a<=0 ? t("gs.sExp") : a<pl-0.004 ? t("gs.sPartIn") : t("gs.sRecv");
+    if(k==="savings") return a>0 && a>=pl-0.004 ? t("gs.sSaved") : "";
+    if(k==="expenses") return a>pl+0.004 ? t("gs.sOver") : "";
+    if(a>0 && a>=pl-0.004) return t("gs.sPaid");
+    if(a>0) return t("gs.sPart");
+    const d = dueDate(p,cat.due); if(!d) return "";
+    return d<todayISO() ? t("gs.sLate") : t("gs.sDue",{d:fShort(d)});
+  }
+  function build(){
+    const F=fmts(), p=P(), c=calc(p), sheets={};
+    // 1 · overview
+    const ov=[];
+    ov.push([cS("Bloom Budget",F.h1)]);
+    ov.push([cS(pLabel(p)+" · "+fRange(p.start,p.end),F.sub)]);
+    ov.push([cS(t("gs.synced",{d:stamp(Date.now())}),F.note)]);
+    ov.push([]);
+    const kp=[["k.lts",c.lts,"sage"],["k.ltp",c.ltp,"teal"],["k.spent",c.outAct,"peach"],["k.inc",c.act.income,"lav"]];
+    ov.push(kp.map(([k,,col])=>cS(t(k).toUpperCase(),F.klab(col))));
+    ov.push(kp.map(([,v,col])=>cN(v,F.kval(col,v<-0.004))));
+    ov.push([]);
+    ov.push([cS(t("summary"),F.th("lav")),cS(t("planned"),F.thN("lav")),cS(t("actual"),F.thN("lav")),cS(t("gs.diff"),F.thN("lav"))]);
+    [["roll",p.rollover,p.rollover]].concat(SECS.map(k=>[k,c.plan[k],c.act[k]])).forEach(([k,pl,a])=>
+      ov.push([cS(k==="roll"?t("rollover"):t(k),F.sec(k)),cN(pl,F.money),cN(a,F.money),cN(a-pl,F.money)]));
+    ov.push([cS(t("balance"),F.totL),cN(c.ltp,F.totN),cN(c.lts,F.totN),cN(c.lts-c.ltp,F.totN)]);
+    ov.push([]);
+    ov.push([cS(t("gs.note"),F.note)]);
+    sheets[11]={title:t("gs.tOv"),rows:ov,widths:[210,150,150,150],frozen:0,grid:false,tall:{0:34,5:40},tab:"lav"};
+    // 2 · plan
+    const pl=[[cS(t("gs.tPlan")+" · "+pLabel(p),F.h2)],[cS(fRange(p.start,p.end),F.sub)],[]];
+    SECS.forEach(k=>{
+      const dueCol = k==="bills"||k==="debt";
+      pl.push([cS(t(k),F.th(k)),cS(t("planned"),F.thN(k)),cS(t("actual"),F.thN(k)),cS(t("gs.left"),F.thN(k)),cS(dueCol?t("f.due"):"",F.th(k)),cS(t("gs.status"),F.th(k))]);
+      p.cats[k].forEach(cat=>{
+        const a=c.by[cat.id]||0, v=+cat.plan||0;
+        pl.push([cS(cat.name||t("unnamed"),F.cell),cN(v,F.money),cN(a,F.money),cN(v-a,F.moneyMuted),dueCol&&cat.due?cN(cat.due,F.center):cS("",F.cell),cS(status(k,cat,a,v,p),F.status)]);
+      });
+      if(!p.cats[k].length) pl.push([cS(t("noItems"),F.muted)]);
+      pl.push([cS(t("total"),F.totL),cN(c.plan[k],F.totN),cN(c.act[k],F.totN),cN(c.plan[k]-c.act[k],F.totN),cS("",F.totL),cS("",F.totL)]);
+      pl.push([]);
+    });
+    sheets[12]={title:t("gs.tPlan"),rows:pl,widths:[220,120,120,120,80,170],frozen:0,grid:true,tall:{0:30},tab:"peach"};
+    // 3 · money log (all periods)
+    const lg=[[cS(t("f.date"),F.th("income")),cS(t("f.period"),F.th("income")),cS(t("f.cat"),F.th("income")),cS(t("f.sub"),F.th("income")),cS(t("f.amount"),F.thN("income")),cS(t("f.note"),F.th("income"))]];
+    S.tx.slice().sort((a,b)=>b.date.localeCompare(a.date)||((b.ts||0)-(a.ts||0))).forEach(x=>{
+      const pp=S.periods.find(y=>y.id===x.pid), f=pp&&findCat(pp,x.cid), inc=x.sec==="income";
+      lg.push([cD(x.date,F.date),cS(pp?pLabel(pp):"",F.cell),cS(t(x.sec),F.sec(x.sec)),cS(f?f.cat.name:"",F.cell),cN((inc?1:-1)*x.amt,inc?F.moneyIn:F.money),cS(x.note||"",F.cell)]);
+    });
+    if(lg.length===1) lg.push([cS(t("log.empty"),F.muted)]);
+    sheets[13]={title:t("gs.tLog"),rows:lg,widths:[110,170,110,190,120,260],frozen:1,grid:true,tall:{},tab:"sage"};
+    // 4 · goals
+    const go=[[cS(t("gs.tGoals"),F.h2)],[]];
+    const sv=p.cats.savings.filter(x=>+x.goal>0), db=p.cats.debt.filter(x=>+x.goal>0);
+    go.push([cS(t("gs.savGoals"),F.th("savings")),cS(t("f.goal"),F.thN("savings")),cS(t("gs.saved"),F.thN("savings")),cS(t("gs.left"),F.thN("savings")),cS(t("gs.progress"),F.thN("savings"))]);
+    sv.forEach(x=>{ const tot=totalFor(x.id); go.push([cS(x.name||t("unnamed"),F.cell),cN(x.goal,F.money),cN(tot,F.money),cN(Math.max(x.goal-tot,0),F.money),cP(Math.min(tot/x.goal,1),F.pct)]); });
+    if(!sv.length) go.push([cS(t("gs.noGoals"),F.muted)]);
+    go.push([]);
+    go.push([cS(t("gs.debts"),F.th("debt")),cS(t("gs.start"),F.thN("debt")),cS(t("gs.paidSoFar"),F.thN("debt")),cS(t("gs.left"),F.thN("debt")),cS(t("gs.progress"),F.thN("debt"))]);
+    db.forEach(x=>{ const tot=totalFor(x.id); go.push([cS(x.name||t("unnamed"),F.cell),cN(x.goal,F.money),cN(tot,F.money),cN(Math.max(x.goal-tot,0),F.money),cP(Math.min(tot/x.goal,1),F.pct)]); });
+    if(!db.length) go.push([cS(t("gs.noGoals"),F.muted)]);
+    sheets[14]={title:t("gs.tGoals"),rows:go,widths:[220,130,130,130,100],frozen:0,grid:true,tall:{0:30},tab:"butter"};
+    return sheets;
+  }
+  function requests(sheets, have){
+    const reqs=[{updateSpreadsheetProperties:{properties:{locale:gLocale()},fields:"locale"}}];
+    const titles = new Map(have.map(s=>[s.sheetId,s.title]));
+    IDS.forEach((id,i)=>{
+      const sh=sheets[id];
+      if(!titles.has(id)){
+        let ti=sh.title, n=2; const used=new Set(titles.values()); while(used.has(ti)) ti=sh.title+" "+(n++);
+        reqs.push({addSheet:{properties:{sheetId:id,title:ti,index:i}}}); titles.set(id,ti);
+      } else if(titles.get(id)!==sh.title && ![...titles.entries()].some(([k,v])=>k!==id&&v===sh.title)){
+        reqs.push({updateSheetProperties:{properties:{sheetId:id,title:sh.title},fields:"title"}}); titles.set(id,sh.title);
+      }
+      const cols=Math.max(sh.widths.length,1);
+      reqs.push({updateSheetProperties:{properties:{sheetId:id,tabColorStyle:{rgbColor:RGB(DARK[sh.tab])},gridProperties:{rowCount:Math.max(sh.rows.length+20,40),columnCount:cols+1,frozenRowCount:sh.frozen,hideGridlines:!sh.grid}},
+        fields:"tabColorStyle,gridProperties.rowCount,gridProperties.columnCount,gridProperties.frozenRowCount,gridProperties.hideGridlines"}});
+      reqs.push({updateCells:{range:{sheetId:id}, rows:sh.rows.map(r=>({values:r})), fields:"userEnteredValue,userEnteredFormat"}});
+      sh.widths.forEach((w,ci)=>reqs.push({updateDimensionProperties:{range:{sheetId:id,dimension:"COLUMNS",startIndex:ci,endIndex:ci+1},properties:{pixelSize:w},fields:"pixelSize"}}));
+      reqs.push({updateDimensionProperties:{range:{sheetId:id,dimension:"ROWS",startIndex:0,endIndex:Math.max(sh.rows.length+20,40)},properties:{pixelSize:24},fields:"pixelSize"}});
+      Object.keys(sh.tall).forEach(r=>reqs.push({updateDimensionProperties:{range:{sheetId:id,dimension:"ROWS",startIndex:+r,endIndex:+r+1},properties:{pixelSize:sh.tall[r]},fields:"pixelSize"}}));
+    });
+    return reqs;
+  }
+  async function create(){
+    const sheets=build();
+    const j = await api("POST",API,{properties:{title:"Bloom Budget",locale:gLocale()}, sheets:IDS.map((id,i)=>({properties:{sheetId:id,title:sheets[id].title,index:i}}))});
+    meta.sid=j.spreadsheetId; meta.url=j.spreadsheetUrl || ("https://docs.google.com/spreadsheets/d/"+j.spreadsheetId+"/edit"); saveMeta();
+    try{ const a=await api("GET","https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)"); if(a.user&&a.user.emailAddress){ meta.email=a.user.emailAddress; saveMeta(); } }catch(e){}
+  }
+  async function sync(manual){
+    if(!on()) return;
+    if(busy){ again=true; return; }
+    if(!navigator.onLine || !tokenOK()){ meta.dirty=true; saveMeta(); refresh(); return; }
+    busy=true; refresh();
+    try{
+      let info;
+      try{ info = await api("GET",`${API}/${meta.sid}?fields=spreadsheetUrl,sheets.properties(sheetId,title)`); }
+      catch(e){ if(e.code===404||e.code===403){ await create(); info = await api("GET",`${API}/${meta.sid}?fields=spreadsheetUrl,sheets.properties(sheetId,title)`); } else throw e; }
+      if(info.spreadsheetUrl) meta.url=info.spreadsheetUrl;
+      const have=(info.sheets||[]).map(s=>s.properties);
+      await api("POST",`${API}/${meta.sid}:batchUpdate`,{requests:requests(build(),have)});
+      meta.last=Date.now(); meta.dirty=false; meta.err=null; saveMeta();
+      if(manual) toast(t("gs.ok"));
+    }catch(e){
+      meta.dirty=true; meta.err = e.code===401?"auth":"fail"; saveMeta();
+      if(manual && e.code!==401) toast(t("gs.err"));
+      if(manual && e.code===401){ busy=false; auth(true,"sync"); return; }
+    }finally{
+      busy=false; refresh();
+      if(again){ again=false; schedule(800); }
+    }
+  }
+  function schedule(ms){ clearTimeout(timer); timer=setTimeout(()=>{ if(tokenOK()) sync(false); else refresh(); }, ms); }
+  function changed(){ if(!on()) return; if(!meta.dirty){ meta.dirty=true; saveMeta(); } schedule(2500); }
+
+  /* ---- UI ---- */
+  function chip(mobile){
+    if(!on()) return "";
+    if(busy) return `<span class="chip gs-chip" ${mobile?'style="padding:8px"':""}>${icon("cloud","spin")}${mobile?"":t("gs.syncing")}</span>`;
+    if(meta.err || (meta.dirty && !(tokenOK() && navigator.onLine))) return `<button class="chip gs-chip wait" data-a="gsSync" ${mobile?`style="padding:8px" aria-label="${t("gs.chip")}"`:""}>${icon("cloud")}${mobile?"":t("gs.chip")}<i class="gs-dot wait"></i></button>`;
+    return "";
+  }
+  function card(){
+    const lock = DEMO?` <span class="demo-lock">${t("gs.demo")}</span>`:"";
+    let h = `<h3>${t("gs.title")}${lock}</h3><p>${t("gs.p")} <a href="/bloom/privacy.html" target="_blank" rel="noopener" style="color:var(--muted)">${t("gs.privacy")}</a></p>`;
+    if(!on()) return h + `<button class="btn" data-a="gsConnect" ${DEMO?"disabled":""}>${icon("cloud")}${t("gs.connect")}</button>`;
+    const st = busy ? t("gs.syncing")
+      : (meta.dirty && !navigator.onLine) ? t("gs.offline")
+      : meta.err==="fail" ? `<span style="color:var(--coral-t)">${t("gs.err")}</span>`
+      : meta.dirty ? t("gs.pending")
+      : meta.last ? t("gs.last",{d:stamp(meta.last)}) : t("gs.never");
+    return h + `<div class="gs-st"><span class="gs-dot ${meta.err==="fail"?"bad":meta.dirty?"wait":""}"></span><div><b>${esc(meta.email?t("gs.as",{e:meta.email}):t("gs.asNoEmail"))}</b><small>${st}</small></div></div>
+      <div class="rowb"><button class="btn" data-a="gsSync" ${busy?"disabled":""}>${icon("cloud")}${t("gs.syncNow")}</button>
+      <a class="btn ghost" href="${esc(meta.url||"#")}" target="_blank" rel="noopener">${icon("sheet")}${t("gs.open")}</a>
+      <button class="btn ghost" data-a="gsDisc">${t("gs.disc")}</button></div>`;
+  }
+  function refresh(){
+    const a=$("#gs-chip"); if(a) a.innerHTML=chip(false);
+    const b=$("#gs-chip-m"); if(b) b.innerHTML=chip(true);
+    const c=$("#gs-card"); if(c) c.innerHTML=card();
+  }
+  function connect(){ if(DEMO||!CID) return; if(!navigator.onLine){ toast(t("gs.offline")); return; } auth(false,"connect"); }
+  function syncNow(){
+    if(!on()) return;
+    if(!navigator.onLine){ meta.dirty=true; saveMeta(); refresh(); toast(t("gs.offline")); return; }
+    if(tokenOK()) sync(true); else auth(true,"sync");
+  }
+  function disconnect(){
+    if(!confirm(t("gs.discQ"))) return;
+    if(tok&&tok.t){ try{ fetch("https://oauth2.googleapis.com/revoke?token="+encodeURIComponent(tok.t),{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"}}).catch(()=>{}); }catch(e){} }
+    meta={}; tok=null; put(MK,null); put(TK,null); clearTimeout(timer); render();
+  }
+  async function boot(){
+    if(DEMO || !CID) return;
+    const r = readReturn();
+    if(r){
+      if(r.ok){
+        if(r.then==="connect"){
+          UI.view="settings"; render();
+          try{ busy=true; refresh(); if(!meta.sid) await create(); busy=false; meta.dirty=true; saveMeta(); await sync(false); toast(t(meta.err?"gs.err":"gs.connected")); }
+          catch(e){ busy=false; meta.err="fail"; saveMeta(); refresh(); toast(t("gs.err")); }
+          return;
+        }
+        if(r.then==="sync"){ await sync(true); return; }
+      } else if(r.silent && /interaction_required|login_required|consent_required|account_selection_required/.test(r.err)){
+        auth(false, r.then); return;
+      } else if(r.err==="access_denied" || r.err==="scope"){
+        if(r.then==="connect"){ UI.view="settings"; render(); }
+        toast(t("gs.denied"));
+      }
+    }
+    if(on() && meta.dirty && tokenOK()) schedule(1500);
+    window.addEventListener("online",()=>{ refresh(); if(on() && meta.dirty && tokenOK()) schedule(500); });
+    window.addEventListener("offline",refresh);
+  }
+  function forget(){ meta={}; tok=null; put(MK,null); put(TK,null); clearTimeout(timer); }
+  return {avail,on,changed,chip,card,connect,syncNow,disconnect,boot,refresh,forget,_meta:()=>meta,_tok:()=>tok};
+})();
+
 /* ---------------- boot ---------------- */
 async function boot(){
   if(DEMO) document.body.classList.add("demo");
@@ -1644,6 +1933,7 @@ async function boot(){
     if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
   }
   render();
+  GS.boot();
 }
 window.__bloom = {get state(){return S;}, render};
 boot();
