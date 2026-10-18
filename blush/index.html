@@ -561,6 +561,8 @@ html[data-theme="dark"] .ring .rt{stroke:rgba(255,255,255,.1)}
 html[data-theme="dark"] .ring .rd{fill:var(--surface)}
 html[data-theme="dark"] .ht-go{background:rgba(255,255,255,.1);color:var(--ink)}
 
+.herogrid .hero .big,.hc-val{white-space:nowrap;overflow:hidden}
+
 html[data-theme="dark"] .demobar .btn.ghost{color:var(--lilac);border-color:var(--lilac-b)}
 </style>
 </head>
@@ -1310,7 +1312,15 @@ function softDecimals(){
       n.nodeValue=m[1]; n.after(sp); sp.after(document.createTextNode(m[3])); });
     el.dataset.sd=1;
   });
+  fitNumbers();
 }
+function fitNumbers(){
+  document.querySelectorAll('.big, .hc-val').forEach(el=>{
+    el.style.fontSize=''; let fs=parseFloat(getComputedStyle(el).fontSize), g=0;
+    while(el.scrollWidth>el.clientWidth+1 && fs>26 && g++<40){ fs-=2; el.style.fontSize=fs+'px'; }
+  });
+}
+addEventListener('resize', ()=>{ clearTimeout(window.__fitT); window.__fitT=setTimeout(fitNumbers,120); });
 /* ---------------- topbar ---------------- */
 function renderTop(){
   const c = calc();
