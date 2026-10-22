@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Reset — an ADHD-friendly cleaning planner app</title>
+<meta name="description" content="A cleaning planner that adapts to your energy: low, medium or high-energy plans, room freshness, SOS guest mode, focus timer, family chore chart, 30-day declutter and a printable planner. Works offline, no account, no subscription.">
+<meta name="theme-color" content="#F2F6F4">
+<meta property="og:title" content="The Reset — ADHD cleaning planner app">
+<meta property="og:description" content="Tell it how you feel, get a cleaning plan that fits. Works offline, no account, one payment.">
+<meta property="og:image" content="img/hero.jpg">
+<link rel="icon" type="image/png" href="demo/icon-192.png">
+<style>
+@font-face{font-family:"Nunito";src:url(../everyday/nunito.woff2) format("woff2");font-weight:200 1000;font-display:swap}
+@font-face{font-family:"Bricolage";src:url(../everyday/bricolage.woff2) format("woff2");font-weight:200 800;font-display:swap}
+:root{--bg:#F2F6F4;--surface:#fff;--line:#E2EBE7;--ink:#1D2A28;--ink-2:#55655F;--ink-3:#92A29C;--brand:#16806A;
+ --mint:#BFEBD9;--mint-ink:#16765C;--sky:#CFE2FA;--sky-ink:#2A62A8;--sun:#FBE3A2;--sun-ink:#8A5E00;--peach:#FBD6C3;--peach-ink:#A64D1E;
+ --lilac:#E1D7F8;--lilac-ink:#6446B4;--pink:#F7D0DE;--pink-ink:#AC3C67;--shadow:0 1px 2px rgba(20,60,50,.05),0 12px 32px -14px rgba(20,70,60,.24)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Nunito",system-ui,sans-serif;color:var(--ink);background:var(--bg);background-image:linear-gradient(165deg,#EAF7F1 0%,#F1F5FB 50%,#F6F1FB 100%);background-attachment:fixed;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Bricolage","Nunito",sans-serif;margin:0;letter-spacing:-.02em;line-height:1.1}
+h1{font-size:clamp(36px,5.6vw,64px);font-weight:800}
+h2{font-size:clamp(26px,3.4vw,38px);font-weight:800}
+h3{font-size:20px;font-weight:800}
+a{color:inherit}
+img{max-width:100%;display:block;border-radius:18px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.75);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:14px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Bricolage";font-weight:800;font-size:19px}
+.brand svg{width:34px;height:34px}
+.grow{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:50px;padding:0 24px;border-radius:14px;font-weight:800;text-decoration:none;border:1.5px solid var(--line);background:var(--surface);white-space:nowrap}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.sm{height:40px;padding:0 16px;font-size:15px}
+section{padding:70px 0}
+.hero{padding:64px 0 40px;text-align:center}
+.lead{font-size:clamp(17px,2vw,21px);color:var(--ink-2);max-width:660px;margin:18px auto 26px;font-weight:600}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.note{font-size:14px;color:var(--ink-3);font-weight:700;margin-top:14px}
+.shot{box-shadow:var(--shadow);border:1px solid var(--line);margin-top:40px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:30px;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;background:var(--c);color:var(--c-ink)}
+.t-pink{--c:var(--pink);--c-ink:var(--pink-ink)}.t-mint{--c:var(--mint);--c-ink:var(--mint-ink)}.t-sun{--c:var(--sun);--c-ink:var(--sun-ink)}
+.t-sky{--c:var(--sky);--c-ink:var(--sky-ink)}.t-lilac{--c:var(--lilac);--c-ink:var(--lilac-ink)}.t-peach{--c:var(--peach);--c-ink:var(--peach-ink)}
+.grid{display:grid;gap:22px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:1fr 1fr;align-items:center;gap:42px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:var(--shadow)}
+.card h3{margin:12px 0 6px}
+.card p{margin:0;color:var(--ink-2);font-weight:600;font-size:15px}
+.ic{width:44px;height:44px;border-radius:14px;background:var(--c);color:var(--c-ink);display:grid;place-items:center;font-size:21px}
+.feat{display:flex;gap:13px;align-items:flex-start;margin:16px 0}
+.feat i{width:32px;height:32px;border-radius:10px;background:var(--c);display:grid;place-items:center;flex:none;font-style:normal;font-size:16px}
+.feat b{display:block}
+.feat span{color:var(--ink-2);font-weight:600;font-size:15px}
+.phones{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.phones img{width:230px;border-radius:30px;border:8px solid var(--ink);box-shadow:var(--shadow)}
+.faq{max-width:760px;margin:0 auto}
+details{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:10px}
+details summary{font-weight:800;cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";float:right;color:var(--ink-3)}
+details[open] summary::after{content:"–"}
+details p{color:var(--ink-2);font-weight:600;font-size:15px;margin-bottom:0}
+.buy{background:var(--ink);color:#fff;border-radius:30px;padding:54px 30px;text-align:center}
+.buy h2{color:#fff}
+.buy p{color:#C4D3CE;max-width:520px;margin:14px auto 24px;font-weight:600}
+.buy .btn.pri{background:#63D9B2;border-color:#63D9B2;color:#0b2c24}
+footer{padding:36px 0;text-align:center;color:var(--ink-3);font-weight:700;font-size:14px}
+.center{text-align:center}
+.sub{color:var(--ink-2);font-weight:600;max-width:680px;margin:14px auto 0}
+@media (max-width:860px){.g3,.g2{grid-template-columns:1fr}section{padding:48px 0}}
+@media (max-width:520px){header .wrap{gap:8px;padding:0 14px}.brand{font-size:16px}.brand svg{width:28px;height:28px}.btn.sm{height:38px;padding:0 12px;font-size:14px}.wrap{padding:0 16px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <span class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#63D9B2"/><stop offset="1" stop-color="#14796A"/></linearGradient></defs><rect width="40" height="40" rx="12" fill="url(#g)"/><path d="M10.5 19.5 20 11.8l9.5 7.7V29.5h-19z" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 17.6c.4 2.6 1.6 3.8 4.2 4.2-2.6.4-3.8 1.6-4.2 4.2-.4-2.6-1.6-3.8-4.2-4.2 2.6-.4 3.8-1.6 4.2-4.2z" fill="#fff"/></svg>The Reset</span>
+  <span class="grow"></span>
+  <a class="btn sm" href="demo/" target="_blank">Try the demo</a>
+  <a class="btn sm pri" href="https://thepetalo.etsy.com" target="_blank" rel="noopener">Get it</a>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <span class="pill t-mint">ADHD-friendly cleaning planner</span>
+  <h1 style="margin-top:18px">A cleaner home that<br>works with your energy.</h1>
+  <p class="lead">Tell it how you feel and how many minutes you have — The Reset builds a small plan that fits. No catch-up lists, no guilt, no subscription.</p>
+  <div class="cta">
+    <a class="btn pri" href="https://thepetalo.etsy.com" target="_blank" rel="noopener">Get the full app</a>
+    <a class="btn" href="demo/" target="_blank">Try the free demo →</a>
+  </div>
+  <p class="note">Works offline · No account · Printable planner included</p>
+  <img class="shot" src="img/today.jpg" alt="The Reset Today screen: home freshness, energy check and today's plan" width="1400">
+</div></section>
+
+<section><div class="wrap">
+  <div class="center"><h2>Three taps a day</h2><p class="sub">Check in, pick your minutes, tick things off. The app handles the remembering.</p></div>
+  <div class="grid g3" style="margin-top:36px">
+    <div class="card t-sky"><div class="ic">🔋</div><h3>1 · Check your energy</h3><p>Low, Medium or High. On low days you only see 2–10 minute tasks you can do from the couch.</p></div>
+    <div class="card t-sun"><div class="ic">⏱</div><h3>2 · Pick your minutes</h3><p>5, 15, 30 or 60. Your plan fills up to exactly that — the most "ready" rooms first.</p></div>
+    <div class="card t-mint"><div class="ic">✓</div><h3>3 · Tick, swap or skip</h3><p>Confetti when you finish, a swap button when you don't feel it, and "not today" with no guilt.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="grid g2">
+    <div><span class="pill t-mint">Room freshness</span>
+      <h2 style="margin-top:16px">See which room needs love</h2>
+      <p style="color:var(--ink-2);font-weight:600">Every task has its own rhythm — daily, weekly, every three months. As days pass, each room's ring slowly empties, so you know exactly where ten minutes will matter most. Tick a task and it fills right back up.</p>
+      <div class="feat"><i class="t-mint" style="background:var(--mint)">🏠</i><span><b>13 room types, 84 ready tasks</b>Kitchen to garage, plus "home care" jobs like smoke alarms and filters. Edit anything.</span></div>
+      <div class="feat"><i style="background:var(--sky)">🧽</i><span><b>Deep clean lists for every room</b>95 steps, no deadline — tick one whenever you have a burst.</span></div>
+    </div>
+    <img class="shot" src="img/rooms.jpg" alt="Rooms with freshness rings" style="margin:0">
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="grid g2">
+    <img class="shot" src="img/week.jpg" alt="The week ahead" style="margin:0">
+    <div><span class="pill t-lilac">Built for ADHD brains</span>
+      <h2 style="margin-top:16px">No backlog. No guilt.</h2>
+      <div class="feat"><i style="background:var(--mint)">↻</i><span><b>Tasks roll forward</b>Missed a day? Nothing multiplies — a task simply waits as "ready".</span></div>
+      <div class="feat"><i style="background:var(--sun)">✨</i><span><b>Fresh start</b>Feeling buried? One tap spreads everything over the next days.</span></div>
+      <div class="feat"><i style="background:var(--peach)">🛟</i><span><b>SOS guest mode</b>5, 15 or 30 minutes, step by step with a timer.</span></div>
+      <div class="feat"><i style="background:var(--lilac)">🎲</i><span><b>Surprise me + focus timer</b>Let the dice pick, then a body-double timer with brown noise, rain or ocean.</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap center">
+  <h2>It fits in your pocket too</h2><p class="sub">Add it to your Home Screen and it opens like a normal app — full screen and offline. Works on iPhone, iPad, Android, Mac, Windows and Chromebook.</p>
+  <div class="phones" style="margin-top:34px">
+    <img src="img/m_today.jpg" alt="Today on a phone"><img src="img/m_family.jpg" alt="Family chores on a phone"><img src="img/m_sos.jpg" alt="SOS mode on a phone">
+  </div>
+</div></section>
+
+<section><div class="wrap center">
+  <h2>What you get</h2>
+  <div class="grid g3" style="margin-top:32px;text-align:left">
+    <div class="card"><h3>The Reset app</h3><p>Your private link — Today, rooms, week, family chores, checklists, declutter, supplies and progress.</p></div>
+    <div class="card"><h3>36-page printable</h3><p>Energy menu, daily reset, 13 room checklists, SOS cards, chore charts and more — US Letter and A4.</p></div>
+    <div class="card"><h3>Free updates</h3><p>Improvements land at the same link — no subscription, no account, ever.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap faq">
+  <h2 class="center" style="margin-bottom:26px">Questions</h2>
+  <details open><summary>Where is my data stored?</summary><p>On your device, in your browser — nothing is sent anywhere, and there's no account. You can download a backup file anytime and restore it on another device.</p></details>
+  <details><summary>Does it work offline?</summary><p>Yes. Once it's opened, it keeps working with no internet.</p></details>
+  <details><summary>Can my family use it?</summary><p>Add everyone on the Family page, assign tasks and print a chore chart. On one shared device everyone sees the same plan.</p></details>
+  <details><summary>Do I need to install anything?</summary><p>No app store. Open your link in any modern browser; add it to your Home Screen if you like.</p></details>
+  <details><summary>Is it a subscription?</summary><p>No. One payment, yours forever.</p></details>
+  <details><summary>Can I try it first?</summary><p>Yes — the demo is the full app with sample data. Play with it as long as you like.</p></details>
+</div></section>
+
+<section><div class="wrap"><div class="buy">
+  <h2>Five minutes still counts</h2>
+  <p>Start with one small reset today. The app remembers the rest.</p>
+  <div class="cta"><a class="btn pri" href="https://thepetalo.etsy.com" target="_blank" rel="noopener">Get the full app</a><a class="btn" style="background:transparent;color:#fff;border-color:#3d4f4a" href="demo/" target="_blank">Try the demo first</a></div>
+</div></div></section>
+
+<footer>The Reset · ADHD cleaning planner · made by ThePetalo</footer>
+</body></html>
