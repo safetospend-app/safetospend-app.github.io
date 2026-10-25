@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cover Builder — The Clear Year 2027</title>
+<meta name="description" content="Pick a new cover for your The Clear Year 2027 digital planner in one tap.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,300&family=Lexend:wght@300;400;500&display=swap">
+<style>
+:root{--bg:#EFECE6;--paper:#FBFAF7;--ink:#2B2724;--soft:#6B625B;--line:#E4DED5;--accent:#9C6650;--tint:#F1E6DF;--tint2:#E9EDDD;--bad:#9B2C2C}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Lexend',system-ui,sans-serif;font-weight:300;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 56px}
+header{text-align:center;padding:44px 0 20px}
+.tag{display:inline-block;padding:6px 14px;border-radius:999px;background:var(--ink);color:var(--paper);font-size:12px;letter-spacing:.14em;font-weight:500}
+h1{font-family:'Fraunces',serif;font-weight:300;font-style:italic;color:var(--accent);font-size:clamp(40px,7vw,68px);line-height:1.05;margin:16px 0 8px}
+.sub{max-width:560px;margin:0 auto;font-size:17px}
+.card{background:var(--paper);border-radius:22px;padding:26px;margin-top:18px}
+.step{display:flex;gap:14px;align-items:baseline;margin:0 0 14px}
+.num{flex:0 0 34px;height:34px;border-radius:50%;background:var(--tint);color:var(--accent);font-family:'Fraunces',serif;font-size:18px;display:flex;align-items:center;justify-content:center}
+h2{font-family:'Fraunces',serif;font-weight:400;font-size:24px;margin:0}
+.hint{color:var(--soft);font-size:14px;margin:4px 0 0;overflow-wrap:anywhere}
+.step>div{min-width:0}
+.file{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 24px;border-radius:999px;border:0;background:var(--ink);color:var(--paper);font:500 16px 'Lexend',system-ui,sans-serif;cursor:pointer;text-decoration:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+.status{font-size:15px;overflow-wrap:anywhere}
+.status.ok{color:#3E5A24}
+.status.bad{color:var(--bad)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.tab{min-height:40px;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font:400 14px 'Lexend',system-ui,sans-serif;color:var(--ink);cursor:pointer}
+.tab[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.cover{border:0;padding:0;background:none;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.cover img{width:100%;height:auto;aspect-ratio:4/3;display:block;border-radius:12px;outline:3px solid transparent;outline-offset:2px;box-shadow:0 6px 16px rgba(60,40,25,.12)}
+.cover[aria-pressed=true] img{outline-color:var(--accent)}
+.cover span{display:block;font-size:13px;margin-top:6px;color:var(--soft)}
+.cover[aria-pressed=true] span{color:var(--accent);font-weight:500}
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.bar{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:12px;display:none}
+.bar i{display:block;height:100%;width:30%;background:var(--accent);animation:slide 1.2s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
+.done{display:none;background:var(--tint2)}
+.privacy{font-size:13px;color:var(--soft);text-align:center;margin-top:22px}
+@media (max-width:720px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<span class="tag">COVER BUILDER</span>
+<h1>Pick your cover</h1>
+<p class="sub">Choose any of the 60 covers and get your planner back with it on the front. All links keep working.</p>
+</header>
+
+<section class="card" aria-labelledby="s1">
+<div class="step"><span class="num">1</span><div><h2 id="s1">Choose your planner file</h2>
+<p class="hint">Unzip your download first, then pick the planner PDF (for example TheClearYear2027_Midnight_MondayStart.pdf).</p></div></div>
+<div class="file">
+<label class="btn" for="pdf">Choose planner PDF</label>
+<input id="pdf" type="file" accept="application/pdf,.pdf">
+<span id="fileStatus" class="status" role="status" aria-live="polite"></span>
+</div>
+<div class="bar" id="loadBar"><i></i></div>
+</section>
+
+<section class="card" aria-labelledby="s2">
+<div class="step"><span class="num">2</span><div><h2 id="s2">Tap a cover</h2>
+<p class="hint">Your planner's own theme is shown first. You can pick a cover from any theme.</p></div></div>
+<div class="tabs" id="tabs" role="group" aria-label="Cover colors"></div>
+<div class="grid" id="grid"></div>
+</section>
+
+<section class="card" aria-labelledby="s3">
+<div class="step"><span class="num">3</span><div><h2 id="s3">Get your planner</h2>
+<p class="hint" id="summary">Choose your planner file and a cover first.</p></div></div>
+<div class="actions">
+<button class="btn" id="make" type="button" disabled>Make my planner</button>
+</div>
+<div class="bar" id="makeBar"><i></i></div>
+<p id="makeStatus" class="status" role="status" aria-live="polite"></p>
+</section>
+
+<section class="card done" id="done" aria-labelledby="s4">
+<h2 id="s4">Your planner is ready</h2>
+<p class="hint" style="color:var(--ink)">On iPad: tap <b>Open in your app</b> and choose GoodNotes or Notability. Or save it, then import it from the Files app.</p>
+<div class="actions">
+<button class="btn" id="share" type="button">Open in your app</button>
+<a class="btn ghost" id="download" href="#" download>Save the PDF</a>
+</div>
+</section>
+
+<p class="privacy">Your planner never leaves your device. Everything happens right here in your browser.</p>
+</div>
+
+<script src="pdf-lib.min.js"></script>
+<script>
+(function () {
+  var THEMES = [
+    { name: 'Cloud Clay', slug: 'CloudClay' }, { name: 'Luminous Blue', slug: 'LuminousBlue' },
+    { name: 'Pop Pink', slug: 'PopPink' }, { name: 'Peaceful Lilac', slug: 'PeacefulLilac' },
+    { name: 'Midnight', slug: 'Midnight' }, { name: 'Rainbow 2027', slug: 'Rainbow' }
+  ];
+  var COVERS = ['Arch', 'Retro Rainbow', 'Gingham', 'Checkerboard', 'Editorial', 'Blooms', 'Waves', 'Classic Frame', 'Sunset', 'Confetti'];
+  var state = { bytes: null, fileName: '', theme: 'CloudClay', start: '', pages: 0, coverTheme: 'CloudClay', cover: -1, out: null, outName: '' };
+  var $ = function (id) { return document.getElementById(id); };
+
+  function bySlug(s) { return THEMES.filter(function (t) { return t.slug === s; })[0]; }
+
+  function renderTabs() {
+    var box = $('tabs');
+    box.innerHTML = '';
+    THEMES.forEach(function (t) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'tab';
+      b.textContent = t.name;
+      b.setAttribute('aria-pressed', String(t.slug === state.coverTheme));
+      b.addEventListener('click', function () { state.coverTheme = t.slug; renderTabs(); renderGrid(); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderGrid() {
+    var g = $('grid');
+    g.innerHTML = '';
+    COVERS.forEach(function (n, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cover';
+      var on = state.cover === i && state.chosenTheme === state.coverTheme;
+      b.setAttribute('aria-pressed', String(on));
+      var img = document.createElement('img');
+      img.src = 'thumbs/' + state.coverTheme + '-' + String(i + 1).padStart(2, '0') + '.jpg';
+      img.alt = n + ' cover, ' + bySlug(state.coverTheme).name;
+      img.width = 480; img.height = 360;
+      var s = document.createElement('span');
+      s.textContent = String(i + 1).padStart(2, '0') + ' ' + n;
+      b.appendChild(img); b.appendChild(s);
+      b.addEventListener('click', function () { state.cover = i; state.chosenTheme = state.coverTheme; renderGrid(); update(); });
+      g.appendChild(b);
+    });
+  }
+
+  function update() {
+    var ready = state.bytes && state.cover >= 0;
+    $('make').disabled = !ready;
+    if (!state.bytes) { $('summary').textContent = 'Choose your planner file and a cover first.'; return; }
+    if (state.cover < 0) { $('summary').textContent = 'Now tap a cover.'; return; }
+    $('summary').textContent = 'Your ' + bySlug(state.theme).name + ' planner with the ' + COVERS[state.cover] +
+      ' cover (' + bySlug(state.chosenTheme).name + ').';
+  }
+
+  $('pdf').addEventListener('change', async function (e) {
+    var f = e.target.files && e.target.files[0];
+    var st = $('fileStatus');
+    $('done').style.display = 'none';
+    state.bytes = null; update();
+    if (!f) return;
+    st.className = 'status'; st.textContent = 'Reading ' + f.name + '…';
+    $('loadBar').style.display = 'block';
+    try {
+      var bytes = new Uint8Array(await f.arrayBuffer());
+      var doc = await PDFLib.PDFDocument.load(bytes, { updateMetadata: false });
+      var title = doc.getTitle() || '';
+      var m = title.match(/The Clear Year 2027 — Digital Planner \((.+?), (Monday|Sunday) start\)/);
+      if (!m) throw new Error('not-ours');
+      var th = THEMES.filter(function (t) { return t.name === m[1]; })[0];
+      if (!th) throw new Error('not-ours');
+      state.bytes = bytes; state.fileName = f.name; state.theme = th.slug; state.start = m[2];
+      state.pages = doc.getPageCount();
+      state.coverTheme = th.slug;
+      if (state.cover >= 0 && !state.chosenTheme) state.chosenTheme = th.slug;
+      st.className = 'status ok';
+      st.textContent = '✓ ' + th.name + ' · ' + m[2] + ' start · ' + state.pages + ' pages';
+      renderTabs(); renderGrid(); update();
+    } catch (err) {
+      st.className = 'status bad';
+      st.textContent = err.message === 'not-ours'
+        ? 'This file is not a The Clear Year 2027 planner. Pick the planner PDF from your unzipped download.'
+        : 'Could not open this PDF. Please pick the planner PDF from your unzipped download.';
+    } finally {
+      $('loadBar').style.display = 'none';
+    }
+  });
+
+  $('make').addEventListener('click', async function () {
+    var st = $('makeStatus');
+    $('make').disabled = true;
+    $('makeBar').style.display = 'block';
+    st.className = 'status'; st.textContent = 'Putting your new cover on… (a few seconds)';
+    try {
+      var doc = await PDFLib.PDFDocument.load(state.bytes, { updateMetadata: false });
+      var coverBytes = await fetch('covers/' + state.chosenTheme + '.pdf').then(function (r) {
+        if (!r.ok) throw new Error('cover-missing');
+        return r.arrayBuffer();
+      });
+      var covers = await PDFLib.PDFDocument.load(coverBytes);
+      var copied = (await doc.copyPages(covers, [state.cover]))[0];
+      var first = doc.getPage(0);
+      // Swap only the drawing of page 1: the page itself (and every link to it) stays the same.
+      var N = PDFLib.PDFName;
+      var contents = copied.node.get(N.of('Contents'));
+      var res = copied.node.get(N.of('Resources')) || copied.node.Resources();
+      if (contents instanceof PDFLib.PDFRawStream || contents instanceof PDFLib.PDFStream) contents = doc.context.register(contents);
+      first.node.set(N.of('Contents'), contents);
+      first.node.set(N.of('Resources'), res);
+      var out = await doc.save({ useObjectStreams: true });
+      var name = 'TheClearYear2027_' + state.theme + '_' + state.start + 'Start_' + COVERS[state.cover].replace(/\s+/g, '') + 'Cover.pdf';
+      state.out = new File([out], name, { type: 'application/pdf' });
+      var url = URL.createObjectURL(state.out);
+      var a = $('download');
+      a.href = url; a.download = name;
+      var canShare = navigator.canShare && navigator.canShare({ files: [state.out] });
+      $('share').style.display = canShare ? '' : 'none';
+      $('done').style.display = 'block';
+      st.className = 'status ok';
+      st.textContent = '✓ Done: ' + name + ' (' + (out.length / 1048576).toFixed(1) + ' MB)';
+      $('done').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+      st.className = 'status bad';
+      st.textContent = 'Something went wrong. Please try again, or message us on Etsy and we will send the file with your cover.';
+    } finally {
+      $('makeBar').style.display = 'none';
+      $('make').disabled = false;
+    }
+  });
+
+  $('share').addEventListener('click', async function () {
+    try { await navigator.share({ files: [state.out], title: state.out.name }); } catch (e) { /* closed */ }
+  });
+
+  renderTabs(); renderGrid(); update();
+})();
+</script>
+</body>
+</html>
