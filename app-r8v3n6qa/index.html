@@ -13,6 +13,15 @@
   <link rel="icon" type="image/png" href="./icon-192.png" />
   <title>All-In-One Digital Planner (2026–2030 PWA)</title>
 
+  <script>
+    (function () {
+      try {
+        var st = JSON.parse(localStorage.getItem('all_in_one_planner_pwa_v1') || '{}');
+        var th = st.theme || 'auto';
+        if (th === 'dark' || (th === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="./app.css" />
   <script src="./lucide.min.js"></script>
 
@@ -83,6 +92,66 @@
       .rtable tfoot td:empty { display: none; }
       .rtable-wrap { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; }
     }
+
+    /* ───────── Dark mode ───────── */
+    html.dark { color-scheme: dark; }
+    html.dark body { background-color: #141211; color: #ede7df; }
+    html.dark .bg-\[\#272422\] { background-color: #0b0a09; }
+    html.dark .bg-\[\#fdfbf7\] { background-color: #1e1b19; }
+    html.dark .bg-\[\#f8f4ec\] { background-color: #262220; }
+    html.dark .bg-white, html.dark .bg-white\/80, html.dark .bg-white\/90, html.dark .bg-\[\#fffdf8\] { background-color: #2a2624; }
+    html.dark .bg-stone-50, html.dark .bg-stone-100 { background-color: #332e2b; }
+    html.dark .bg-stone-100\/50 { background-color: rgba(255,255,255,.03); }
+    html.dark .bg-\[\#f3eee5\] { background-color: #38322e; }
+    html.dark .bg-\[\#fff5f5\] { background-color: rgba(244,63,94,.08); }
+    html.dark .bg-\[\#eef8ff\] { background-color: rgba(14,165,233,.08); }
+    html.dark .bg-\[\#fef9e7\] { background-color: rgba(245,158,11,.08); }
+    html.dark .bg-rose-50 { background-color: rgba(244,63,94,.09); }
+    html.dark .bg-sky-50 { background-color: rgba(14,165,233,.09); }
+    html.dark .bg-amber-50 { background-color: rgba(245,158,11,.09); }
+    html.dark .bg-emerald-50 { background-color: rgba(16,185,129,.09); }
+    html.dark .bg-amber-100 { background-color: rgba(245,158,11,.18); }
+    html.dark .bg-amber-300\/60 { background-color: rgba(245,158,11,.30); }
+    html.dark .bg-stone-800, html.dark .bg-stone-900 { background-color: #efe8de; }
+    html.dark .bg-stone-800.text-white, html.dark .bg-stone-900.text-white, html.dark .bg-stone-800 .text-white, html.dark .bg-stone-900 .text-white { color: #1c1917; }
+    html.dark .hover\:bg-white:hover, html.dark .hover\:bg-stone-50:hover, html.dark .hover\:bg-stone-100:hover { background-color: #36302c; }
+    html.dark .hover\:bg-stone-700:hover { background-color: #ffffff; }
+    html.dark .hover\:bg-amber-200:hover { background-color: rgba(245,158,11,.28); }
+
+    html.dark .text-stone-900, html.dark .hover\:text-stone-900:hover, html.dark .hover\:text-black:hover { color: #f7f2ea; }
+    html.dark .text-stone-800 { color: #ede7df; }
+    html.dark .text-stone-700, html.dark .hover\:text-stone-700:hover { color: #ddd5ca; }
+    html.dark .text-stone-600 { color: #c4bbb0; }
+    html.dark .text-stone-500 { color: #a69d93; }
+    html.dark .text-stone-400 { color: #8a8178; }
+    html.dark .text-stone-300 { color: #6b635c; }
+    html.dark .text-stone-200 { color: #4a423d; }
+    html.dark .text-rose-900 { color: #fda4af; }
+    html.dark .text-sky-900 { color: #7dd3fc; }
+    html.dark .text-amber-900 { color: #fcd34d; }
+    html.dark .text-emerald-900 { color: #6ee7b7; }
+    html.dark .text-emerald-700 { color: #34d399; }
+    html.dark .text-rose-600 { color: #fb7185; }
+
+    html.dark .border-stone-100, html.dark .border-stone-200, html.dark .border-stone-200\/80, html.dark .border-stone-300, html.dark .border-\[\#e6dfd5\] { border-color: #3a3431; }
+    html.dark .border-stone-500, html.dark .border-stone-700, html.dark .hover\:border-stone-400:hover { border-color: #a69d93; }
+    html.dark .ring-stone-700 { --tw-ring-color: #a69d93; }
+    html.dark .border-rose-100, html.dark .border-rose-200, html.dark .border-rose-200\/70 { border-color: rgba(244,63,94,.28); }
+    html.dark .border-sky-200, html.dark .border-sky-200\/70 { border-color: rgba(14,165,233,.28); }
+    html.dark .border-amber-200, html.dark .border-amber-200\/70, html.dark .border-amber-300 { border-color: rgba(245,158,11,.30); }
+    html.dark .border-emerald-200 { border-color: rgba(16,185,129,.28); }
+    html.dark .divide-stone-100 > :not([hidden]) ~ :not([hidden]) { border-color: #332e2b; }
+    html.dark .dot-grid { background-image: radial-gradient(#3d3632 1px, transparent 1px); }
+    html.dark input[type="range"] { accent-color: #e7e1d8; }
+    html.dark ::placeholder { color: #6b635c; }
+    html.dark ::-webkit-scrollbar-thumb { background: #3d3632; }
+    @media (max-width: 639px) {
+      html.dark .rtable tr { background: #2a2624; border-color: #3a3431 !important; }
+      html.dark .rtable tfoot tr { background: #262220; }
+    }
+    /* Pastel pieces keep dark ink (tabs, badges, sticky cards) */
+    html.dark .keep-ink, html.dark .keep-ink input, html.dark .keep-ink textarea, html.dark .keep-ink span, html.dark .keep-ink i { color: #292524; }
+    html.dark .keep-ink textarea { background-color: rgba(255,255,255,.45); }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #d5cdc2; border-radius: 999px; }
@@ -117,6 +186,10 @@
         <option value="es">🇪🇸 Español</option>
         <option value="ar">🇲🇦 العربية</option>
       </select>
+
+      <button id="themeBtn" onclick="toggleTheme()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-stone-700 text-xs font-semibold border border-stone-200 hover:bg-stone-100 transition">
+        <i data-lucide="moon" class="w-3.5 h-3.5"></i> <span id="themeLabel">Dark</span>
+      </button>
 
       <button onclick="toggleStickerModal()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-100 text-amber-900 text-xs font-semibold border border-amber-200 hover:bg-amber-200 transition">
         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span data-i18n="stickers">Stickers</span>
@@ -158,16 +231,16 @@
           <button onclick="switchView('dashboard')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-stone-800 text-white transition flex items-center gap-1.5 shrink-0">
             <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i> <span data-i18n="index">Index</span>
           </button>
-          <button onclick="switchView('daily')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#ffd6d6] text-stone-800 hover:opacity-90 transition shrink-0">
+          <button onclick="switchView('daily')" class="px-3 py-1.5 rounded-lg text-xs font-semibold keep-ink bg-[#ffd6d6] text-stone-800 hover:opacity-90 transition shrink-0">
             <span data-i18n="daily">Daily</span>
           </button>
-          <button onclick="switchView('weekly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#ffe8c2] text-stone-800 hover:opacity-90 transition shrink-0">
+          <button onclick="switchView('weekly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold keep-ink bg-[#ffe8c2] text-stone-800 hover:opacity-90 transition shrink-0">
             <span data-i18n="weekly">Weekly</span>
           </button>
-          <button onclick="switchView('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#d9f2d0] text-stone-800 hover:opacity-90 transition shrink-0">
+          <button onclick="switchView('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold keep-ink bg-[#d9f2d0] text-stone-800 hover:opacity-90 transition shrink-0">
             <span data-i18n="monthly">Monthly</span>
           </button>
-          <button onclick="switchView('notes')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#d4ebff] text-stone-800 hover:opacity-90 transition shrink-0">
+          <button onclick="switchView('notes')" class="px-3 py-1.5 rounded-lg text-xs font-semibold keep-ink bg-[#d4ebff] text-stone-800 hover:opacity-90 transition shrink-0">
             <span data-i18n="notes">Notes</span>
           </button>
         </div>
@@ -346,6 +419,8 @@
       moodsSub: ["Pick a mood, then tap the days", "Choisissez une humeur, puis touchez les jours", "Elige un ánimo y toca los días", "ختار المزاج ومن بعد اضغط على الأيام"],
       deleteRow: ["Delete", "Supprimer", "Eliminar", "مسح"],
       menu: ["Settings", "Réglages", "Ajustes", "الإعدادات"],
+      darkMode: ["Dark", "Sombre", "Oscuro", "ليلي"],
+      lightMode: ["Light", "Clair", "Claro", "نهاري"],
       yearL: ["Year", "Année", "Año", "العام"],
       languageL: ["Language", "Langue", "Idioma", "اللغة"]
     };
@@ -918,6 +993,7 @@
       ['days', 'weekNotes', 'habitChecks', 'monthEvents', 'templateEntries', 'stickers'].forEach(k => { if (!out[k] || typeof out[k] !== 'object') out[k] = {}; });
       if (!Array.isArray(out.habits)) out.habits = [];
       if (typeof out.notesPaper !== 'string') out.notesPaper = '';
+      if (!['auto', 'light', 'dark'].includes(out.theme)) out.theme = 'auto';
       return out;
     }
 
@@ -945,6 +1021,7 @@
     function initApp() {
       document.getElementById('yearSelect').value = state.year;
       document.getElementById('langSelect').value = state.lang;
+      applyTheme();
       applyLanguageAttributes();
       renderSideTabs();
       renderStickerPalette();
@@ -958,6 +1035,26 @@
       document.documentElement.lang = state.lang;
       document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
       document.getElementById('saveIndicator').textContent = t('saved');
+      updateThemeButton();
+    }
+
+    /* Theme */
+    function isDark() { return document.documentElement.classList.contains('dark'); }
+    function applyTheme() {
+      const th = state.theme || 'auto';
+      const dark = th === 'dark' || (th === 'auto' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', dark);
+      updateThemeButton();
+    }
+    function updateThemeButton() {
+      const btn = document.getElementById('themeBtn'); if (!btn) return;
+      const dark = isDark();
+      btn.innerHTML = `<i data-lucide="${dark ? 'sun' : 'moon'}" class="w-3.5 h-3.5"></i> <span id="themeLabel">${t(dark ? 'lightMode' : 'darkMode')}</span>`;
+      if (window.lucide) lucide.createIcons();
+    }
+    function toggleTheme() { state.theme = isDark() ? 'light' : 'dark'; saveState(); applyTheme(); renderCurrentView(); }
+    if (window.matchMedia) {
+      try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if ((state.theme || 'auto') === 'auto') { applyTheme(); renderCurrentView(); } }); } catch (e) {}
     }
 
     function syncYearSelect() {
@@ -1042,7 +1139,7 @@
       const monthColors = ['#ffd6d6','#ffe2c6','#fff3bf','#d9f2d0','#c8f4ea','#d4ebff','#ded9ff','#f3d9fa','#ffd6eb','#e2ece9','#ffe8c2','#d9f2d0'];
       leftContainer.innerHTML = months.map((m, idx) => `
         <button onclick="selectMonth(${idx})" style="background:${monthColors[idx]}"
-          class="side-tab px-1 sm:px-1.5 py-2 sm:py-2.5 rounded-s-lg text-[9px] sm:text-[10px] text-stone-800 border border-e-0 border-stone-300 ${state.currentView === 'monthly' && state.month === idx ? 'active font-bold' : 'opacity-85'}">
+          class="side-tab keep-ink px-1 sm:px-1.5 py-2 sm:py-2.5 rounded-s-lg text-[9px] sm:text-[10px] text-stone-800 border border-e-0 border-stone-300 ${state.currentView === 'monthly' && state.month === idx ? 'active font-bold' : 'opacity-85'}">
           ${m}
         </button>
       `).join('');
@@ -1050,7 +1147,7 @@
       const rightContainer = document.getElementById('rightSectionTabs');
       rightContainer.innerHTML = LIFE_SECTIONS.map(sec => `
         <button onclick="switchView('section', '${sec.id}')" style="background:${sec.color}"
-          class="side-tab px-1 sm:px-1.5 py-2 sm:py-3 rounded-e-lg text-[9px] sm:text-[10px] text-stone-800 border border-s-0 border-stone-300 ${state.currentView === 'section' && state.activeSectionId === sec.id ? 'active font-bold' : 'opacity-90'}">
+          class="side-tab keep-ink px-1 sm:px-1.5 py-2 sm:py-3 rounded-e-lg text-[9px] sm:text-[10px] text-stone-800 border border-s-0 border-stone-300 ${state.currentView === 'section' && state.activeSectionId === sec.id ? 'active font-bold' : 'opacity-90'}">
           ${esc(secName(sec))}
         </button>
       `).join('');
@@ -1106,10 +1203,10 @@
             <h2 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">${t('lifeSections', { n: TOTAL_TEMPLATES })}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
               ${LIFE_SECTIONS.map(sec => `
-                <div style="background:${sec.color}40" class="rounded-2xl border border-stone-200/80 p-4 flex flex-col justify-between hover:shadow-md transition">
+                <div style="background:${sec.color}${isDark() ? '1c' : '40'}" class="rounded-2xl border border-stone-200/80 p-4 flex flex-col justify-between hover:shadow-md transition">
                   <div>
                     <div class="flex items-center justify-between gap-2 mb-2">
-                      <span style="background:${sec.color}" class="px-2.5 py-1 rounded-lg text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                      <span style="background:${sec.color}" class="keep-ink px-2.5 py-1 rounded-lg text-xs font-bold text-stone-800 flex items-center gap-1.5">
                         <i data-lucide="${sec.icon}" class="w-3.5 h-3.5"></i> ${esc(secName(sec))}
                       </span>
                       <span class="text-[10px] font-semibold text-stone-500 shrink-0">${t('pages', { n: sec.templates.length })}</span>
@@ -1424,7 +1521,7 @@
 
       return `
         <div class="space-y-5">
-          <div style="background:${sec.color}55" class="p-4 rounded-2xl border border-stone-200">
+          <div style="background:${sec.color}${isDark() ? '24' : '55'}" class="p-4 rounded-2xl border border-stone-200">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
               <h2 class="serif-title text-xl sm:text-2xl font-bold text-stone-800 flex items-center gap-2 flex-wrap">
                 <i data-lucide="${sec.icon}" class="w-5 h-5"></i> ${esc(secName(sec))} — <span class="text-stone-600">${esc(tplName(tpl))}</span>
@@ -1648,7 +1745,7 @@
       return `
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="boardGrid">
           ${cards.map((c, i) => `
-            <div class="rounded-2xl border border-stone-200 p-4 shadow-sm flex flex-col gap-2 min-h-[170px]" style="background:${c.color || BOARD_COLORS[0]}">
+            <div class="keep-ink rounded-2xl border border-stone-200 p-4 shadow-sm flex flex-col gap-2 min-h-[170px]" style="background:${c.color || BOARD_COLORS[0]}">
               <input type="text" value="${esc(c.title)}" placeholder="${esc(t('cardTitle'))}" oninput="boardData()[${i}].title=this.value; saveState();" class="serif-title text-lg font-bold bg-transparent focus:outline-none text-stone-800 placeholder-stone-500/60"/>
               <textarea rows="4" placeholder="${esc(t('cardText'))}" oninput="boardData()[${i}].text=this.value; saveState();" class="flex-1 text-xs bg-white/50 rounded-lg p-2 focus:outline-none resize-none text-stone-700">${esc(c.text)}</textarea>
               <div class="flex items-center justify-between">
@@ -1808,7 +1905,7 @@
     function renderPinnedStickers() {
       const bar = document.getElementById('pageStickersBar');
       const list = state.stickers[state.currentView] || [];
-      bar.innerHTML = list.map((st, idx) => `<button onclick="removeStickerFromPage(${idx})" title="${esc(t('removeSticker'))}" class="px-3 py-1 rounded-full bg-amber-100/90 border border-amber-300 text-amber-900 text-xs font-bold shadow-sm hover:bg-rose-100 hover:border-rose-300 transition">${esc(stickerLabel(st))}</button>`).join('');
+      bar.innerHTML = list.map((st, idx) => `<button onclick="removeStickerFromPage(${idx})" title="${esc(t('removeSticker'))}" class="keep-ink px-3 py-1 rounded-full bg-amber-100/90 border border-amber-300 text-amber-900 text-xs font-bold shadow-sm hover:bg-rose-100 hover:border-rose-300 transition">${esc(stickerLabel(st))}</button>`).join('');
     }
 
     /* ───────────────────────── CALENDAR EXPORT ───────────────────────── */
@@ -1949,7 +2046,7 @@
         saveState();
         document.getElementById('yearSelect').value = state.year;
         document.getElementById('langSelect').value = state.lang;
-        applyLanguageAttributes(); renderSideTabs(); renderStickerPalette(); renderCurrentView();
+        applyTheme(); applyLanguageAttributes(); renderSideTabs(); renderStickerPalette(); renderCurrentView();
         toast(t('restoreOk'));
       };
       reader.readAsText(file);
