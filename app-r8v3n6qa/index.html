@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#272422" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LifePlanner" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="icon" type="image/png" href="./icon-192.png" />
+  <title>All-In-One Digital Planner (2026–2030 PWA)</title>
+
+  <link rel="stylesheet" href="./app.css" />
+  <script src="./lucide.min.js"></script>
+
+  <style>
+    @font-face { font-family: 'Plus Jakarta Sans'; font-style: normal; font-weight: 400; font-display: swap; src: url(./fonts/plus-jakarta-sans-latin-400-normal.woff2) format('woff2'); }
+    @font-face { font-family: 'Plus Jakarta Sans'; font-style: normal; font-weight: 500; font-display: swap; src: url(./fonts/plus-jakarta-sans-latin-500-normal.woff2) format('woff2'); }
+    @font-face { font-family: 'Plus Jakarta Sans'; font-style: normal; font-weight: 600; font-display: swap; src: url(./fonts/plus-jakarta-sans-latin-600-normal.woff2) format('woff2'); }
+    @font-face { font-family: 'Plus Jakarta Sans'; font-style: normal; font-weight: 700; font-display: swap; src: url(./fonts/plus-jakarta-sans-latin-700-normal.woff2) format('woff2'); }
+    @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 600; font-display: swap; src: url(./fonts/playfair-display-latin-600-normal.woff2) format('woff2'); }
+    @font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700; font-display: swap; src: url(./fonts/playfair-display-latin-700-normal.woff2) format('woff2'); }
+    @font-face { font-family: 'Cairo'; font-style: normal; font-weight: 400; font-display: swap; src: url(./fonts/cairo-arabic-400-normal.woff2) format('woff2'); }
+    @font-face { font-family: 'Cairo'; font-style: normal; font-weight: 600; font-display: swap; src: url(./fonts/cairo-arabic-600-normal.woff2) format('woff2'); }
+    @font-face { font-family: 'Cairo'; font-style: normal; font-weight: 700; font-display: swap; src: url(./fonts/cairo-arabic-700-normal.woff2) format('woff2'); }
+
+    :root {
+      --bg-paper: #fdfbf7;
+      --bg-desk: #e9e4dc;
+      --ink: #2c2623;
+      --border: #e6dfd5;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Cairo', sans-serif;
+      background-color: var(--bg-desk);
+      color: var(--ink);
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    input, textarea, select { user-select: text; -webkit-user-select: text; }
+    .serif-title {
+      font-family: 'Playfair Display', 'Cairo', serif;
+    }
+    .side-tab {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transition: all 0.2s ease;
+    }
+    .side-tab:hover, .side-tab.active {
+      transform: translateX(4px);
+      font-weight: 700;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.12);
+    }
+    [dir="rtl"] .side-tab:hover, [dir="rtl"] .side-tab.active { transform: translateX(-4px); }
+    .dot-grid {
+      background-image: radial-gradient(#d6cfc4 1px, transparent 1px);
+      background-size: 18px 18px;
+    }
+    input[type="range"] { accent-color: #292524; }
+    input[type="checkbox"] { accent-color: #059669; }
+    @media (min-width: 0px) { body { padding-top: calc(env(safe-area-inset-top) + 8px); padding-bottom: calc(env(safe-area-inset-bottom) + 8px); } }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+    .safe-top { padding-top: calc(env(safe-area-inset-top) + 12px); }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+    .sheet-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 20px); }
+
+    /* Phone: every table row becomes a card with labels */
+    @media (max-width: 639px) {
+      .rtable, .rtable tbody, .rtable tfoot { display: block; width: 100%; }
+      .rtable thead { display: none; }
+      .rtable tr { display: block; position: relative; border: 1px solid #ece6dc !important; border-radius: 14px; padding: 8px 12px; padding-inline-end: 30px; margin-bottom: 10px; background: #fff; }
+      .rtable td { display: flex; align-items: center; gap: 10px; padding: 5px 0 !important; }
+      .rtable td[data-label]::before { content: attr(data-label); flex: 0 0 34%; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #a8a29e; }
+      .rtable td > * { flex: 1; min-width: 0 !important; }
+      .rtable td.rdel { position: absolute; top: 8px; inset-inline-end: 10px; padding: 0 !important; }
+      .rtable td.rempty { display: block; text-align: center; }
+      .rtable tfoot tr { background: #f8f4ec; }
+      .rtable tfoot td:empty { display: none; }
+      .rtable-wrap { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d5cdc2; border-radius: 999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 md:p-5">
+
+  <!-- Top Controls Bar (tablet & desktop) -->
+  <div class="w-full max-w-7xl flex flex-wrap items-center justify-between gap-2 mb-3 px-1 sm:px-2">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 text-xs font-semibold shadow-sm border border-stone-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span data-i18n="offline">PWA Offline Ready</span>
+      </span>
+      <button id="installPwaBtn" class="hidden items-center gap-1.5 px-3 py-1 rounded-full bg-stone-900 text-white text-xs font-semibold shadow hover:bg-stone-700 transition">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i> <span data-i18n="install">Install App</span>
+      </button>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <select id="yearSelect" onchange="changeYear(this.value)" class="px-3 py-1.5 rounded-lg bg-white text-xs font-semibold border border-stone-200 shadow-sm focus:outline-none">
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+        <option value="2029">2029</option>
+        <option value="2030">2030</option>
+      </select>
+
+      <select id="langSelect" onchange="changeLanguage(this.value)" class="px-3 py-1.5 rounded-lg bg-white text-xs font-semibold border border-stone-200 shadow-sm focus:outline-none">
+        <option value="en">🇬🇧 English</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="ar">🇲🇦 العربية</option>
+      </select>
+
+      <button onclick="toggleStickerModal()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-100 text-amber-900 text-xs font-semibold border border-amber-200 hover:bg-amber-200 transition">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> <span data-i18n="stickers">Stickers</span>
+      </button>
+
+      <button onclick="exportBackup()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-stone-700 text-xs font-semibold border border-stone-200 hover:bg-stone-100 transition">
+        <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i> <span data-i18n="backup">Backup</span>
+      </button>
+      <button onclick="document.getElementById('restoreInput').click()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white text-stone-700 text-xs font-semibold border border-stone-200 hover:bg-stone-100 transition">
+        <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i> <span data-i18n="restore">Restore</span>
+      </button>
+      <input id="restoreInput" type="file" accept=".json,application/json" class="hidden" onchange="importBackup(this)" />
+    </div>
+  </div>
+
+  <!-- Main Tablet Binder Frame -->
+  <div class="w-full max-w-7xl bg-[#272422] p-1.5 sm:p-2.5 md:p-4 rounded-[22px] sm:rounded-[28px] shadow-2xl flex relative">
+    <div class="flex flex-col gap-1 pt-5 sm:pt-6 pe-0.5 sm:pe-1 z-10 shrink-0 max-h-[86vh] overflow-y-auto no-scrollbar" id="leftMonthTabs"></div>
+
+    <div class="flex-1 min-w-0 bg-[#fdfbf7] rounded-[16px] sm:rounded-[20px] shadow-inner border border-[#e6dfd5] flex flex-col min-h-[82vh] max-h-[86vh] overflow-hidden relative">
+      <!-- Phone app bar -->
+      <div class="hidden">
+        <button onclick="switchView('dashboard')" class="flex items-center gap-2.5 min-w-0 text-start">
+          <img src="./icon-192.png" alt="" class="w-9 h-9 rounded-xl bg-white/5"/>
+          <span class="min-w-0">
+            <span class="block serif-title text-lg font-bold leading-tight">Life Planner</span>
+            <span id="mobileSub" class="block text-[11px] text-white/60 truncate"></span>
+          </span>
+        </button>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button onclick="openCalModal(calContext())" class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center"><i data-lucide="calendar-plus" class="w-4 h-4"></i></button>
+          <button onclick="toggleStickerModal()" class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i></button>
+          <button onclick="openMenu()" class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center"><i data-lucide="menu" class="w-4 h-4"></i></button>
+        </div>
+      </div>
+
+      <header class="flex border-b border-[#e6dfd5] bg-[#f8f4ec] px-3 sm:px-4 py-2.5 flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5 overflow-x-auto py-1">
+          <button onclick="switchView('dashboard')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-stone-800 text-white transition flex items-center gap-1.5 shrink-0">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i> <span data-i18n="index">Index</span>
+          </button>
+          <button onclick="switchView('daily')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#ffd6d6] text-stone-800 hover:opacity-90 transition shrink-0">
+            <span data-i18n="daily">Daily</span>
+          </button>
+          <button onclick="switchView('weekly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#ffe8c2] text-stone-800 hover:opacity-90 transition shrink-0">
+            <span data-i18n="weekly">Weekly</span>
+          </button>
+          <button onclick="switchView('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#d9f2d0] text-stone-800 hover:opacity-90 transition shrink-0">
+            <span data-i18n="monthly">Monthly</span>
+          </button>
+          <button onclick="switchView('notes')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#d4ebff] text-stone-800 hover:opacity-90 transition shrink-0">
+            <span data-i18n="notes">Notes</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="openCalModal(calContext())" class="px-2.5 py-1 rounded-md bg-white border border-stone-200 text-[11px] font-semibold text-stone-700 hover:bg-stone-50 flex items-center gap-1 shadow-sm">
+            <i data-lucide="calendar-plus" class="w-3 h-3 text-blue-600"></i> + Google Cal
+          </button>
+          <button onclick="openCalModal(calContext())" class="px-2.5 py-1 rounded-md bg-white border border-stone-200 text-[11px] font-semibold text-stone-700 hover:bg-stone-50 flex items-center gap-1 shadow-sm">
+            <i data-lucide="calendar" class="w-3 h-3 text-stone-900"></i> + Apple Cal
+          </button>
+        </div>
+      </header>
+
+      <div class="flex-1 min-h-0 flex flex-col bg-[#fdfbf7] relative overflow-hidden">
+        <div id="pageStickersBar" class="px-5 pt-3 sm:pt-2 flex flex-wrap gap-2 empty:hidden"></div>
+        <main id="mainContent" class="flex-1 overflow-y-auto p-4 md:p-7"></main>
+      </div>
+
+      <footer class="flex border-t border-[#e6dfd5] bg-[#f8f4ec] px-3 sm:px-5 py-2 items-center justify-between gap-2 text-[11px] text-stone-500">
+        <span id="footerBreadcrumb">All-In-One Planner</span>
+        <span id="saveIndicator" class="text-emerald-700 font-medium shrink-0">✓ Saved to device</span>
+      </footer>
+
+      <!-- Phone bottom tab bar -->
+      <nav id="bottomNav" class="hidden grid-cols-5 md:px-[12%] border-t border-[#e6dfd5] bg-[#f8f4ec] safe-bottom"></nav>
+    </div>
+
+    <div class="flex flex-col gap-1 sm:gap-1.5 pt-5 sm:pt-6 ps-0.5 sm:ps-1 z-10 shrink-0 max-h-[86vh] overflow-y-auto no-scrollbar" id="rightSectionTabs"></div>
+  </div>
+
+  <!-- Sticker Modal -->
+  <div id="stickerModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4" onclick="if(event.target===this) toggleStickerModal()">
+    <div class="bg-[#fdfbf7] border border-stone-200 rounded-2xl max-w-md w-full p-5 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-stone-200">
+        <h3 class="font-bold text-stone-800 flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> <span data-i18n="stickerTitle">Digital Sticker Pack</span>
+        </h3>
+        <button onclick="toggleStickerModal()" class="text-stone-400 hover:text-stone-700">✕</button>
+      </div>
+      <p class="text-xs text-stone-500 mt-2 mb-3" data-i18n="stickerHint">Tap a sticker to pin it to this page:</p>
+      <div class="grid grid-cols-3 sm:grid-cols-4 gap-2.5 text-center" id="stickerPalette"></div>
+    </div>
+  </div>
+
+  <!-- Calendar Modal -->
+  <div id="calModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4" onclick="if(event.target===this) closeCalModal()">
+    <div class="bg-[#fdfbf7] border border-stone-200 rounded-2xl max-w-md w-full p-5 shadow-2xl" id="calModalBody"></div>
+  </div>
+
+  <!-- Phone settings sheet -->
+  <div id="menuSheet" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-end justify-center z-50" onclick="if(event.target===this) closeMenu()">
+    <div id="menuBody" class="bg-[#fdfbf7] w-full max-w-lg rounded-t-3xl p-5 sheet-bottom space-y-4"></div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-full bg-stone-900 text-white text-xs font-semibold shadow-lg hidden"></div>
+
+  <script>
+    /* ───────────────────────── LANGUAGES ───────────────────────── */
+    const LANGS = ['en', 'fr', 'es', 'ar'];
+    const LOCALES = { en: 'en-GB', fr: 'fr-FR', es: 'es-ES', ar: 'ar-MA' };
+    const MONTHS = {
+      en: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      fr: ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc'],
+      es: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+      ar: ['يناير','فبراير','مارس','أبريل','ماي','يونيو','يوليوز','غشت','شتنبر','أكتوبر','نونبر','دجنبر']
+    };
+    const MONTHS_LONG = {
+      en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+      fr: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+      es: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+      ar: ['يناير','فبراير','مارس','أبريل','ماي','يونيو','يوليوز','غشت','شتنبر','أكتوبر','نونبر','دجنبر']
+    };
+    const DAYS = {
+      en: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      fr: ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'],
+      es: ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],
+      ar: ['الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد']
+    };
+
+    // Interface text: [en, fr, es, ar]
+    const UI = {
+      index: ["Index", "Index", "Índice", "الفهرس"],
+      daily: ["Daily", "Quotidien", "Diario", "اليومي"],
+      weekly: ["Weekly", "Hebdo", "Semanal", "الأسبوعي"],
+      monthly: ["Monthly", "Mensuel", "Mensual", "الشهري"],
+      notes: ["Notes", "Notes", "Notas", "ملاحظات"],
+      dashboard: ["Index", "Index", "Índice", "الفهرس"],
+      section: ["Section", "Section", "Sección", "القسم"],
+      stickers: ["Stickers", "Stickers", "Stickers", "ملصقات"],
+      backup: ["Backup", "Sauvegarder", "Copia", "نسخة احتياطية"],
+      restore: ["Restore", "Restaurer", "Restaurar", "استرجاع"],
+      offline: ["PWA Offline Ready", "Fonctionne hors ligne", "Funciona sin conexión", "يشتغل بدون أنترنت"],
+      install: ["Install App", "Installer l'app", "Instalar app", "ثبّت التطبيق"],
+      welcomeTitle: ["All-In-One Life Planner", "Agenda Digital Tout-en-Un", "Planificador Digital Todo-en-Uno", "المنظم الرقمي الشامل"],
+      welcomeSub: ["10 Life Sections • {n} Templates • Multi-Year • Offline PWA", "10 Sections de Vie • {n} Modèles • Multi-Années • Application PWA", "10 Secciones de Vida • {n} Plantillas • Multianual • App PWA", "10 أقسام للحياة • {n} قالب • متعدد السنوات • يشتغل بدون أنترنت"],
+      edition: ["{y} EDITION • PWA APP", "ÉDITION {y} • APP PWA", "EDICIÓN {y} • APP PWA", "إصدار {y} • تطبيق PWA"],
+      monthlyCals: ["{y} Monthly Calendars", "Calendriers mensuels {y}", "Calendarios mensuales {y}", "التقويمات الشهرية {y}"],
+      lifeSections: ["10 Life Sections ({n} Interactive Templates)", "10 Sections de vie ({n} modèles interactifs)", "10 Secciones de vida ({n} plantillas interactivas)", "10 أقسام للحياة ({n} قالب تفاعلي)"],
+      pages: ["{n} pages", "{n} pages", "{n} páginas", "{n} صفحات"],
+      more: ["+ {n} more", "+ {n} autres", "+ {n} más", "+ {n} أخرى"],
+      openSection: ["Open Section →", "Ouvrir la section →", "Abrir sección →", "افتح القسم ←"],
+      dailyTitle: ["Daily Planner", "Planner du jour", "Planificador diario", "المخطط اليومي"],
+      today: ["Today", "Aujourd'hui", "Hoy", "اليوم"],
+      topPriorities: ["Top 3 Priorities", "Top 3 Priorités du Jour", "Top 3 Prioridades", "أهم 3 أولويات اليوم"],
+      dailySchedule: ["Hourly Schedule (06:00 - 21:00)", "Planning Horaire (06:00 - 21:00)", "Horario del Día (06:00 - 21:00)", "الجدول الزمني اليومي (06:00 - 21:00)"],
+      toDoList: ["To-Do List", "Liste des Tâches", "Lista de Tareas", "قائمة المهام"],
+      waterTracker: ["Hydration (8 Glasses)", "Hydratation (8 Verres)", "Hidratación (8 Vasos)", "شرب الماء (8 كؤوس)"],
+      moodGratitude: ["Daily Mood & Gratitude", "Humeur & Gratitude", "Ánimo y Gratitud", "المزاج والامتنان اليومي"],
+      priorityPh: ["Priority {n}...", "Priorité {n}...", "Prioridad {n}...", "الأولوية {n}..."],
+      addTask: ["+ Add Task", "+ Ajouter", "+ Añadir", "+ أضف مهمة"],
+      taskPh: ["New task...", "Nouvelle tâche...", "Nueva tarea...", "مهمة جديدة..."],
+      noTasks: ["No tasks for this day yet.", "Aucune tâche pour ce jour.", "Sin tareas para este día.", "ما كاين حتى مهمة فهاد النهار."],
+      gratefulPh: ["Grateful for...", "Reconnaissant(e) pour...", "Agradecido/a por...", "ممتن لـ..."],
+      weeklyTitle: ["Weekly Overview", "Vue de la semaine", "Resumen semanal", "نظرة على الأسبوع"],
+      thisWeek: ["This week", "Cette semaine", "Esta semana", "هاد الأسبوع"],
+      plansPh: ["Plans & tasks...", "Plans & tâches...", "Planes y tareas...", "الخطط والمهام..."],
+      weeklyFocus: ["Weekly Goals & Habit Tracker", "Objectifs & Habitudes de la Semaine", "Metas y Hábitos Semanales", "أهداف وعادات الأسبوع"],
+      habitCol: ["Habit / Routine", "Habitude / Routine", "Hábito / Rutina", "العادة / الروتين"],
+      addHabit: ["+ Add Habit", "+ Ajouter une habitude", "+ Añadir hábito", "+ أضف عادة"],
+      newHabit: ["New habit", "Nouvelle habitude", "Nuevo hábito", "عادة جديدة"],
+      clickDay: ["Type events in any day • tap a date number to open that day's page", "Écrivez vos événements • touchez un numéro pour ouvrir la page du jour", "Escribe tus eventos • toca un número para abrir ese día", "كتب الأحداث فأي نهار • اضغط على الرقم باش تفتح صفحة داك النهار"],
+      addRow: ["+ Add Entry Row", "+ Ajouter une ligne", "+ Añadir fila", "+ أضف سطر"],
+      emptyRows: ["No entries yet — tap “+ Add Entry Row” to start.", "Aucune entrée — touchez « + Ajouter une ligne » pour commencer.", "Sin entradas — toca «+ Añadir fila» para empezar.", "ما كاين والو — اضغط «+ أضف سطر» باش تبدا."],
+      total: ["Total", "Total", "Total", "المجموع"],
+      average: ["Average", "Moyenne", "Promedio", "المعدل"],
+      notesTitle: ["Notes & Brainstorming Grid", "Notes & Grille d'idées", "Notas y Cuadrícula de Ideas", "ملاحظات وشبكة الأفكار"],
+      dotGrid: ["Dot-Grid Digital Paper", "Papier pointillé", "Papel punteado", "ورق منقط"],
+      notesPh: ["Write freely, brainstorm projects, or paste links here...", "Écrivez librement, notez vos idées ou collez des liens...", "Escribe libremente, anota ideas o pega enlaces...", "كتب بحرية، الأفكار، المشاريع ولا الروابط..."],
+      stickerTitle: ["Digital Sticker Pack", "Pack de stickers", "Pack de stickers", "ملصقات رقمية"],
+      stickerHint: ["Tap a sticker to pin it to this page (tap a pinned sticker to remove it):", "Touchez un sticker pour l'épingler sur cette page (touchez-le ensuite pour le retirer) :", "Toca un sticker para fijarlo en esta página (tócalo después para quitarlo):", "اضغط على ملصق باش تلصقو فهاد الصفحة (اضغط عليه من بعد باش تحيدو):"],
+      removeSticker: ["Tap to remove", "Toucher pour retirer", "Toca para quitar", "اضغط باش تحيد"],
+      saved: ["✓ Saved to device", "✓ Enregistré sur l'appareil", "✓ Guardado en el dispositivo", "✓ محفوظ فالجهاز"],
+      savedNow: ["✓ Saved just now", "✓ Enregistré", "✓ Guardado", "✓ تحفظ دابا"],
+      restoreConfirm: ["Replace all current planner data with this backup?", "Remplacer toutes les données actuelles par cette sauvegarde ?", "¿Reemplazar todos los datos actuales por esta copia?", "واش تبدل كاع البيانات الحالية بهاد النسخة؟"],
+      restoreOk: ["Backup restored ✓", "Sauvegarde restaurée ✓", "Copia restaurada ✓", "ترجعات النسخة ✓"],
+      restoreBad: ["This file is not a valid planner backup.", "Ce fichier n'est pas une sauvegarde valide.", "Este archivo no es una copia válida.", "هاد الملف ماشي نسخة صالحة."],
+      calTitle: ["Add to Calendar", "Ajouter au calendrier", "Añadir al calendario", "زيد للتقويم"],
+      calEvent: ["Event title", "Titre de l'événement", "Título del evento", "عنوان الحدث"],
+      calDate: ["Date", "Date", "Fecha", "التاريخ"],
+      calStart: ["Start", "Début", "Inicio", "البداية"],
+      calEnd: ["End", "Fin", "Fin", "النهاية"],
+      calAllDay: ["All day", "Toute la journée", "Todo el día", "النهار كامل"],
+      calGoogle: ["Open in Google Calendar", "Ouvrir dans Google Agenda", "Abrir en Google Calendar", "افتح فـ Google Calendar"],
+      calApple: ["Download for Apple / Outlook (.ics)", "Télécharger pour Apple / Outlook (.ics)", "Descargar para Apple / Outlook (.ics)", "حمّل لـ Apple / Outlook (.ics)"],
+      calMonth: ["Export all events of {m} (.ics)", "Exporter tous les événements de {m} (.ics)", "Exportar todos los eventos de {m} (.ics)", "صدّر كاع الأحداث ديال {m} (.ics)"],
+      calNoEvents: ["No events written in {m} yet.", "Aucun événement en {m}.", "No hay eventos en {m}.", "ما كاين حتى حدث فـ {m}."],
+      calNeedTitle: ["Please type an event title.", "Veuillez saisir un titre.", "Escribe un título.", "كتب عنوان الحدث."],
+      calDone: ["Calendar file downloaded ✓", "Fichier calendrier téléchargé ✓", "Archivo de calendario descargado ✓", "تحمّل ملف التقويم ✓"],
+      addToCal: ["Add to calendar", "Ajouter au calendrier", "Añadir al calendario", "زيد للتقويم"],
+      calFrom: ["Planned in my All-In-One Planner", "Planifié dans mon agenda Tout-en-Un", "Planificado en mi planificador", "مبرمج فالمنظم ديالي"],
+      doFirst: ["Do First", "À faire tout de suite", "Hacer ya", "دير دابا"],
+      doFirstSub: ["Urgent & important", "Urgent & important", "Urgente e importante", "مستعجل ومهم"],
+      scheduleQ: ["Schedule", "Planifier", "Programar", "برمج"],
+      scheduleSub: ["Important, not urgent", "Important, pas urgent", "Importante, no urgente", "مهم، ماشي مستعجل"],
+      delegateQ: ["Delegate", "Déléguer", "Delegar", "فوّض"],
+      delegateSub: ["Urgent, not important", "Urgent, pas important", "Urgente, no importante", "مستعجل، ماشي مهم"],
+      eliminateQ: ["Eliminate", "Éliminer", "Eliminar", "حيّد"],
+      eliminateSub: ["Neither urgent nor important", "Ni urgent ni important", "Ni urgente ni importante", "لا مستعجل لا مهم"],
+      strengths: ["Strengths", "Forces", "Fortalezas", "نقاط القوة"],
+      strengthsSub: ["What I do well", "Ce que je fais bien", "Lo que hago bien", "شنو كندير مزيان"],
+      weaknesses: ["Weaknesses", "Faiblesses", "Debilidades", "نقاط الضعف"],
+      weaknessesSub: ["What I can improve", "Ce que je peux améliorer", "Lo que puedo mejorar", "شنو نقدر نحسّن"],
+      opportunities: ["Opportunities", "Opportunités", "Oportunidades", "الفرص"],
+      opportunitiesSub: ["Chances around me", "Les chances autour de moi", "Oportunidades a mi alrededor", "الفرص اللي دايرة بيا"],
+      threats: ["Threats", "Menaces", "Amenazas", "التهديدات"],
+      threatsSub: ["What could hold me back", "Ce qui pourrait me freiner", "Lo que podría frenarme", "شنو يقدر يوقفني"],
+      addItem: ["+ Add", "+ Ajouter", "+ Añadir", "+ زيد"],
+      itemPh: ["Type here...", "Écrire ici...", "Escribe aquí...", "كتب هنا..."],
+      addCard: ["+ Add Card", "+ Ajouter une carte", "+ Añadir tarjeta", "+ زيد بطاقة"],
+      cardTitle: ["Title...", "Titre...", "Título...", "العنوان..."],
+      cardText: ["Describe it...", "Décrivez...", "Descríbelo...", "وصف..."],
+      emptyBoard: ["Your board is empty — add your first card.", "Votre tableau est vide — ajoutez une première carte.", "Tu tablero está vacío — añade tu primera tarjeta.", "اللوحة خاوية — زيد أول بطاقة."],
+      habitsSub: ["Tap a day to mark it done", "Touchez un jour pour le cocher", "Toca un día para marcarlo", "اضغط على نهار باش تعلّمو"],
+      moodsSub: ["Pick a mood, then tap the days", "Choisissez une humeur, puis touchez les jours", "Elige un ánimo y toca los días", "ختار المزاج ومن بعد اضغط على الأيام"],
+      deleteRow: ["Delete", "Supprimer", "Eliminar", "مسح"],
+      menu: ["Settings", "Réglages", "Ajustes", "الإعدادات"],
+      yearL: ["Year", "Année", "Año", "العام"],
+      languageL: ["Language", "Langue", "Idioma", "اللغة"]
+    };
+
+    // Column & option words: [en, fr, es, ar]
+    const WORDS = {
+      goal: ["Goal", "Objectif", "Meta", "الهدف"],
+      area: ["Life Area", "Domaine", "Área", "المجال"],
+      deadline: ["Deadline", "Échéance", "Fecha límite", "الأجل"],
+      progress: ["Progress", "Progrès", "Progreso", "التقدم"],
+      status: ["Status", "Statut", "Estado", "الحالة"],
+      date: ["Date", "Date", "Fecha", "التاريخ"],
+      prompt: ["Question", "Question", "Pregunta", "السؤال"],
+      answer: ["My Answer", "Ma réponse", "Mi respuesta", "الجواب ديالي"],
+      title: ["Title", "Titre", "Título", "العنوان"],
+      author: ["Author", "Auteur", "Autor", "الكاتب"],
+      started: ["Started", "Commencé le", "Empezado", "بديت"],
+      finished: ["Finished", "Terminé le", "Terminado", "ساليت"],
+      pages: ["Pages", "Pages", "Páginas", "الصفحات"],
+      rating: ["Rating", "Note", "Valoración", "التقييم"],
+      dream: ["Dream", "Rêve", "Sueño", "الحلم"],
+      targetDate: ["Target Date", "Date visée", "Fecha objetivo", "التاريخ المستهدف"],
+      done: ["Done", "Fait", "Hecho", "تدار"],
+      time: ["Time", "Heure", "Hora", "الوقت"],
+      mood: ["Mood", "Humeur", "Ánimo", "المزاج"],
+      trigger: ["What happened", "Ce qui s'est passé", "Qué pasó", "شنو وقع"],
+      notes: ["Notes", "Notes", "Notas", "ملاحظات"],
+      g1: ["Grateful for #1", "Gratitude n°1", "Agradezco #1", "ممتن لـ #1"],
+      g2: ["Grateful for #2", "Gratitude n°2", "Agradezco #2", "ممتن لـ #2"],
+      g3: ["Grateful for #3", "Gratitude n°3", "Agradezco #3", "ممتن لـ #3"],
+      milestone: ["Milestone", "Étape", "Hito", "المحطة"],
+      name: ["Name", "Nom", "Nombre", "الاسم"],
+      birthday: ["Birthday", "Anniversaire", "Cumpleaños", "عيد الميلاد"],
+      giftIdea: ["Gift Idea", "Idée cadeau", "Idea de regalo", "فكرة الهدية"],
+      sent: ["Sent", "Envoyé", "Enviado", "تصيفط"],
+      activity: ["Activity", "Activité", "Actividad", "النشاط"],
+      frequency: ["Frequency", "Fréquence", "Frecuencia", "التكرار"],
+      lastDone: ["Last Done", "Dernière fois", "Última vez", "آخر مرة"],
+      workout: ["Workout", "Séance", "Entrenamiento", "التمرين"],
+      type: ["Type", "Type", "Tipo", "النوع"],
+      minutes: ["Minutes", "Minutes", "Minutos", "الدقائق"],
+      bedtime: ["Bedtime", "Coucher", "Hora de dormir", "وقت النعاس"],
+      wake: ["Wake Up", "Réveil", "Despertar", "وقت الفيقة"],
+      hours: ["Hours", "Heures", "Horas", "السوايع"],
+      quality: ["Quality", "Qualité", "Calidad", "الجودة"],
+      affirmation: ["Affirmation", "Affirmation", "Afirmación", "التأكيد"],
+      favorite: ["Favorite", "Favori", "Favorito", "مفضل"],
+      wentWell: ["What went well", "Ce qui a bien marché", "Qué salió bien", "شنو مشى مزيان"],
+      improve: ["What to improve", "À améliorer", "Qué mejorar", "شنو نحسّن"],
+      tomorrow: ["Tomorrow's focus", "Focus de demain", "Enfoque de mañana", "التركيز ديال غدا"],
+      entry: ["Journal Entry", "Texte du jour", "Entrada", "المذكرة"],
+      step: ["Step", "Étape", "Paso", "الخطوة"],
+      product: ["Product", "Produit", "Producto", "المنتوج"],
+      am: ["Morning", "Matin", "Mañana", "الصباح"],
+      pm: ["Evening", "Soir", "Noche", "الليل"],
+      day: ["Day", "Jour", "Día", "النهار"],
+      subject: ["Subject", "Matière", "Asignatura", "المادة"],
+      topic: ["Topic", "Sujet", "Tema", "الموضوع"],
+      assignment: ["Assignment", "Devoir", "Tarea", "الواجب"],
+      due: ["Due Date", "Échéance", "Fecha de entrega", "آخر أجل"],
+      priority: ["Priority", "Priorité", "Prioridad", "الأولوية"],
+      assessment: ["Test / Exam", "Évaluation", "Evaluación", "الفرض / الامتحان"],
+      score: ["Score", "Note", "Puntuación", "النقطة"],
+      maxScore: ["Out of", "Sur", "Sobre", "على"],
+      result: ["Result", "Résultat", "Resultado", "النتيجة"],
+      r1: ["Review 1", "Révision 1", "Repaso 1", "مراجعة 1"],
+      r2: ["Review 2", "Révision 2", "Repaso 2", "مراجعة 2"],
+      r3: ["Review 3", "Révision 3", "Repaso 3", "مراجعة 3"],
+      confidence: ["Confidence", "Confiance", "Confianza", "الثقة"],
+      className: ["Class", "Cours", "Clase", "الحصة"],
+      teacher: ["Teacher", "Professeur", "Profesor", "الأستاذ"],
+      room: ["Room", "Salle", "Aula", "القاعة"],
+      schedule: ["Schedule", "Horaire", "Horario", "التوقيت"],
+      email: ["Email", "E-mail", "Email", "الإيميل"],
+      task: ["Task", "Tâche", "Tarea", "المهمة"],
+      source: ["Source", "Source", "Fuente", "المصدر"],
+      lesson: ["Lesson", "Leçon", "Lección", "الدرس"],
+      objectives: ["Objectives", "Objectifs", "Objetivos", "الأهداف"],
+      materials: ["Materials", "Matériel", "Materiales", "الأدوات"],
+      category: ["Category", "Catégorie", "Categoría", "الفئة"],
+      planned: ["Planned", "Prévu", "Previsto", "المتوقع"],
+      actual: ["Actual", "Réel", "Real", "الحقيقي"],
+      difference: ["Difference", "Écart", "Diferencia", "الفرق"],
+      item: ["Item", "Article", "Concepto", "البند"],
+      method: ["Payment", "Paiement", "Pago", "طريقة الأداء"],
+      amount: ["Amount", "Montant", "Importe", "المبلغ"],
+      target: ["Target", "Montant visé", "Monto objetivo", "المبلغ المستهدف"],
+      saved: ["Saved", "Épargné", "Ahorrado", "المدّخر"],
+      debt: ["Debt", "Dette", "Deuda", "الدين"],
+      balance: ["Balance", "Solde restant", "Saldo", "الباقي"],
+      rate: ["Interest %", "Taux %", "Interés %", "الفائدة %"],
+      minPay: ["Min. Payment", "Paiement min.", "Pago mínimo", "الأداء الأدنى"],
+      paid: ["Paid", "Payé", "Pagado", "تخلّص"],
+      bill: ["Bill", "Facture", "Factura", "الفاتورة"],
+      asset: ["Asset", "Actif", "Activo", "الأصل"],
+      invested: ["Invested", "Investi", "Invertido", "المستثمر"],
+      value: ["Current Value", "Valeur actuelle", "Valor actual", "القيمة الحالية"],
+      gain: ["Gain / Loss", "Gain / Perte", "Ganancia / Pérdida", "الربح / الخسارة"],
+      service: ["Service", "Service", "Servicio", "الخدمة"],
+      cycle: ["Billing", "Facturation", "Facturación", "الدورة"],
+      renewal: ["Renewal", "Renouvellement", "Renovación", "التجديد"],
+      cancel: ["Cancel?", "Résilier ?", "¿Cancelar?", "نلغيه؟"],
+      deposit: ["Deposit", "Dépôt", "Depósito", "الإيداع"],
+      withdrawal: ["Withdrawal", "Retrait", "Retiro", "السحب"],
+      store: ["Store", "Magasin", "Tienda", "المحل"],
+      qty: ["Qty", "Qté", "Cant.", "الكمية"],
+      estPrice: ["Estimate", "Estimation", "Estimado", "التقدير"],
+      bought: ["Bought", "Acheté", "Comprado", "تشرى"],
+      budget: ["Budget", "Budget", "Presupuesto", "الميزانية"],
+      spent: ["Spent", "Dépensé", "Gastado", "المصروف"],
+      vendor: ["Vendor", "Prestataire", "Proveedor", "المزوّد"],
+      person: ["Person", "Personne", "Persona", "الشخص"],
+      occasion: ["Occasion", "Occasion", "Ocasión", "المناسبة"],
+      fund: ["Fund", "Fonds", "Fondo", "الصندوق"],
+      monthly: ["Per Month", "Par mois", "Al mes", "فالشهر"],
+      year: ["Year", "Année", "Año", "العام"],
+      why: ["Why it matters", "Pourquoi c'est important", "Por qué importa", "علاش مهم"],
+      month: ["Month", "Mois", "Mes", "الشهر"],
+      wins: ["Wins", "Réussites", "Logros", "النجاحات"],
+      lessons: ["Lessons", "Leçons", "Lecciones", "الدروس"],
+      focusNext: ["Next month's focus", "Focus du mois prochain", "Enfoque del próximo mes", "تركيز الشهر الجاي"],
+      skill: ["Skill to build", "Compétence à développer", "Habilidad a desarrollar", "المهارة"],
+      nextStep: ["Next Step", "Prochaine étape", "Siguiente paso", "الخطوة الجاية"],
+      intention: ["Intention", "Intention", "Intención", "النية"],
+      action: ["Action", "Action", "Acción", "الإجراء"],
+      recurring: ["Recurring", "Récurrent", "Recurrente", "كيتعاود"],
+      coreValue: ["Value", "Valeur", "Valor", "القيمة"],
+      meaning: ["What it means to me", "Ce que ça signifie pour moi", "Qué significa para mí", "شنو كتعني ليا"],
+      project: ["Project", "Projet", "Proyecto", "المشروع"],
+      start: ["Start", "Début", "Inicio", "البداية"],
+      end: ["End", "Fin", "Fin", "النهاية"],
+      owner: ["Owner", "Responsable", "Responsable", "المسؤول"],
+      weekOf: ["Week of", "Semaine du", "Semana del", "أسبوع"],
+      focus: ["Main Focus", "Focus principal", "Enfoque principal", "التركيز"],
+      top3: ["Top 3", "Top 3", "Top 3", "أهم 3"],
+      review: ["Review", "Bilan", "Revisión", "المراجعة"],
+      idea: ["Idea", "Idée", "Idea", "الفكرة"],
+      actioned: ["Actioned", "Traité", "Hecho", "تدار"],
+      breakfast: ["Breakfast", "Petit-déjeuner", "Desayuno", "الفطور"],
+      lunch: ["Lunch", "Déjeuner", "Almuerzo", "الغدا"],
+      dinner: ["Dinner", "Dîner", "Cena", "العشا"],
+      snacks: ["Snacks", "Collations", "Snacks", "وجبات خفيفة"],
+      chore: ["Chore", "Tâche", "Tarea", "الخدمة"],
+      who: ["Who", "Qui", "Quién", "شكون"],
+      roomH: ["Room", "Pièce", "Habitación", "البيت"],
+      aisle: ["Aisle", "Rayon", "Pasillo", "الرف"],
+      got: ["Got it", "Pris", "Listo", "خديتو"],
+      recipe: ["Recipe", "Recette", "Receta", "الوصفة"],
+      prepTime: ["Time (min)", "Temps (min)", "Tiempo (min)", "الوقت (دقيقة)"],
+      ingredients: ["Ingredients", "Ingrédients", "Ingredientes", "المكونات"],
+      link: ["Link", "Lien", "Enlace", "الرابط"],
+      job: ["Job", "Travaux", "Trabajo", "الإصلاح"],
+      location: ["Place", "Lieu", "Lugar", "المكان"],
+      cost: ["Cost", "Coût", "Coste", "التكلفة"],
+      event: ["Event", "Événement", "Evento", "الحدث"],
+      with: ["With", "Avec", "Con", "مع"],
+      expiry: ["Expiry", "Expiration", "Caducidad", "تاريخ الانتهاء"],
+      restock: ["Restock", "À racheter", "Reponer", "نعاود نشريه"],
+      meeting: ["Meeting", "Réunion", "Reunión", "الاجتماع"],
+      attendees: ["Attendees", "Participants", "Asistentes", "الحاضرين"],
+      actionItems: ["Action Items", "Actions à mener", "Acciones", "الإجراءات"],
+      from: ["From", "De", "De", "من"],
+      received: ["Received", "Reçu le", "Recibido", "توصلت بيه"],
+      company: ["Company", "Entreprise", "Empresa", "الشركة"],
+      phone: ["Phone", "Téléphone", "Teléfono", "الهاتف"],
+      kpi: ["KPI / Measure", "Indicateur", "Indicador", "المؤشر"],
+      client: ["Client", "Client", "Cliente", "الزبون"],
+      booked: ["Booked", "Réservé", "Reservado", "محجوز"],
+      packed: ["Packed", "Dans la valise", "Empacado", "فالباليزة"],
+      destination: ["Destination", "Destination", "Destino", "الوجهة"],
+      transport: ["Transport", "Transport", "Transporte", "النقل"],
+      stay: ["Stay", "Hébergement", "Alojamiento", "السكن"],
+      city: ["City", "Ville", "Ciudad", "المدينة"],
+      visited: ["Visited", "Visité", "Visitado", "زرتو"],
+      checkIn: ["Check-in", "Arrivée", "Entrada", "الدخول"],
+      checkOut: ["Check-out", "Départ", "Salida", "الخروج"],
+      address: ["Address", "Adresse", "Dirección", "العنوان"],
+      price: ["Price", "Prix", "Precio", "الثمن"],
+      stop: ["Stop", "Étape", "Parada", "الوقفة"],
+      distance: ["Distance (km)", "Distance (km)", "Distancia (km)", "المسافة (كلم)"],
+      fuel: ["Fuel", "Carburant", "Combustible", "الوقود"],
+      document: ["Document", "Document", "Documento", "الوثيقة"],
+      ready: ["Ready", "Prêt", "Listo", "واجد"],
+      // option values
+      notStarted: ["Not started", "Pas commencé", "Sin empezar", "ما بديتش"],
+      inProgress: ["In progress", "En cours", "En curso", "فالطريق"],
+      onHold: ["On hold", "En pause", "En pausa", "واقف"],
+      doneS: ["Done", "Terminé", "Terminado", "سالا"],
+      high: ["High", "Haute", "Alta", "عالية"],
+      medium: ["Medium", "Moyenne", "Media", "متوسطة"],
+      low: ["Low", "Basse", "Baja", "ضعيفة"],
+      health: ["Health", "Santé", "Salud", "الصحة"],
+      career: ["Career", "Carrière", "Carrera", "المسار المهني"],
+      money: ["Money", "Argent", "Dinero", "الفلوس"],
+      relationships: ["Relationships", "Relations", "Relaciones", "العلاقات"],
+      learning: ["Learning", "Apprentissage", "Aprendizaje", "التعلم"],
+      fun: ["Fun", "Loisirs", "Ocio", "الترفيه"],
+      personalA: ["Personal", "Personnel", "Personal", "شخصي"],
+      homeA: ["Home", "Maison", "Hogar", "الدار"],
+      daily: ["Daily", "Quotidien", "Diario", "كل نهار"],
+      weeklyF: ["Weekly", "Hebdomadaire", "Semanal", "كل أسبوع"],
+      monthlyF: ["Monthly", "Mensuel", "Mensual", "كل شهر"],
+      yearlyF: ["Yearly", "Annuel", "Anual", "كل عام"],
+      cardio: ["Cardio", "Cardio", "Cardio", "كارديو"],
+      strength: ["Strength", "Musculation", "Fuerza", "تقوية العضلات"],
+      yoga: ["Yoga", "Yoga", "Yoga", "يوغا"],
+      walk: ["Walk", "Marche", "Caminata", "مشي"],
+      sport: ["Sport", "Sport", "Deporte", "رياضة"],
+      other: ["Other", "Autre", "Otro", "أخرى"],
+      incomeO: ["Income", "Revenu", "Ingreso", "دخل"],
+      expenseO: ["Expense", "Dépense", "Gasto", "مصروف"],
+      savingsO: ["Savings", "Épargne", "Ahorro", "ادخار"],
+      housing: ["Housing", "Logement", "Vivienda", "السكن"],
+      food: ["Food", "Alimentation", "Comida", "الماكلة"],
+      transportO: ["Transport", "Transport", "Transporte", "النقل"],
+      bills: ["Bills", "Factures", "Facturas", "الفواتير"],
+      shopping: ["Shopping", "Shopping", "Compras", "التسوق"],
+      cash: ["Cash", "Espèces", "Efectivo", "كاش"],
+      card: ["Card", "Carte", "Tarjeta", "بطاقة"],
+      transfer: ["Transfer", "Virement", "Transferencia", "تحويل"],
+      stocks: ["Stocks", "Actions", "Acciones", "أسهم"],
+      crypto: ["Crypto", "Crypto", "Cripto", "كريبتو"],
+      realEstate: ["Real estate", "Immobilier", "Inmuebles", "عقار"],
+      fundO: ["Fund / ETF", "Fonds / ETF", "Fondo / ETF", "صندوق / ETF"],
+      salary: ["Salary", "Salaire", "Salario", "الخلصة"],
+      side: ["Side hustle", "Activité annexe", "Ingreso extra", "دخل جانبي"],
+      stayO: ["Stay", "Hébergement", "Alojamiento", "السكن"],
+      activities: ["Activities", "Activités", "Actividades", "الأنشطة"],
+      vet: ["Vet", "Vétérinaire", "Veterinario", "البيطري"],
+      grooming: ["Grooming", "Toilettage", "Peluquería", "التزيين"],
+      toys: ["Toys", "Jouets", "Juguetes", "اللعب"],
+      dessert: ["Dessert", "Dessert", "Postre", "ديسير"],
+      kitchen: ["Kitchen", "Cuisine", "Cocina", "الكوزينة"],
+      living: ["Living room", "Salon", "Salón", "الصالون"],
+      bedroom: ["Bedroom", "Chambre", "Dormitorio", "بيت النعاس"],
+      bathroom: ["Bathroom", "Salle de bain", "Baño", "الحمام"],
+      outdoor: ["Outdoor", "Extérieur", "Exterior", "برا"],
+      wholeHome: ["Whole home", "Toute la maison", "Toda la casa", "الدار كاملة"],
+      produce: ["Fruit & veg", "Fruits & légumes", "Frutas y verduras", "الخضرة والفواكه"],
+      dairy: ["Dairy", "Produits laitiers", "Lácteos", "الحليب ومشتقاتو"],
+      meat: ["Meat & fish", "Viande & poisson", "Carne y pescado", "اللحم والحوت"],
+      bakery: ["Bakery", "Boulangerie", "Panadería", "الخبز"],
+      pantry: ["Pantry", "Épicerie", "Despensa", "البقالة"],
+      frozen: ["Frozen", "Surgelés", "Congelados", "المجمّدات"],
+      household: ["Household", "Entretien", "Limpieza", "مواد التنظيف"],
+      reply: ["Reply", "Répondre", "Responder", "جاوب"],
+      followUp: ["Follow up", "Relancer", "Dar seguimiento", "تابع"],
+      delegateO: ["Delegate", "Déléguer", "Delegar", "فوّض"],
+      archive: ["Archive", "Archiver", "Archivar", "أرشيف"],
+      work: ["Work", "Travail", "Trabajo", "الخدمة"],
+      errands: ["Errands", "Courses", "Recados", "التقضيات"],
+      clothes: ["Clothes", "Vêtements", "Ropa", "الحوايج"],
+      toiletries: ["Toiletries", "Toilette", "Aseo", "أدوات النظافة"],
+      documents: ["Documents", "Documents", "Documentos", "الوثائق"],
+      electronics: ["Electronics", "Électronique", "Electrónica", "الإلكترونيات"],
+      sight: ["Sightseeing", "Visite", "Turismo", "زيارة"],
+      nature: ["Nature", "Nature", "Naturaleza", "الطبيعة"],
+      toRead: ["To read", "À lire", "Por leer", "غادي نقراه"],
+      reading: ["Reading", "En cours", "Leyendo", "كنقراه"],
+      finishedO: ["Finished", "Lu", "Leído", "قريتو"],
+      yr1: ["Year 1", "Année 1", "Año 1", "العام 1"],
+      yr2: ["Year 2", "Année 2", "Año 2", "العام 2"],
+      yr3: ["Year 3", "Année 3", "Año 3", "العام 3"],
+      yr4: ["Year 4", "Année 4", "Año 4", "العام 4"],
+      yr5: ["Year 5", "Année 5", "Año 5", "العام 5"]
+    };
+
+    const OPTS = {
+      status: ['notStarted','inProgress','onHold','doneS'],
+      priority: ['high','medium','low'],
+      areas: ['health','career','money','relationships','learning','fun','personalA','homeA'],
+      freq: ['daily','weeklyF','monthlyF','yearlyF'],
+      workout: ['cardio','strength','yoga','walk','sport','other'],
+      flow: ['incomeO','expenseO','savingsO'],
+      expcat: ['housing','food','transportO','bills','shopping','health','fun','other'],
+      method: ['cash','card','transfer'],
+      invest: ['stocks','crypto','realEstate','fundO','other'],
+      cycle: ['weeklyF','monthlyF','yearlyF'],
+      income: ['salary','side','other'],
+      travelcat: ['transportO','stayO','food','activities','shopping','other'],
+      pet: ['food','vet','grooming','toys','other'],
+      meals: ['breakfast','lunch','dinner','dessert','snacks'],
+      rooms: ['kitchen','living','bedroom','bathroom','outdoor','wholeHome'],
+      aisles: ['produce','dairy','meat','bakery','pantry','frozen','household','other'],
+      inbox: ['reply','followUp','delegateO','archive'],
+      todocat: ['work','homeA','personalA','errands'],
+      packing: ['clothes','toiletries','documents','electronics','other'],
+      places: ['sight','food','nature','shopping','other'],
+      reading: ['toRead','reading','finishedO'],
+      years: ['yr1','yr2','yr3','yr4','yr5']
+    };
+
+    /*
+      Template column spec: "key:type[:arg]" joined by "|"
+      t text • l long text • n number • ns summed number • m money (summed) • d date • h time
+      c checkbox • s:<optionSet> select • r star rating • mo mood emoji • p progress slider
+      xd:a-b difference • xp:a/b percentage bar • xs:a,b hours between two times
+      "@kind" = special layout (swot, matrix, habits, moods, board)
+    */
+    const SECTION_DEFS = [
+      { id: 'personal', n: ["Personal", "Personnel", "Personal", "شخصي"], color: '#ffd6d6', icon: 'user', t: [
+        ["Goal Tracker", "Suivi des objectifs", "Seguimiento de metas", "تتبع الأهداف", "goal:t|area:s:areas|deadline:d|progress:p|status:s:status"],
+        ["Self-Discovery Journal", "Journal de découverte de soi", "Diario de autodescubrimiento", "مذكرات اكتشاف الذات", "date:d|prompt:t|answer:l"],
+        ["Personal SWOT Analysis", "Analyse SWOT personnelle", "Análisis DAFO personal", "تحليل SWOT الشخصي", "@swot"],
+        ["Reading Log", "Journal de lecture", "Registro de lectura", "سجل القراءة", "title:t|author:t|started:d|finished:d|pages:ns|rating:r"],
+        ["Bucket List", "Bucket list", "Lista de deseos", "قائمة الأحلام", "dream:t|area:s:areas|targetDate:d|done:c"],
+        ["Mood Log", "Journal d'humeur", "Registro de ánimo", "سجل المزاج", "date:d|time:h|mood:mo|trigger:t|notes:l"],
+        ["Gratitude Log", "Liste de gratitude", "Lista de gratitud", "سجل الامتنان", "date:d|g1:t|g2:t|g3:t"],
+        ["Life Milestones", "Étapes de vie", "Hitos de vida", "محطات الحياة", "date:d|milestone:t|area:s:areas|notes:l"],
+        ["Birthday Tracker", "Suivi des anniversaires", "Registro de cumpleaños", "أعياد الميلاد", "name:t|birthday:d|giftIdea:t|sent:c"]
+      ]},
+      { id: 'selfcare', n: ["Self-Care", "Bien-être", "Autocuidado", "العناية بالذات"], color: '#ffe2c6', icon: 'heart', t: [
+        ["Self-Care Checklist", "Checklist bien-être", "Checklist de autocuidado", "لائحة العناية بالذات", "activity:t|frequency:s:freq|lastDone:d|done:c"],
+        ["Habit Tracker", "Suivi des habitudes", "Seguimiento de hábitos", "تتبع العادات", "@habits"],
+        ["Fitness Tracker", "Suivi sportif", "Registro de ejercicio", "تتبع الرياضة", "date:d|workout:t|type:s:workout|minutes:ns|notes:t"],
+        ["Sleep Tracker", "Suivi du sommeil", "Registro de sueño", "تتبع النعاس", "date:d|bedtime:h|wake:h|hours:xs:1,2|quality:r"],
+        ["Positive Affirmations", "Affirmations positives", "Afirmaciones positivas", "تأكيدات إيجابية", "affirmation:l|favorite:c"],
+        ["Daily Reflection", "Réflexion du jour", "Reflexión diaria", "تأمل يومي", "date:d|wentWell:l|improve:l|tomorrow:l"],
+        ["Mood Tracker", "Suivi de l'humeur", "Seguimiento del ánimo", "تتبع المزاج", "@moods"],
+        ["Gratitude Journal", "Journal de gratitude", "Diario de gratitud", "دفتر الامتنان", "date:d|entry:l"],
+        ["Skincare Routine", "Routine soin de la peau", "Rutina de cuidado facial", "روتين العناية بالبشرة", "step:t|product:t|am:c|pm:c"]
+      ]},
+      { id: 'education', n: ["Education", "Études", "Educación", "الدراسة"], color: '#fff3bf', icon: 'graduation-cap', t: [
+        ["Study Schedule", "Planning de révisions", "Horario de estudio", "جدول المراجعة", "day:s:weekdays|time:h|subject:t|topic:t|done:c"],
+        ["Assignment Planner", "Planificateur de devoirs", "Planificador de tareas", "تخطيط الواجبات", "assignment:t|subject:t|due:d|priority:s:priority|status:s:status"],
+        ["Grade Tracker", "Suivi des notes", "Registro de notas", "تتبع النقط", "subject:t|assessment:t|score:n|maxScore:n|result:xp:2/3"],
+        ["Revision Tracker", "Suivi des révisions", "Seguimiento de repasos", "تتبع المراجعة", "subject:t|topic:t|r1:c|r2:c|r3:c|confidence:r"],
+        ["Class Information", "Infos des cours", "Información de clases", "معلومات الحصص", "className:t|teacher:t|room:t|schedule:t|email:t"],
+        ["Research Project", "Projet de recherche", "Proyecto de investigación", "مشروع بحث", "task:t|source:t|due:d|status:s:status|notes:l"],
+        ["Reading List", "Liste de lecture", "Lista de lectura", "لائحة القراءة", "title:t|author:t|subject:t|status:s:reading"],
+        ["Lesson Planner", "Planificateur de leçons", "Planificador de lecciones", "تخطيط الدروس", "date:d|lesson:t|objectives:l|materials:t|done:c"]
+      ]},
+      { id: 'finance', n: ["Finance", "Finances", "Finanzas", "المالية"], color: '#d9f2d0', icon: 'wallet', t: [
+        ["Monthly Budget Planner", "Budget mensuel", "Presupuesto mensual", "الميزانية الشهرية", "category:t|type:s:flow|planned:m|actual:m|difference:xd:2-3"],
+        ["Expense Tracker", "Suivi des dépenses", "Registro de gastos", "تتبع المصاريف", "date:d|item:t|category:s:expcat|method:s:method|amount:m"],
+        ["Savings Goal Tracker", "Objectifs d'épargne", "Metas de ahorro", "أهداف الادخار", "goal:t|target:m|saved:m|progress:xp:2/1|deadline:d"],
+        ["Debt Tracker", "Suivi des dettes", "Registro de deudas", "تتبع الديون", "debt:t|balance:m|rate:n|minPay:m|due:d|paid:c"],
+        ["Bill Payment Tracker", "Suivi des factures", "Pago de facturas", "تتبع الفواتير", "bill:t|due:d|amount:m|frequency:s:freq|paid:c"],
+        ["Investment Tracker", "Suivi des investissements", "Registro de inversiones", "تتبع الاستثمارات", "asset:t|type:s:invest|invested:m|value:m|gain:xd:3-2"],
+        ["Subscription Tracker", "Suivi des abonnements", "Registro de suscripciones", "تتبع الاشتراكات", "service:t|cycle:s:cycle|amount:m|renewal:d|cancel:c"],
+        ["Emergency Fund", "Fonds d'urgence", "Fondo de emergencia", "صندوق الطوارئ", "date:d|deposit:m|withdrawal:m|notes:t"],
+        ["Income Tracker", "Suivi des revenus", "Registro de ingresos", "تتبع المداخيل", "date:d|source:t|type:s:income|amount:m"]
+      ]},
+      { id: 'budget', n: ["Budget", "Budget", "Presupuesto", "الميزانية"], color: '#c8f4ea', icon: 'piggy-bank', t: [
+        ["Weekly Budget", "Budget hebdomadaire", "Presupuesto semanal", "الميزانية الأسبوعية", "day:s:weekdays|item:t|category:s:expcat|planned:m|spent:m"],
+        ["Grocery Budget", "Budget courses", "Presupuesto de compras", "ميزانية التقضية", "item:t|store:t|qty:n|estPrice:m|actual:m|bought:c"],
+        ["Holiday/Travel Budget", "Budget vacances", "Presupuesto de vacaciones", "ميزانية العطلة", "item:t|category:s:travelcat|budget:m|spent:m|difference:xd:2-3"],
+        ["Event Budget", "Budget événement", "Presupuesto de evento", "ميزانية المناسبة", "item:t|vendor:t|budget:m|spent:m|paid:c"],
+        ["Gift Budget", "Budget cadeaux", "Presupuesto de regalos", "ميزانية الهدايا", "person:t|occasion:t|giftIdea:t|budget:m|spent:m|bought:c"],
+        ["Pet Care Budget", "Budget animaux", "Presupuesto de mascotas", "ميزانية الحيوانات", "date:d|item:t|category:s:pet|amount:m"],
+        ["Clothing Budget", "Budget vêtements", "Presupuesto de ropa", "ميزانية الحوايج", "item:t|store:t|planned:m|spent:m|bought:c"],
+        ["Sinking Funds", "Épargne par objectif", "Fondos de ahorro", "صناديق الادخار", "fund:t|target:m|monthly:m|saved:m|progress:xp:3/1"]
+      ]},
+      { id: 'vision', n: ["Vision", "Vision", "Visión", "الرؤية والأهداف"], color: '#d4ebff', icon: 'compass', t: [
+        ["Vision Board", "Tableau de vision", "Tablero de visión", "لوحة الرؤية", "@board"],
+        ["5-Year Plan", "Plan sur 5 ans", "Plan a 5 años", "خطة 5 سنين", "area:s:areas|goal:t|year:s:years|milestone:t|done:c"],
+        ["Long-Term Goals", "Objectifs à long terme", "Metas a largo plazo", "أهداف بعيدة المدى", "goal:t|area:s:areas|why:l|deadline:d|progress:p"],
+        ["Monthly Vision Reflection", "Bilan mensuel de vision", "Reflexión mensual", "مراجعة الرؤية الشهرية", "month:s:months|wins:l|lessons:l|focusNext:l"],
+        ["Career Vision", "Vision de carrière", "Visión profesional", "رؤية المسار المهني", "goal:t|skill:t|nextStep:t|deadline:d|status:s:status"],
+        ["Relationship Vision", "Vision des relations", "Visión de relaciones", "رؤية العلاقات", "person:t|intention:t|action:t|frequency:s:freq"],
+        ["Dream Journal", "Journal des rêves", "Diario de sueños", "دفتر الأحلام", "date:d|dream:l|mood:mo|recurring:c"],
+        ["Core Values", "Valeurs essentielles", "Valores fundamentales", "القيم الأساسية", "coreValue:t|meaning:l|rating:r"]
+      ]},
+      { id: 'planning', n: ["Planning", "Planification", "Planificación", "التخطيط"], color: '#ded9ff', icon: 'check-square', t: [
+        ["Goal Planner", "Planificateur d'objectifs", "Planificador de metas", "مخطط الأهداف", "goal:t|why:l|deadline:d|nextStep:t|progress:p"],
+        ["Priority Matrix", "Matrice des priorités", "Matriz de prioridades", "مصفوفة الأولويات", "@matrix"],
+        ["Project Planner", "Planificateur de projets", "Planificador de proyectos", "مخطط المشاريع", "project:t|start:d|end:d|status:s:status|progress:p"],
+        ["Event Planner", "Organisation d'événement", "Planificador de eventos", "تنظيم المناسبات", "task:t|due:d|owner:t|status:s:status|notes:t"],
+        ["Goal Action Plan", "Plan d'action", "Plan de acción", "خطة العمل", "goal:t|action:t|due:d|done:c"],
+        ["Weekly Overview", "Aperçu hebdomadaire", "Resumen semanal", "نظرة أسبوعية", "weekOf:d|focus:t|top3:l|review:l"],
+        ["Daily Timeline", "Chronologie du jour", "Cronograma diario", "الجدول اليومي", "time:h|activity:t|done:c"],
+        ["Master To-Do List", "Liste de tâches principale", "Lista maestra de tareas", "اللائحة الكبرى للمهام", "task:t|category:s:todocat|priority:s:priority|due:d|done:c"],
+        ["Brain Dump", "Vidage mental", "Volcado de ideas", "تفريغ الأفكار", "idea:l|category:s:todocat|actioned:c"]
+      ]},
+      { id: 'household', n: ["Household", "Maison", "Hogar", "المنزل"], color: '#f3d9fa', icon: 'home', t: [
+        ["Meal Planner", "Planning des repas", "Planificador de comidas", "تخطيط الوجبات", "day:s:weekdays|breakfast:t|lunch:t|dinner:t|snacks:t"],
+        ["Chore Chart", "Tableau des tâches", "Tabla de tareas", "جدول خدمة الدار", "chore:t|who:t|frequency:s:freq|day:s:weekdays|done:c"],
+        ["Cleaning Tracker", "Suivi du ménage", "Registro de limpieza", "تتبع التنظيف", "roomH:s:rooms|task:t|frequency:s:freq|lastDone:d|done:c"],
+        ["Grocery List", "Liste de courses", "Lista de compras", "لائحة التقضية", "item:t|qty:t|aisle:s:aisles|got:c"],
+        ["Recipe Planner", "Carnet de recettes", "Planificador de recetas", "دفتر الوصفات", "recipe:t|category:s:meals|prepTime:n|ingredients:l|link:t"],
+        ["Maintenance Jobs", "Travaux d'entretien", "Mantenimiento", "إصلاحات الدار", "job:t|location:t|due:d|cost:m|done:c"],
+        ["Family Calendar", "Calendrier familial", "Calendario familiar", "تقويم العائلة", "date:d|time:h|event:t|who:t"],
+        ["Appointments", "Rendez-vous", "Citas", "المواعيد", "date:d|time:h|with:t|location:t|notes:t"],
+        ["Pantry Inventory", "Inventaire du garde-manger", "Inventario de despensa", "مخزون المطبخ", "item:t|qty:n|expiry:d|restock:c"]
+      ]},
+      { id: 'work', n: ["Work", "Travail", "Trabajo", "العمل"], color: '#ffd6eb', icon: 'briefcase', t: [
+        ["Daily Work Planner", "Planning de travail", "Planificador laboral", "مخطط الخدمة اليومي", "time:h|task:t|priority:s:priority|done:c"],
+        ["Project Tracker", "Suivi de projets", "Seguimiento de proyectos", "تتبع المشاريع", "project:t|client:t|deadline:d|status:s:status|progress:p"],
+        ["Meeting Notes", "Notes de réunion", "Notas de reuniones", "ملاحظات الاجتماعات", "date:d|meeting:t|attendees:t|notes:l|actionItems:l"],
+        ["Inbox Tracker", "Suivi de la boîte mail", "Seguimiento de bandeja", "تتبع البريد", "from:t|subject:t|received:d|action:s:inbox|done:c"],
+        ["Task List", "Liste de tâches", "Lista de tareas", "لائحة المهام", "task:t|project:t|due:d|priority:s:priority|done:c"],
+        ["Brainstorming Board", "Tableau de brainstorming", "Tablero de ideas", "لوحة الأفكار", "@board"],
+        ["Contact List", "Liste de contacts", "Lista de contactos", "لائحة الاتصالات", "name:t|company:t|phone:t|email:t|notes:t"],
+        ["Work Goals", "Objectifs pro", "Metas laborales", "أهداف الخدمة", "goal:t|kpi:t|deadline:d|progress:p"],
+        ["Time Log", "Suivi du temps", "Registro de horas", "سجل الوقت", "date:d|project:t|task:t|hours:ns"]
+      ]},
+      { id: 'travel', n: ["Travel", "Voyage", "Viajes", "السفر"], color: '#e2ece9', icon: 'plane', t: [
+        ["Travel Itinerary", "Itinéraire", "Itinerario", "برنامج السفر", "date:d|time:h|activity:t|location:t|booked:c"],
+        ["Packing Checklist", "Checklist valise", "Lista de equipaje", "لائحة الباليزة", "item:t|category:s:packing|qty:n|packed:c"],
+        ["Budget Travel Planner", "Budget voyage", "Presupuesto de viaje", "ميزانية السفر", "item:t|category:s:travelcat|budget:m|spent:m"],
+        ["Trip Overview", "Aperçu du voyage", "Resumen del viaje", "نظرة على الرحلة", "destination:t|start:d|end:d|transport:t|stay:t|notes:t"],
+        ["Places to Visit", "Lieux à visiter", "Lugares por visitar", "أماكن للزيارة", "location:t|city:t|type:s:places|visited:c"],
+        ["Accommodation Planner", "Hébergements", "Alojamientos", "تخطيط السكن", "name:t|checkIn:d|checkOut:d|address:t|price:m|booked:c"],
+        ["Road Trip Planner", "Road trip", "Viaje por carretera", "رحلة بالطوموبيل", "stop:t|date:d|distance:ns|fuel:m|notes:t"],
+        ["Travel Documents", "Documents de voyage", "Documentos de viaje", "وثائق السفر", "document:t|expiry:d|ready:c"]
+      ]}
+    ];
+
+    const LIFE_SECTIONS = SECTION_DEFS.map(s => ({
+      id: s.id, n: s.n, color: s.color, icon: s.icon,
+      templates: s.t.map(a => {
+        const spec = a[4];
+        const kind = spec[0] === '@' ? spec.slice(1) : 'table';
+        const cols = kind === 'table' ? spec.split('|').map(c => { const [key, type, arg] = c.split(':'); return { key, type, arg }; }) : [];
+        return { en: a[0], names: a.slice(0, 4), kind, cols };
+      })
+    }));
+    const TOTAL_TEMPLATES = LIFE_SECTIONS.reduce((n, s) => n + s.templates.length, 0);
+
+    const STICKER_PACK = [
+      ['⭐', "Priority", "Priorité", "Prioridad", "أولوية"], ['🌿', "Self-Care", "Bien-être", "Autocuidado", "عناية بالذات"],
+      ['💪', "Workout", "Sport", "Ejercicio", "رياضة"], ['📚', "Study", "Études", "Estudio", "قراية"],
+      ['💸', "Payday", "Jour de paie", "Día de pago", "نهار الخلصة"], ['✈️', "Travel", "Voyage", "Viaje", "سفر"],
+      ['☕', "Coffee Break", "Pause café", "Pausa café", "استراحة قهوة"], ['🎯', "Goal Hit", "Objectif atteint", "Meta lograda", "هدف تحقق"],
+      ['💡', "Big Idea", "Grande idée", "Gran idea", "فكرة كبيرة"], ['❤️', "Grateful", "Reconnaissant", "Agradecido", "ممتن"],
+      ['🛒', "Groceries", "Courses", "Compras", "التقضية"], ['🎉', "Celebrate", "Fête", "Celebrar", "احتفال"]
+    ];
+    const DAY_MOODS = ['🤩','😊','😌','😐','😴'];
+    const MOODS = ['🤩','😊','😌','😐','😔','😴','😡'];
+    const BOARD_COLORS = ['#ffd6d6','#ffe8c2','#fff3bf','#d9f2d0','#d4ebff','#ded9ff','#f3d9fa'];
+    const HOURS = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00'];
+    const MIN_YEAR = 2026, MAX_YEAR = 2030;
+    const MIN_DATE = '2026-01-01', MAX_DATE = '2030-12-31';
+    const VIEWS = ['dashboard','daily','weekly','monthly','section','notes'];
+
+    /* ───────────────────────── HELPERS ───────────────────────── */
+    let LI = 0;
+    function t(k, vars) {
+      const a = UI[k]; let s = a ? (a[LI] || a[0]) : k;
+      if (vars) for (const v in vars) s = s.split('{' + v + '}').join(vars[v]);
+      return s;
+    }
+    function w(k) { const a = WORDS[k]; return a ? (a[LI] || a[0]) : k; }
+    function loc() { return LOCALES[state.lang] || 'en-GB'; }
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function iso(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+    function parseISO(s) { const [y, m, d] = String(s).split('-').map(Number); return new Date(y, (m || 1) - 1, d || 1); }
+    function validISO(s) { return /^\d{4}-\d{2}-\d{2}$/.test(String(s)) && !isNaN(parseISO(s)); }
+    function addDays(s, n) { const d = parseISO(s); d.setDate(d.getDate() + n); return iso(d); }
+    function mondayOf(s) { const d = parseISO(s); const off = (d.getDay() + 6) % 7; d.setDate(d.getDate() - off); return iso(d); }
+    function clampDate(s) { return s < MIN_DATE ? MIN_DATE : (s > MAX_DATE ? MAX_DATE : s); }
+    function clampYear(y) { return Math.min(MAX_YEAR, Math.max(MIN_YEAR, y)); }
+    function todayISO() { return iso(new Date()); }
+    function num(v) { const n = parseFloat(String(v == null ? '' : v).replace(',', '.')); return isNaN(n) ? 0 : n; }
+    function isBlank(v) { return v === undefined || v === null || v === ''; }
+    function fmt(n) { return new Intl.NumberFormat(loc(), { maximumFractionDigits: 2 }).format(n); }
+    function fmtDate(s, opts) { return new Intl.DateTimeFormat(loc(), opts).format(parseISO(s)); }
+    function uid() { return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+    function secName(sec) { return sec.n[LI] || sec.n[0]; }
+    function tplName(tpl) { return tpl.names[LI] || tpl.names[0]; }
+    function monthTitle(y, m) { return `${MONTHS_LONG[state.lang][m]} ${y}`; }
+
+    /* ───────────────────────── STATE ───────────────────────── */
+    const STORAGE_KEY = 'all_in_one_planner_pwa_v1';
+
+    function blankDay() { return { priorities: ['', '', ''], schedule: {}, todos: [], water: 0, mood: '', gratitude: '' }; }
+
+    function defaultState() {
+      const today = clampDate(todayISO());
+      const d = parseISO(today);
+      const nav = (navigator.language || 'en').slice(0, 2);
+      return {
+        v: 2, year: d.getFullYear(), month: d.getMonth(),
+        lang: LANGS.includes(nav) ? nav : 'en',
+        currentView: 'dashboard', activeSectionId: 'personal', activeTemplate: 'Goal Tracker',
+        dailyDate: today, weekStart: mondayOf(today),
+        days: {}, weekNotes: {},
+        habits: [
+          { id: 'h1', name: 'Morning Hydration' }, { id: 'h2', name: '30m Reading / Study' },
+          { id: 'h3', name: 'Workout / Walk' }, { id: 'h4', name: 'Zero Impulse Spend' }
+        ],
+        habitChecks: {}, monthEvents: {}, templateEntries: {}, notesPaper: '', stickers: {}
+      };
+    }
+
+    function findTemplateByKey(key) {
+      for (const sec of LIFE_SECTIONS) {
+        if (!key.startsWith(sec.id + '_')) continue;
+        const name = key.slice(sec.id.length + 1);
+        const tpl = sec.templates.find(x => x.en === name);
+        if (tpl) return tpl;
+      }
+      return null;
+    }
+
+    // Converts any older save (or backup file) to the current format
+    function migrate(src) {
+      const d = defaultState();
+      if (!src || typeof src !== 'object') return d;
+      const s = JSON.parse(JSON.stringify(src));
+
+      if (!s.v || s.v < 2) {
+        const day = blankDay(); let hasDay = false;
+        if (Array.isArray(s.priorities)) { day.priorities = [0, 1, 2].map(i => String(s.priorities[i] || '')); hasDay = true; }
+        if (Array.isArray(s.todos)) { day.todos = s.todos.map(x => ({ text: String(x.text || ''), done: !!x.done })); hasDay = true; }
+        if (s.schedule && typeof s.schedule === 'object') {
+          Object.keys(s.schedule).forEach(k => { if (/^\d\d:00$/.test(k)) day.schedule[k] = String(s.schedule[k] || ''); });
+        }
+        if (typeof s.water === 'number') day.water = s.water;
+        if (s.mood) day.mood = s.mood;
+        if (s.gratitude) day.gratitude = s.gratitude;
+        const date = validISO(s.dailyDate) ? clampDate(s.dailyDate) : d.dailyDate;
+        s.days = hasDay ? { [date]: day } : {};
+        s.dailyDate = date;
+        s.weekStart = mondayOf(date);
+        s.weekNotes = {};
+        if (s.schedule) for (let i = 0; i < 7; i++) { const v = s.schedule['week_day_' + i]; if (v) s.weekNotes[`${s.weekStart}_${i}`] = String(v); }
+        if (Array.isArray(s.weeklyHabits)) {
+          s.habits = []; s.habitChecks = { [s.weekStart]: {} };
+          s.weeklyHabits.forEach((h, i) => {
+            const id = 'h' + (i + 1);
+            s.habits.push({ id, name: String(h.name || '') });
+            s.habitChecks[s.weekStart][id] = (h.days || []).slice(0, 7).map(Boolean);
+          });
+        }
+        // Old templates were one generic 3-column table: keep the user's own rows, drop the auto examples
+        const oldTE = s.templateEntries || {}; s.templateEntries = {};
+        const defaultsText = ['Active', 'Add details...', 'In Progress', 'Planned', 'High Priority / Notes', 'New Entry...'];
+        Object.keys(oldTE).forEach(key => {
+          const rows = oldTE[key]; const tpl = findTemplateByKey(key);
+          if (!Array.isArray(rows) || !tpl) return;
+          const real = rows.filter(r => r && !/^Example Entry \/ Goal #\d+$/.test(r.col1 || '') && !(r.col1 === 'New Entry...' && r.col2 === 'Active'));
+          if (!real.length) return;
+          const extraOf = r => [r.col2, r.col3].filter(x => x && !defaultsText.includes(x) && !/^Target: Q2 \d{4}$/.test(x)).join(' — ');
+          if (tpl.kind === 'table') {
+            let noteIdx = -1;
+            tpl.cols.forEach((c, i) => { if (i > 0 && (c.type === 'l' || c.type === 't')) noteIdx = i; });
+            s.templateEntries[key] = real.map(r => { const o = { c0: r.col1 || '' }; const ex = extraOf(r); if (ex && noteIdx > 0) o['c' + noteIdx] = ex; return o; });
+          } else if (tpl.kind === 'board') {
+            s.templateEntries[key] = real.map((r, i) => ({ title: r.col1 || '', text: extraOf(r), color: BOARD_COLORS[i % BOARD_COLORS.length] }));
+          } else if (tpl.kind === 'swot' || tpl.kind === 'matrix') {
+            s.templateEntries[key] = { q: [real.map(r => ({ text: r.col1 || '', done: false })), [], [], []] };
+          } else if (tpl.kind === 'habits') {
+            s.templateEntries[key] = { habits: real.map((r, i) => ({ id: 'm' + i, name: r.col1 || '' })), checks: {} };
+          }
+        });
+        // Stickers were stored as text, now as index
+        const oldSt = s.stickers || {}; s.stickers = {};
+        Object.keys(oldSt).forEach(view => {
+          s.stickers[view] = (oldSt[view] || []).map(x => typeof x === 'number' ? x : STICKER_PACK.findIndex(p => String(x).startsWith(p[0]))).filter(i => i >= 0);
+        });
+        ['priorities', 'todos', 'schedule', 'water', 'mood', 'gratitude', 'weeklyHabits'].forEach(k => delete s[k]);
+        s.v = 2;
+      }
+
+      const out = Object.assign(d, s);
+      if (!LANGS.includes(out.lang)) out.lang = 'en';
+      out.year = clampYear(parseInt(out.year, 10) || d.year);
+      out.month = Math.min(11, Math.max(0, parseInt(out.month, 10) || 0));
+      if (!VIEWS.includes(out.currentView)) out.currentView = 'dashboard';
+      if (!validISO(out.dailyDate)) out.dailyDate = d.dailyDate;
+      out.dailyDate = clampDate(out.dailyDate);
+      if (!validISO(out.weekStart)) out.weekStart = mondayOf(out.dailyDate);
+      const sec = LIFE_SECTIONS.find(x => x.id === out.activeSectionId) || LIFE_SECTIONS[0];
+      out.activeSectionId = sec.id;
+      if (!sec.templates.some(x => x.en === out.activeTemplate)) out.activeTemplate = sec.templates[0].en;
+      ['days', 'weekNotes', 'habitChecks', 'monthEvents', 'templateEntries', 'stickers'].forEach(k => { if (!out[k] || typeof out[k] !== 'object') out[k] = {}; });
+      if (!Array.isArray(out.habits)) out.habits = [];
+      if (typeof out.notesPaper !== 'string') out.notesPaper = '';
+      return out;
+    }
+
+    function loadState() {
+      let raw = null;
+      try { raw = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { raw = null; }
+      return migrate(raw);
+    }
+
+    let state = loadState();
+    LI = LANGS.indexOf(state.lang);
+
+    let saveTimer = null;
+    function saveState() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+      const ind = document.getElementById('saveIndicator');
+      if (ind) {
+        ind.textContent = t('savedNow');
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => { ind.textContent = t('saved'); }, 1500);
+      }
+    }
+
+    /* ───────────────────────── APP SHELL ───────────────────────── */
+    function initApp() {
+      document.getElementById('yearSelect').value = state.year;
+      document.getElementById('langSelect').value = state.lang;
+      applyLanguageAttributes();
+      renderSideTabs();
+      renderStickerPalette();
+      renderCurrentView();
+      registerPWA();
+    }
+
+    function applyLanguageAttributes() {
+      LI = LANGS.indexOf(state.lang);
+      document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = state.lang;
+      document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+      document.getElementById('saveIndicator').textContent = t('saved');
+    }
+
+    function syncYearSelect() {
+      document.getElementById('yearSelect').value = state.year;
+      const m = document.getElementById('yearSelectM'); if (m) m.value = state.year;
+    }
+
+    /* Phone tab bar & settings sheet */
+    const BOTTOM_TABS = [
+      ['dashboard', 'layout-grid', '#292524'], ['daily', 'sun', '#ffd6d6'], ['weekly', 'calendar-range', '#ffe8c2'],
+      ['monthly', 'calendar-days', '#d9f2d0'], ['notes', 'notebook-pen', '#d4ebff']
+    ];
+    function renderBottomNav() {
+      const cur = state.currentView === 'section' ? 'dashboard' : state.currentView;
+      document.getElementById('bottomNav').innerHTML = BOTTOM_TABS.map(([v, icon, color]) => {
+        const on = v === cur;
+        const pill = on ? `background:${color};${v === 'dashboard' ? 'color:#fff;' : ''}` : '';
+        return `<button onclick="switchView('${v}')" class="flex flex-col items-center gap-0.5 pt-2 pb-1.5 text-[10px] font-semibold ${on ? 'text-stone-900' : 'text-stone-400'}">
+          <span class="px-3.5 py-1 rounded-full transition" style="${pill}"><i data-lucide="${icon}" class="w-[18px] h-[18px]"></i></span>
+          <span class="truncate max-w-full px-1">${t(v)}</span>
+        </button>`;
+      }).join('');
+    }
+    function openMenu() {
+      const sel = 'w-full px-3 py-2.5 rounded-xl bg-white text-sm font-semibold border border-stone-200 focus:outline-none';
+      const btn = 'flex flex-col items-center gap-1 py-3 rounded-2xl bg-white border border-stone-200 text-xs font-semibold text-stone-700';
+      document.getElementById('menuBody').innerHTML = `
+        <div class="mx-auto w-10 h-1.5 rounded-full bg-stone-300"></div>
+        <div class="flex items-center justify-between">
+          <h3 class="serif-title text-xl font-bold text-stone-800">${t('menu')}</h3>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-[11px] font-semibold border border-stone-200"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>${t('offline')}</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <label class="block"><span class="text-[11px] font-bold uppercase text-stone-400">${t('yearL')}</span>
+            <select id="yearSelectM" onchange="changeYear(this.value)" class="${sel} mt-1">${[2026, 2027, 2028, 2029, 2030].map(y => `<option value="${y}" ${y === state.year ? 'selected' : ''}>${y}</option>`).join('')}</select></label>
+          <label class="block"><span class="text-[11px] font-bold uppercase text-stone-400">${t('languageL')}</span>
+            <select onchange="changeLanguage(this.value); document.getElementById('langSelect').value=this.value; openMenu();" class="${sel} mt-1">
+              ${[['en', '🇬🇧 English'], ['fr', '🇫🇷 Français'], ['es', '🇪🇸 Español'], ['ar', '🇲🇦 العربية']].map(([k, l]) => `<option value="${k}" ${k === state.lang ? 'selected' : ''}>${l}</option>`).join('')}
+            </select></label>
+        </div>
+        <div class="grid grid-cols-3 gap-2.5">
+          <button onclick="closeMenu(); toggleStickerModal();" class="${btn}"><i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>${t('stickers')}</button>
+          <button onclick="exportBackup()" class="${btn}"><i data-lucide="download-cloud" class="w-5 h-5"></i>${t('backup')}</button>
+          <button onclick="closeMenu(); document.getElementById('restoreInput').click();" class="${btn}"><i data-lucide="upload-cloud" class="w-5 h-5"></i>${t('restore')}</button>
+        </div>
+        ${DEFERRED_PROMPT ? `<button onclick="installApp()" class="w-full py-3 rounded-2xl bg-stone-900 text-white text-sm font-bold flex items-center justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i>${t('install')}</button>` : ''}
+      `;
+      const m = document.getElementById('menuSheet');
+      m.classList.remove('hidden'); m.classList.add('flex');
+      lucide.createIcons();
+    }
+    function closeMenu() { const m = document.getElementById('menuSheet'); m.classList.add('hidden'); m.classList.remove('flex'); }
+
+    function changeYear(yr) {
+      const y = clampYear(parseInt(yr, 10));
+      state.year = y;
+      const d = parseISO(state.dailyDate);
+      const last = new Date(y, d.getMonth() + 1, 0).getDate();
+      state.dailyDate = clampDate(iso(new Date(y, d.getMonth(), Math.min(d.getDate(), last))));
+      state.weekStart = mondayOf(state.dailyDate);
+      saveState(); renderSideTabs(); renderCurrentView();
+    }
+    function changeLanguage(lang) {
+      state.lang = LANGS.includes(lang) ? lang : 'en';
+      saveState(); applyLanguageAttributes(); renderSideTabs(); renderStickerPalette(); renderCurrentView();
+    }
+
+    function switchView(view, sectionId = null) {
+      state.currentView = view;
+      if (sectionId) {
+        state.activeSectionId = sectionId;
+        const sec = LIFE_SECTIONS.find(s => s.id === sectionId);
+        if (sec) state.activeTemplate = sec.templates[0].en;
+      }
+      saveState(); renderSideTabs(); renderCurrentView();
+      document.getElementById('mainContent').scrollTop = 0;
+    }
+
+    function renderSideTabs() {
+      const months = MONTHS[state.lang];
+      const leftContainer = document.getElementById('leftMonthTabs');
+      const monthColors = ['#ffd6d6','#ffe2c6','#fff3bf','#d9f2d0','#c8f4ea','#d4ebff','#ded9ff','#f3d9fa','#ffd6eb','#e2ece9','#ffe8c2','#d9f2d0'];
+      leftContainer.innerHTML = months.map((m, idx) => `
+        <button onclick="selectMonth(${idx})" style="background:${monthColors[idx]}"
+          class="side-tab px-1 sm:px-1.5 py-2 sm:py-2.5 rounded-s-lg text-[9px] sm:text-[10px] text-stone-800 border border-e-0 border-stone-300 ${state.currentView === 'monthly' && state.month === idx ? 'active font-bold' : 'opacity-85'}">
+          ${m}
+        </button>
+      `).join('');
+
+      const rightContainer = document.getElementById('rightSectionTabs');
+      rightContainer.innerHTML = LIFE_SECTIONS.map(sec => `
+        <button onclick="switchView('section', '${sec.id}')" style="background:${sec.color}"
+          class="side-tab px-1 sm:px-1.5 py-2 sm:py-3 rounded-e-lg text-[9px] sm:text-[10px] text-stone-800 border border-s-0 border-stone-300 ${state.currentView === 'section' && state.activeSectionId === sec.id ? 'active font-bold' : 'opacity-90'}">
+          ${esc(secName(sec))}
+        </button>
+      `).join('');
+    }
+
+    function selectMonth(idx) { state.month = idx; state.currentView = 'monthly'; saveState(); renderSideTabs(); renderCurrentView(); }
+
+    function viewLabel() {
+      if (state.currentView === 'section') {
+        const sec = LIFE_SECTIONS.find(s => s.id === state.activeSectionId);
+        return sec ? secName(sec) : t('section');
+      }
+      return t(state.currentView);
+    }
+
+    function renderCurrentView() {
+      const main = document.getElementById('mainContent');
+      document.getElementById('footerBreadcrumb').textContent = `All-In-One Digital Planner • ${state.year} • ${viewLabel().toUpperCase()}`;
+      renderPinnedStickers();
+      const v = state.currentView;
+      if (v === 'dashboard') main.innerHTML = renderDashboardView();
+      else if (v === 'daily') main.innerHTML = renderDailyView();
+      else if (v === 'weekly') main.innerHTML = renderWeeklyView();
+      else if (v === 'monthly') main.innerHTML = renderMonthlyView();
+      else if (v === 'section') main.innerHTML = renderLifeSectionView();
+      else if (v === 'notes') main.innerHTML = renderNotesView();
+      lucide.createIcons();
+    }
+
+    const chevL = `<i data-lucide="chevron-left" class="w-4 h-4 rtl:rotate-180"></i>`;
+    const chevR = `<i data-lucide="chevron-right" class="w-4 h-4 rtl:rotate-180"></i>`;
+    const navBtn = 'px-2.5 py-1.5 rounded-lg bg-white border border-stone-200 text-xs font-bold hover:bg-stone-50 disabled:opacity-30 disabled:cursor-not-allowed flex items-center';
+
+    /* ───────────────────────── DASHBOARD ───────────────────────── */
+    function renderDashboardView() {
+      const months = MONTHS[state.lang];
+      return `
+        <div class="space-y-6">
+          <div class="text-center border-b border-stone-200 pb-5">
+            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold tracking-wide uppercase">${t('edition', { y: state.year })}</span>
+            <h1 class="serif-title text-2xl md:text-4xl font-bold mt-2 text-stone-800">${t('welcomeTitle')}</h1>
+            <p class="text-xs md:text-sm text-stone-500 mt-1">${t('welcomeSub', { n: TOTAL_TEMPLATES })}</p>
+          </div>
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2.5">${t('monthlyCals', { y: state.year })}</h2>
+            <div class="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-12 gap-2">
+              ${months.map((m, i) => `
+                <button onclick="selectMonth(${i})" class="py-2 px-1 rounded-xl border border-stone-200 bg-white hover:bg-stone-800 hover:text-white transition text-xs font-bold shadow-sm">${m}</button>
+              `).join('')}
+            </div>
+          </div>
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">${t('lifeSections', { n: TOTAL_TEMPLATES })}</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
+              ${LIFE_SECTIONS.map(sec => `
+                <div style="background:${sec.color}40" class="rounded-2xl border border-stone-200/80 p-4 flex flex-col justify-between hover:shadow-md transition">
+                  <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                      <span style="background:${sec.color}" class="px-2.5 py-1 rounded-lg text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                        <i data-lucide="${sec.icon}" class="w-3.5 h-3.5"></i> ${esc(secName(sec))}
+                      </span>
+                      <span class="text-[10px] font-semibold text-stone-500 shrink-0">${t('pages', { n: sec.templates.length })}</span>
+                    </div>
+                    <ul class="space-y-1 mt-2 text-xs text-stone-600">
+                      ${sec.templates.slice(0, 5).map((tpl, ti) => `
+                        <li><button onclick="openSpecificTemplate('${sec.id}', ${ti})" class="hover:text-stone-900 hover:underline text-start truncate w-full">• ${esc(tplName(tpl))}</button></li>
+                      `).join('')}
+                      ${sec.templates.length > 5 ? `<li class="text-[11px] font-semibold text-stone-400 ps-2">${t('more', { n: sec.templates.length - 5 })}</li>` : ''}
+                    </ul>
+                  </div>
+                  <button onclick="switchView('section', '${sec.id}')" class="mt-3 w-full py-1.5 rounded-lg bg-white/90 hover:bg-white text-stone-800 text-xs font-bold border border-stone-200 shadow-sm transition">${t('openSection')}</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ───────────────────────── DAILY ───────────────────────── */
+    function dayR() { return state.days[state.dailyDate] || blankDay(); }
+    function dayW() { if (!state.days[state.dailyDate]) state.days[state.dailyDate] = blankDay(); return state.days[state.dailyDate]; }
+
+    function setDaily(dateStr) {
+      if (!validISO(dateStr)) return;
+      state.dailyDate = clampDate(dateStr);
+      const d = parseISO(state.dailyDate);
+      state.year = d.getFullYear(); state.month = d.getMonth();
+      state.weekStart = mondayOf(state.dailyDate);
+      syncYearSelect(); saveState(); renderSideTabs(); renderCurrentView();
+    }
+    function openDay(dateStr) { state.currentView = 'daily'; setDaily(dateStr); document.getElementById('mainContent').scrollTop = 0; }
+
+    function renderDailyView() {
+      const day = dayR();
+      const longDate = fmtDate(state.dailyDate, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      return `
+        <div class="space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-3">
+            <div>
+              <h2 class="serif-title text-2xl font-bold text-stone-800">${t('dailyTitle')}</h2>
+              <p class="text-xs text-stone-500 capitalize">${esc(longDate)}</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="setDaily(addDays(state.dailyDate,-1))" class="${navBtn}" ${state.dailyDate <= MIN_DATE ? 'disabled' : ''}>${chevL}</button>
+              <input type="date" value="${state.dailyDate}" min="${MIN_DATE}" max="${MAX_DATE}" onchange="setDaily(this.value)" class="px-3 py-1.5 rounded-xl border border-stone-300 bg-white text-xs font-bold"/>
+              <button onclick="setDaily(addDays(state.dailyDate,1))" class="${navBtn}" ${state.dailyDate >= MAX_DATE ? 'disabled' : ''}>${chevR}</button>
+              <button onclick="setDaily(clampDate(todayISO()))" class="px-3 py-1.5 rounded-lg bg-stone-800 text-white text-xs font-bold">${t('today')}</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">${t('dailySchedule')}</h3>
+              <div class="space-y-1.5 lg:max-h-[430px] lg:overflow-y-auto pe-1">
+                ${HOURS.map(hr => `
+                  <div class="flex items-center gap-2 border-b border-stone-100 pb-1">
+                    <span class="text-[11px] font-bold text-stone-400 w-12" dir="ltr">${hr}</span>
+                    <input type="text" placeholder="..." value="${esc(day.schedule[hr])}" oninput="dayW().schedule['${hr}']=this.value; saveState();" class="flex-1 min-w-0 text-xs bg-transparent focus:outline-none text-stone-800"/>
+                    <button onclick="calFromHour('${hr}')" title="${esc(t('addToCal'))}" class="text-stone-300 hover:text-blue-600 p-0.5"><i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i></button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="bg-[#fff5f5] rounded-2xl border border-rose-200/70 p-4">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-rose-900 mb-2.5">${t('topPriorities')}</h3>
+                <div class="space-y-2">
+                  ${[0, 1, 2].map(i => `
+                    <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-rose-100">
+                      <span class="text-xs font-bold text-rose-500">#${i + 1}</span>
+                      <input type="text" placeholder="${esc(t('priorityPh', { n: i + 1 }))}" value="${esc(day.priorities[i])}" oninput="dayW().priorities[${i}]=this.value; saveState();" class="flex-1 min-w-0 text-xs bg-transparent focus:outline-none"/>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-2.5">
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500">${t('toDoList')}</h3>
+                  <button onclick="addTodo()" class="text-xs font-bold text-stone-700 hover:text-black">${t('addTask')}</button>
+                </div>
+                <div class="space-y-2" id="todoList">
+                  ${day.todos.length ? day.todos.map((td, idx) => `
+                    <div class="flex items-center gap-2">
+                      <input type="checkbox" ${td.done ? 'checked' : ''} onchange="dayW().todos[${idx}].done=this.checked; saveState(); renderCurrentView();" class="rounded"/>
+                      <input type="text" value="${esc(td.text)}" placeholder="${esc(t('taskPh'))}" oninput="dayW().todos[${idx}].text=this.value; saveState();" class="flex-1 min-w-0 text-xs bg-transparent focus:outline-none ${td.done ? 'line-through text-stone-400' : 'text-stone-800'}"/>
+                      <button onclick="dayW().todos.splice(${idx},1); saveState(); renderCurrentView();" class="text-stone-300 hover:text-rose-500 text-xs">✕</button>
+                    </div>
+                  `).join('') : `<p class="text-xs text-stone-400">${t('noTasks')}</p>`}
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="bg-[#eef8ff] rounded-2xl border border-sky-200/70 p-3.5">
+                  <h3 class="text-[11px] font-bold uppercase text-sky-900 mb-2">${t('waterTracker')}</h3>
+                  <div class="flex gap-1.5 flex-wrap">
+                    ${[1, 2, 3, 4, 5, 6, 7, 8].map(n => `
+                      <button onclick="dayW().water = (dayR().water === ${n} ? ${n - 1} : ${n}); saveState(); renderCurrentView();" class="w-7 h-7 rounded-lg text-xs font-bold transition ${n <= day.water ? 'bg-sky-500 text-white' : 'bg-white text-sky-400 border border-sky-200'}">💧</button>
+                    `).join('')}
+                  </div>
+                </div>
+                <div class="bg-[#fef9e7] rounded-2xl border border-amber-200/70 p-3.5">
+                  <h3 class="text-[11px] font-bold uppercase text-amber-900 mb-2">${t('moodGratitude')}</h3>
+                  <div class="flex justify-between text-lg mb-2">
+                    ${DAY_MOODS.map(m => `
+                      <button onclick="dayW().mood = (dayR().mood === '${m}' ? '' : '${m}'); saveState(); renderCurrentView();" class="p-1 rounded-lg ${day.mood === m ? 'bg-amber-300/60 scale-110' : 'opacity-60'}">${m}</button>
+                    `).join('')}
+                  </div>
+                  <input type="text" placeholder="${esc(t('gratefulPh'))}" value="${esc(day.gratitude)}" oninput="dayW().gratitude=this.value; saveState();" class="w-full text-xs bg-white px-2.5 py-1.5 rounded-lg border border-amber-200 focus:outline-none"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function addTodo() {
+      dayW().todos.push({ text: '', done: false }); saveState(); renderCurrentView();
+      const inputs = document.querySelectorAll('#todoList input[type=text]');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }
+
+    /* ───────────────────────── WEEKLY ───────────────────────── */
+    function setWeek(ws) {
+      if (!validISO(ws)) return;
+      const minWs = mondayOf(MIN_DATE), maxWs = mondayOf(MAX_DATE);
+      ws = ws < minWs ? minWs : (ws > maxWs ? maxWs : ws);
+      state.weekStart = ws;
+      const y = parseISO(addDays(ws, 3)).getFullYear();
+      state.year = clampYear(y); syncYearSelect();
+      saveState(); renderCurrentView();
+    }
+
+    function renderWeeklyView() {
+      const ws = state.weekStart;
+      const days = DAYS[state.lang];
+      const checks = state.habitChecks[ws] || {};
+      const range = `${fmtDate(ws, { day: 'numeric', month: 'short' })} – ${fmtDate(addDays(ws, 6), { day: 'numeric', month: 'short', year: 'numeric' })}`;
+      const today = todayISO();
+      return `
+        <div class="space-y-6">
+          <div class="border-b border-stone-200 pb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="serif-title text-2xl font-bold text-stone-800">${t('weeklyTitle')}</h2>
+              <p class="text-xs text-stone-500">${esc(range)}</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="setWeek(addDays(state.weekStart,-7))" class="${navBtn}" ${ws <= mondayOf(MIN_DATE) ? 'disabled' : ''}>${chevL}</button>
+              <button onclick="setWeek(mondayOf(clampDate(todayISO())))" class="px-3 py-1.5 rounded-lg bg-white border border-stone-200 text-xs font-bold">${t('thisWeek')}</button>
+              <button onclick="setWeek(addDays(state.weekStart,7))" class="${navBtn}" ${ws >= mondayOf(MAX_DATE) ? 'disabled' : ''}>${chevR}</button>
+              <button onclick="addHabit()" class="px-3 py-1.5 rounded-xl bg-stone-800 text-white text-xs font-bold">${t('addHabit')}</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            ${days.map((d, i) => {
+              const date = addDays(ws, i);
+              const key = `${ws}_${i}`;
+              return `
+                <div class="bg-white rounded-2xl border ${date === today ? 'border-stone-500' : 'border-stone-200'} p-3.5 shadow-sm flex flex-col">
+                  <button onclick="openDay('${date}')" class="text-start text-xs font-bold uppercase tracking-wider text-stone-700 border-b border-stone-100 pb-1.5 mb-2 hover:underline">${d} ${parseISO(date).getDate()}</button>
+                  <textarea rows="4" placeholder="${esc(t('plansPh'))}" oninput="state.weekNotes['${key}']=this.value; saveState();" class="w-full text-xs bg-transparent focus:outline-none resize-none text-stone-700">${esc(state.weekNotes[key])}</textarea>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm overflow-x-auto">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">${t('weeklyFocus')}</h3>
+            <table class="w-full text-start text-xs">
+              <thead>
+                <tr class="border-b border-stone-200 text-stone-400">
+                  <th class="pb-2 text-start min-w-[140px]">${t('habitCol')}</th>
+                  ${days.map(d => `<th class="pb-2 text-center px-1">${d}</th>`).join('')}
+                  <th class="pb-2 w-6"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-100">
+                ${state.habits.map((h, hIdx) => `
+                  <tr>
+                    <td class="py-2 pe-2"><input type="text" value="${esc(h.name)}" placeholder="${esc(t('newHabit'))}" oninput="state.habits[${hIdx}].name=this.value; saveState();" class="font-semibold text-stone-800 bg-transparent focus:outline-none w-full"/></td>
+                    ${[0, 1, 2, 3, 4, 5, 6].map(dIdx => `
+                      <td class="py-2 text-center"><input type="checkbox" ${(checks[h.id] || [])[dIdx] ? 'checked' : ''} onchange="setWeekHabit('${h.id}', ${dIdx}, this.checked)" class="w-4 h-4 rounded accent-emerald-600 cursor-pointer"/></td>
+                    `).join('')}
+                    <td class="py-2 text-end"><button onclick="deleteHabit(${hIdx})" class="text-stone-300 hover:text-rose-500">✕</button></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function setWeekHabit(id, dIdx, val) {
+      const ws = state.weekStart;
+      if (!state.habitChecks[ws]) state.habitChecks[ws] = {};
+      if (!state.habitChecks[ws][id]) state.habitChecks[ws][id] = [false, false, false, false, false, false, false];
+      state.habitChecks[ws][id][dIdx] = val; saveState();
+    }
+    function addHabit() {
+      state.habits.push({ id: uid(), name: '' }); saveState(); renderCurrentView();
+      const inputs = document.querySelectorAll('#mainContent tbody input[type=text]');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }
+    function deleteHabit(idx) { state.habits.splice(idx, 1); saveState(); renderCurrentView(); }
+
+    /* ───────────────────────── MONTHLY ───────────────────────── */
+    function canShiftMonth(dir) {
+      const idx = state.year * 12 + state.month + dir;
+      return idx >= MIN_YEAR * 12 && idx <= MAX_YEAR * 12 + 11;
+    }
+    function shiftMonth(dir) {
+      if (!canShiftMonth(dir)) return;
+      const idx = state.year * 12 + state.month + dir;
+      state.year = Math.floor(idx / 12); state.month = idx % 12;
+      syncYearSelect(); saveState(); renderSideTabs(); renderCurrentView();
+    }
+    function monthNav() {
+      return `
+        <div class="flex gap-1.5">
+          <button onclick="shiftMonth(-1)" class="${navBtn}" ${canShiftMonth(-1) ? '' : 'disabled'}>${chevL}</button>
+          <button onclick="shiftMonth(1)" class="${navBtn}" ${canShiftMonth(1) ? '' : 'disabled'}>${chevR}</button>
+        </div>`;
+    }
+    function monthCells(year, month) {
+      const firstDay = new Date(year, month, 1).getDay();
+      const startOffset = (firstDay + 6) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const cells = [];
+      for (let i = 0; i < startOffset; i++) cells.push(null);
+      for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+      return cells;
+    }
+
+    function renderMonthlyView() {
+      const year = state.year, month = state.month;
+      const today = todayISO();
+      return `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between gap-2 border-b border-stone-200 pb-3">
+            <div>
+              <h2 class="serif-title text-2xl font-bold text-stone-800">${monthTitle(year, month)}</h2>
+              <p class="text-xs text-stone-500">${t('clickDay')}</p>
+            </div>
+            ${monthNav()}
+          </div>
+          <div class="sm:hidden space-y-1.5">
+            ${Array.from({ length: new Date(year, month + 1, 0).getDate() }, (_, i) => {
+              const d = i + 1;
+              const key = `${year}_${month}_${d}`;
+              const date = `${year}-${pad(month + 1)}-${pad(d)}`;
+              const wd = (new Date(year, month, d).getDay() + 6) % 7;
+              return `
+                <div class="flex items-start gap-2.5 bg-white rounded-xl border ${date === today ? 'border-stone-700' : 'border-stone-200'} p-2">
+                  <button onclick="openDay('${date}')" class="w-12 shrink-0 rounded-lg ${wd > 4 ? 'bg-[#f3eee5]' : 'bg-stone-50'} py-1 text-center">
+                    <span class="block text-[9px] font-bold uppercase text-stone-400 truncate">${DAYS[state.lang][wd]}</span>
+                    <span class="block text-base font-bold text-stone-800 leading-tight">${d}</span>
+                  </button>
+                  <textarea rows="2" placeholder="..." oninput="state.monthEvents['${key}']=this.value; saveState();" class="flex-1 min-w-0 text-xs bg-transparent focus:outline-none resize-none text-stone-700 pt-1">${esc(state.monthEvents[key])}</textarea>
+                  <button onclick="calFromDay('${date}', '${key}')" title="${esc(t('addToCal'))}" class="text-stone-300 hover:text-blue-600 p-1"><i data-lucide="calendar-plus" class="w-4 h-4"></i></button>
+                </div>`;
+            }).join('')}
+          </div>
+          <div class="hidden sm:grid grid-cols-7 gap-1.5 text-center text-[11px] font-bold text-stone-500 uppercase">
+            ${DAYS[state.lang].map(d => `<div class="py-1 truncate">${d}</div>`).join('')}
+          </div>
+          <div class="hidden sm:grid grid-cols-7 gap-1.5">
+            ${monthCells(year, month).map(d => {
+              if (!d) return `<div class="h-20 rounded-xl bg-stone-100/50"></div>`;
+              const key = `${year}_${month}_${d}`;
+              const date = `${year}-${pad(month + 1)}-${pad(d)}`;
+              return `
+                <div class="h-20 md:h-24 rounded-xl bg-white border ${date === today ? 'border-stone-700 ring-1 ring-stone-700' : 'border-stone-200'} p-1.5 flex flex-col hover:border-stone-400 transition min-w-0">
+                  <div class="flex items-center justify-between">
+                    <button onclick="openDay('${date}')" class="text-[11px] font-bold text-stone-700 hover:underline">${d}</button>
+                    <button onclick="calFromDay('${date}', '${key}')" title="${esc(t('addToCal'))}" class="text-stone-300 hover:text-blue-600"><i data-lucide="calendar-plus" class="w-3 h-3"></i></button>
+                  </div>
+                  <textarea placeholder="..." oninput="state.monthEvents['${key}']=this.value; saveState();" class="flex-1 w-full min-w-0 text-[11px] bg-transparent focus:outline-none resize-none text-stone-600 mt-0.5">${esc(state.monthEvents[key])}</textarea>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    /* ───────────────────────── LIFE SECTIONS ───────────────────────── */
+    let CUR_KEY = '';
+    function currentSection() { return LIFE_SECTIONS.find(s => s.id === state.activeSectionId) || LIFE_SECTIONS[0]; }
+    function currentTemplate() { const sec = currentSection(); return sec.templates.find(x => x.en === state.activeTemplate) || sec.templates[0]; }
+
+    function openSpecificTemplate(sectionId, tplIdx) {
+      const sec = LIFE_SECTIONS.find(s => s.id === sectionId) || LIFE_SECTIONS[0];
+      state.currentView = 'section'; state.activeSectionId = sec.id; state.activeTemplate = (sec.templates[tplIdx] || sec.templates[0]).en;
+      saveState(); renderSideTabs(); renderCurrentView();
+    }
+
+    function renderLifeSectionView() {
+      const sec = currentSection();
+      const tpl = currentTemplate();
+      CUR_KEY = `${sec.id}_${tpl.en}`;
+      let action = '';
+      if (tpl.kind === 'table') action = `<button onclick="addRow()" class="px-3 py-1.5 rounded-xl bg-stone-900 text-white text-xs font-bold shadow">${t('addRow')}</button>`;
+      else if (tpl.kind === 'board') action = `<button onclick="addCard()" class="px-3 py-1.5 rounded-xl bg-stone-900 text-white text-xs font-bold shadow">${t('addCard')}</button>`;
+      else if (tpl.kind === 'habits') action = `<button onclick="addMonthHabit()" class="px-3 py-1.5 rounded-xl bg-stone-900 text-white text-xs font-bold shadow">${t('addHabit')}</button>`;
+
+      let body = '';
+      if (tpl.kind === 'table') body = renderTable(tpl);
+      else if (tpl.kind === 'swot' || tpl.kind === 'matrix') body = renderQuadrants(tpl.kind);
+      else if (tpl.kind === 'board') body = renderBoard();
+      else if (tpl.kind === 'habits') body = renderMonthHabits();
+      else if (tpl.kind === 'moods') body = renderMoodGrid();
+
+      return `
+        <div class="space-y-5">
+          <div style="background:${sec.color}55" class="p-4 rounded-2xl border border-stone-200">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <h2 class="serif-title text-xl sm:text-2xl font-bold text-stone-800 flex items-center gap-2 flex-wrap">
+                <i data-lucide="${sec.icon}" class="w-5 h-5"></i> ${esc(secName(sec))} — <span class="text-stone-600">${esc(tplName(tpl))}</span>
+              </h2>
+              ${action}
+            </div>
+            <div class="flex sm:flex-wrap gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0" id="tplChips">
+              ${sec.templates.map((x, ti) => `
+                <button onclick="openSpecificTemplate('${sec.id}', ${ti})" class="shrink-0 whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-semibold transition ${x.en === tpl.en ? 'bg-stone-900 text-white shadow-sm' : 'bg-white/80 text-stone-700 hover:bg-white'}">${esc(tplName(x))}</button>
+              `).join('')}
+            </div>
+          </div>
+          ${body}
+        </div>
+      `;
+    }
+
+    /* — Table templates — */
+    function tableRows() {
+      let rows = state.templateEntries[CUR_KEY];
+      if (!Array.isArray(rows)) { rows = []; state.templateEntries[CUR_KEY] = rows; }
+      return rows;
+    }
+    function optionList(col) {
+      if (col.arg === 'weekdays') return DAYS[state.lang].map((d, i) => [String(i), d]);
+      if (col.arg === 'months') return MONTHS_LONG[state.lang].map((m, i) => [String(i), m]);
+      return (OPTS[col.arg] || []).map(k => [k, w(k)]);
+    }
+    function isSummed(col) { return col.type === 'm' || col.type === 'ns' || col.type === 'xd'; }
+    function isAveraged(col) { return col.type === 'p' || col.type === 'xs' || col.type === 'xp'; }
+
+    function calcValue(col, row) {
+      if (col.type === 'xd') {
+        const [a, b] = col.arg.split('-');
+        if (isBlank(row['c' + a]) && isBlank(row['c' + b])) return null;
+        return num(row['c' + a]) - num(row['c' + b]);
+      }
+      if (col.type === 'xp') {
+        const [a, b] = col.arg.split('/');
+        const den = num(row['c' + b]);
+        if (isBlank(row['c' + a]) || !den) return null;
+        return num(row['c' + a]) / den * 100;
+      }
+      if (col.type === 'xs') {
+        const [a, b] = col.arg.split(',');
+        const s = row['c' + a], e = row['c' + b];
+        if (!s || !e) return null;
+        const [sh, sm] = s.split(':').map(Number), [eh, em] = e.split(':').map(Number);
+        return (((eh * 60 + em) - (sh * 60 + sm) + 1440) % 1440) / 60;
+      }
+      return null;
+    }
+    function bar(pct) {
+      const p = Math.max(0, Math.min(100, pct));
+      return `<div class="h-1.5 w-full rounded-full bg-stone-100 overflow-hidden"><div class="h-full rounded-full bg-emerald-500" style="width:${p}%"></div></div>`;
+    }
+    function calcHTML(col, row) {
+      const v = calcValue(col, row);
+      if (v === null) return `<span class="text-stone-300">—</span>`;
+      if (col.type === 'xd') return `<span class="font-semibold ${v < 0 ? 'text-rose-600' : 'text-emerald-700'}" dir="ltr">${fmt(v)}</span>`;
+      if (col.type === 'xp') return `<div class="space-y-1"><span class="font-semibold text-stone-700" dir="ltr">${fmt(Math.round(v))}%</span>${bar(v)}</div>`;
+      if (col.type === 'xs') return `<span class="font-semibold text-stone-700" dir="ltr">${fmt(v)} h</span>`;
+      return '';
+    }
+    function starsHTML(ri, ci, v) {
+      const n = parseInt(v, 10) || 0;
+      return `<div class="flex text-base leading-none" dir="ltr">${[1, 2, 3, 4, 5].map(i => `<button onclick="setRating(${ri},${ci},${i})" class="${i <= n ? 'text-amber-400' : 'text-stone-200'} hover:scale-110 transition">★</button>`).join('')}</div>`;
+    }
+
+    const INPUT = 'w-full bg-transparent focus:outline-none text-stone-800';
+    function cellHTML(col, ri, ci, row) {
+      const v = row['c' + ci];
+      const set = `setCell(${ri},${ci},this.value`;
+      switch (col.type) {
+        case 't': return `<input type="text" value="${esc(v)}" oninput="${set})" class="${INPUT} ${ci === 0 ? 'font-semibold' : 'text-stone-600'} min-w-[130px]"/>`;
+        case 'l': return `<textarea rows="2" oninput="${set})" class="${INPUT} text-stone-600 resize-y min-w-[190px] leading-snug">${esc(v)}</textarea>`;
+        case 'n': case 'ns': case 'm': return `<input type="number" inputmode="decimal" step="any" value="${esc(v)}" oninput="${set},true)" class="${INPUT} bg-stone-50 px-2 py-1 rounded-md min-w-[80px]" dir="ltr"/>`;
+        case 'd': return `<input type="date" value="${esc(v)}" oninput="${set},true)" class="${INPUT} text-stone-600 min-w-[125px]"/>`;
+        case 'h': return `<input type="time" value="${esc(v)}" oninput="${set},true)" class="${INPUT} text-stone-600 min-w-[90px]"/>`;
+        case 'c': return `<div class="text-center"><input type="checkbox" ${v ? 'checked' : ''} onchange="setCell(${ri},${ci},this.checked,true)" class="w-4 h-4 cursor-pointer"/></div>`;
+        case 's': return `<select onchange="${set},true)" class="${INPUT} bg-stone-50 px-2 py-1 rounded-md text-stone-600 min-w-[110px]"><option value=""></option>${optionList(col).map(([k, label]) => `<option value="${esc(k)}" ${String(v) === k ? 'selected' : ''}>${esc(label)}</option>`).join('')}</select>`;
+        case 'mo': return `<select onchange="${set},true)" class="bg-stone-50 px-1.5 py-1 rounded-md text-base focus:outline-none"><option value=""></option>${MOODS.map(m => `<option ${v === m ? 'selected' : ''}>${m}</option>`).join('')}</select>`;
+        case 'r': return starsHTML(ri, ci, v);
+        case 'p': return `<div class="flex items-center gap-2 min-w-[130px]"><input type="range" min="0" max="100" step="5" value="${num(v)}" oninput="${set},true)" class="flex-1"/><span id="pv-${ri}-${ci}" class="w-9 text-end font-semibold text-stone-600" dir="ltr">${num(v)}%</span></div>`;
+        default: return `<div id="x-${ri}-${ci}" class="min-w-[80px]">${calcHTML(col, row)}</div>`;
+      }
+    }
+
+    function footHTML(cols, rows) {
+      return cols.map((col, ci) => {
+        if (isSummed(col)) {
+          const vals = rows.map(r => col.type === 'xd' ? calcValue(col, r) : (isBlank(r['c' + ci]) ? null : num(r['c' + ci]))).filter(x => x !== null);
+          const s = vals.reduce((a, b) => a + b, 0);
+          return `<span class="${col.type === 'xd' && s < 0 ? 'text-rose-600' : ''}" dir="ltr">${fmt(s)}</span>`;
+        }
+        if (isAveraged(col)) {
+          const vals = rows.map(r => col.type === 'p' ? (isBlank(r['c' + ci]) ? null : num(r['c' + ci])) : calcValue(col, r)).filter(x => x !== null);
+          if (!vals.length) return '';
+          const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+          return `<span dir="ltr">⌀ ${fmt(col.type === 'xs' ? avg : Math.round(avg))}${col.type === 'xs' ? ' h' : '%'}</span>`;
+        }
+        if (col.type === 'c') return `<div class="text-center" dir="ltr">${rows.filter(r => r['c' + ci]).length}/${rows.length}</div>`;
+        return '';
+      });
+    }
+    function hasFooter(cols) { return cols.some(c => isSummed(c) || isAveraged(c) || c.type === 'c'); }
+
+    function renderTable(tpl) {
+      const rows = tableRows();
+      const cols = tpl.cols;
+      const foot = footHTML(cols, rows);
+      if (foot[0] === '') foot[0] = `<span class="uppercase text-[11px] text-stone-400">${t('total')}</span>`;
+      return `
+        <div class="rtable-wrap bg-white rounded-2xl border border-stone-200 p-4 shadow-sm overflow-x-auto">
+          <table class="rtable w-full text-xs text-start">
+            <thead>
+              <tr class="border-b border-stone-200 text-stone-400 uppercase text-[11px]">
+                ${cols.map(c => `<th class="pb-2 pe-3 text-start font-bold whitespace-nowrap ${c.type === 'c' ? 'text-center' : ''}">${esc(w(c.key))}</th>`).join('')}
+                <th class="pb-2 w-8"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100" id="tplBody">
+              ${rows.length ? rows.map((r, ri) => `
+                <tr class="align-top">
+                  ${cols.map((c, ci) => `<td class="py-2.5 pe-3" data-label="${esc(w(c.key))}">${cellHTML(c, ri, ci, r)}</td>`).join('')}
+                  <td class="rdel py-2.5 text-end"><button onclick="deleteRow(${ri})" title="${esc(t('deleteRow'))}" class="text-stone-300 hover:text-rose-500">✕</button></td>
+                </tr>
+              `).join('') : `<tr><td colspan="${cols.length + 1}" class="rempty py-8 text-center text-stone-400">${t('emptyRows')}</td></tr>`}
+            </tbody>
+            ${rows.length && hasFooter(cols) ? `
+            <tfoot>
+              <tr class="border-t-2 border-stone-200 font-bold text-stone-700">
+                ${foot.map((f, ci) => `<td class="pt-2.5 pe-3" id="tot-${ci}"${ci > 0 && f ? ` data-label="${esc(w(cols[ci].key))}"` : ''}>${f}</td>`).join('')}
+                <td></td>
+              </tr>
+            </tfoot>` : ''}
+          </table>
+        </div>`;
+    }
+
+    function setCell(ri, ci, val, refresh) {
+      const rows = tableRows();
+      if (!rows[ri]) return;
+      rows[ri]['c' + ci] = val; saveState();
+      if (refresh) refreshCalcs();
+    }
+    function setRating(ri, ci, n) {
+      const rows = tableRows(); if (!rows[ri]) return;
+      rows[ri]['c' + ci] = (parseInt(rows[ri]['c' + ci], 10) === n) ? 0 : n;
+      saveState(); renderCurrentView();
+    }
+    function refreshCalcs() {
+      const tpl = currentTemplate(); if (tpl.kind !== 'table') return;
+      const rows = tableRows();
+      rows.forEach((r, ri) => tpl.cols.forEach((c, ci) => {
+        if (c.type === 'xd' || c.type === 'xp' || c.type === 'xs') { const el = document.getElementById(`x-${ri}-${ci}`); if (el) el.innerHTML = calcHTML(c, r); }
+        if (c.type === 'p') { const el = document.getElementById(`pv-${ri}-${ci}`); if (el) el.textContent = `${num(r['c' + ci])}%`; }
+      }));
+      const foot = footHTML(tpl.cols, rows);
+      foot.forEach((f, ci) => { const el = document.getElementById('tot-' + ci); if (el && !(ci === 0 && f === '')) el.innerHTML = f; });
+    }
+    function addRow() {
+      tableRows().push({}); saveState(); renderCurrentView();
+      const last = document.querySelector('#tplBody tr:last-child');
+      const field = last && last.querySelector('input:not([type=checkbox]):not([type=range]), textarea, select');
+      if (field) { field.focus(); last.scrollIntoView({ block: 'nearest' }); }
+    }
+    function deleteRow(ri) { tableRows().splice(ri, 1); saveState(); renderCurrentView(); }
+
+    /* — SWOT & Priority matrix — */
+    function quadData() {
+      let d = state.templateEntries[CUR_KEY];
+      if (!d || !Array.isArray(d.q)) { d = { q: [[], [], [], []] }; state.templateEntries[CUR_KEY] = d; }
+      return d;
+    }
+    function renderQuadrants(kind) {
+      const d = quadData();
+      const defs = kind === 'swot'
+        ? [['strengths', 'bg-emerald-50 border-emerald-200', 'text-emerald-900'], ['weaknesses', 'bg-rose-50 border-rose-200', 'text-rose-900'], ['opportunities', 'bg-sky-50 border-sky-200', 'text-sky-900'], ['threats', 'bg-amber-50 border-amber-200', 'text-amber-900']]
+        : [['doFirst', 'bg-rose-50 border-rose-200', 'text-rose-900'], ['scheduleQ', 'bg-sky-50 border-sky-200', 'text-sky-900'], ['delegateQ', 'bg-amber-50 border-amber-200', 'text-amber-900'], ['eliminateQ', 'bg-stone-100 border-stone-200', 'text-stone-700']];
+      const subKey = k => kind === 'swot' ? k + 'Sub' : k.replace(/Q$/, '') + 'Sub';
+      return `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          ${defs.map(([k, box, ink], qi) => `
+            <div class="rounded-2xl border p-4 ${box}">
+              <div class="flex items-start justify-between gap-2 mb-2.5">
+                <div>
+                  <h3 class="text-sm font-bold ${ink}">${t(k)}</h3>
+                  <p class="text-[11px] text-stone-500">${t(subKey(k))}</p>
+                </div>
+                <button onclick="addQItem(${qi})" class="px-2.5 py-1 rounded-lg bg-white/90 border border-stone-200 text-xs font-bold text-stone-700 shrink-0">${t('addItem')}</button>
+              </div>
+              <div class="space-y-1.5" id="q-${qi}">
+                ${d.q[qi].map((it, ii) => `
+                  <div class="flex items-center gap-2 bg-white/80 rounded-lg px-2.5 py-1.5">
+                    ${kind === 'matrix' ? `<input type="checkbox" ${it.done ? 'checked' : ''} onchange="quadData().q[${qi}][${ii}].done=this.checked; saveState(); renderCurrentView();" class="w-4 h-4"/>` : '<span class="text-stone-400">•</span>'}
+                    <input type="text" value="${esc(it.text)}" placeholder="${esc(t('itemPh'))}" oninput="quadData().q[${qi}][${ii}].text=this.value; saveState();" class="flex-1 min-w-0 text-xs bg-transparent focus:outline-none ${it.done ? 'line-through text-stone-400' : 'text-stone-800'}"/>
+                    <button onclick="quadData().q[${qi}].splice(${ii},1); saveState(); renderCurrentView();" class="text-stone-300 hover:text-rose-500 text-xs">✕</button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>`;
+    }
+    function addQItem(qi) {
+      quadData().q[qi].push({ text: '', done: false }); saveState(); renderCurrentView();
+      const inputs = document.querySelectorAll(`#q-${qi} input[type=text]`);
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }
+
+    /* — Boards (Vision Board, Brainstorming Board) — */
+    function boardData() {
+      let d = state.templateEntries[CUR_KEY];
+      if (!Array.isArray(d)) { d = []; state.templateEntries[CUR_KEY] = d; }
+      return d;
+    }
+    function renderBoard() {
+      const cards = boardData();
+      if (!cards.length) return `<div class="bg-white rounded-2xl border border-dashed border-stone-300 p-10 text-center text-xs text-stone-400">${t('emptyBoard')}</div>`;
+      return `
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="boardGrid">
+          ${cards.map((c, i) => `
+            <div class="rounded-2xl border border-stone-200 p-4 shadow-sm flex flex-col gap-2 min-h-[170px]" style="background:${c.color || BOARD_COLORS[0]}">
+              <input type="text" value="${esc(c.title)}" placeholder="${esc(t('cardTitle'))}" oninput="boardData()[${i}].title=this.value; saveState();" class="serif-title text-lg font-bold bg-transparent focus:outline-none text-stone-800 placeholder-stone-500/60"/>
+              <textarea rows="4" placeholder="${esc(t('cardText'))}" oninput="boardData()[${i}].text=this.value; saveState();" class="flex-1 text-xs bg-white/50 rounded-lg p-2 focus:outline-none resize-none text-stone-700">${esc(c.text)}</textarea>
+              <div class="flex items-center justify-between">
+                <div class="flex gap-1">
+                  ${BOARD_COLORS.map(col => `<button onclick="boardData()[${i}].color='${col}'; saveState(); renderCurrentView();" class="w-4 h-4 rounded-full border ${c.color === col ? 'border-stone-800' : 'border-stone-300'}" style="background:${col}"></button>`).join('')}
+                </div>
+                <button onclick="boardData().splice(${i},1); saveState(); renderCurrentView();" class="text-stone-400 hover:text-rose-600"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              </div>
+            </div>
+          `).join('')}
+        </div>`;
+    }
+    function addCard() {
+      const cards = boardData();
+      cards.push({ title: '', text: '', color: BOARD_COLORS[cards.length % BOARD_COLORS.length] }); saveState(); renderCurrentView();
+      const inputs = document.querySelectorAll('#boardGrid input[type=text]');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }
+
+    /* — Monthly habit tracker — */
+    function habitsData() {
+      let d = state.templateEntries[CUR_KEY];
+      if (!d || !Array.isArray(d.habits)) { d = { habits: [], checks: {} }; state.templateEntries[CUR_KEY] = d; }
+      if (!d.checks) d.checks = {};
+      return d;
+    }
+    function renderMonthHabits() {
+      const d = habitsData();
+      const y = state.year, m = state.month, mk = `${y}-${pad(m + 1)}`;
+      const n = new Date(y, m + 1, 0).getDate();
+      const checks = d.checks[mk] || {};
+      const today = todayISO();
+      return `
+        <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="serif-title text-lg font-bold text-stone-800">${monthTitle(y, m)}</h3>
+              <p class="text-[11px] text-stone-500">${t('habitsSub')}</p>
+            </div>
+            ${monthNav()}
+          </div>
+          <div class="overflow-x-auto">
+            <table class="text-xs">
+              <thead>
+                <tr class="text-stone-400">
+                  <th class="text-start pb-2 pe-2 min-w-[150px]">${t('habitCol')}</th>
+                  ${Array.from({ length: n }, (_, i) => `<th class="pb-2 px-0.5 text-center font-semibold ${`${mk}-${pad(i + 1)}` === today ? 'text-stone-900' : ''}">${i + 1}</th>`).join('')}
+                  <th class="pb-2 px-2">✓</th><th></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${d.habits.length ? d.habits.map((h, hi) => {
+                  const arr = checks[h.id] || [];
+                  const cnt = arr.filter(Boolean).length;
+                  return `
+                  <tr>
+                    <td class="py-1 pe-2"><input type="text" value="${esc(h.name)}" placeholder="${esc(t('newHabit'))}" oninput="habitsData().habits[${hi}].name=this.value; saveState();" class="w-full font-semibold text-stone-800 bg-transparent focus:outline-none"/></td>
+                    ${Array.from({ length: n }, (_, di) => `<td class="py-1 px-0.5"><button onclick="toggleMonthHabit('${h.id}', ${di})" class="w-5 h-5 rounded-md border ${arr[di] ? 'bg-emerald-500 border-emerald-500' : 'bg-stone-50 border-stone-200 hover:border-stone-400'}"></button></td>`).join('')}
+                    <td class="py-1 px-2 font-bold text-stone-600 whitespace-nowrap" dir="ltr">${cnt}/${n}</td>
+                    <td class="py-1"><button onclick="habitsData().habits.splice(${hi},1); saveState(); renderCurrentView();" class="text-stone-300 hover:text-rose-500">✕</button></td>
+                  </tr>`;
+                }).join('') : `<tr><td colspan="${n + 3}" class="py-6 text-center text-stone-400">${t('emptyRows').replace(t('addRow'), t('addHabit'))}</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+    function toggleMonthHabit(id, di) {
+      const d = habitsData(); const mk = `${state.year}-${pad(state.month + 1)}`;
+      if (!d.checks[mk]) d.checks[mk] = {};
+      if (!d.checks[mk][id]) d.checks[mk][id] = [];
+      d.checks[mk][id][di] = !d.checks[mk][id][di];
+      saveState(); renderCurrentView();
+    }
+    function addMonthHabit() {
+      habitsData().habits.push({ id: uid(), name: '' }); saveState(); renderCurrentView();
+      const inputs = document.querySelectorAll('#mainContent tbody input[type=text]');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }
+
+    /* — Mood calendar — */
+    let MOOD_BRUSH = '😊';
+    function moodData() {
+      let d = state.templateEntries[CUR_KEY];
+      if (!d || Array.isArray(d) || typeof d !== 'object') { d = {}; state.templateEntries[CUR_KEY] = d; }
+      return d;
+    }
+    function renderMoodGrid() {
+      const d = moodData();
+      const y = state.year, m = state.month;
+      const prefix = `${y}-${pad(m + 1)}-`;
+      const counts = MOODS.map(mo => Object.keys(d).filter(k => k.startsWith(prefix) && d[k] === mo).length);
+      return `
+        <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="serif-title text-lg font-bold text-stone-800">${monthTitle(y, m)}</h3>
+              <p class="text-[11px] text-stone-500">${t('moodsSub')}</p>
+            </div>
+            ${monthNav()}
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            ${MOODS.map((mo, i) => `<button onclick="MOOD_BRUSH='${mo}'; renderCurrentView();" class="px-2.5 py-1 rounded-xl text-lg border ${MOOD_BRUSH === mo ? 'bg-amber-100 border-amber-400 scale-105' : 'bg-white border-stone-200'}">${mo} <span class="text-[11px] font-bold text-stone-500 align-middle">${counts[i]}</span></button>`).join('')}
+          </div>
+          <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-bold text-stone-500 uppercase">
+            ${DAYS[state.lang].map(x => `<div class="py-1 truncate">${x}</div>`).join('')}
+          </div>
+          <div class="grid grid-cols-7 gap-1.5">
+            ${monthCells(y, m).map(day => {
+              if (!day) return `<div class="h-14 rounded-xl bg-stone-100/50"></div>`;
+              const k = prefix + pad(day);
+              return `<button onclick="paintMood('${k}')" class="h-14 rounded-xl border border-stone-200 bg-[#fffdf8] hover:border-stone-400 flex flex-col items-center justify-center"><span class="text-[10px] font-bold text-stone-500">${day}</span><span class="text-xl leading-none">${d[k] || ''}</span></button>`;
+            }).join('')}
+          </div>
+        </div>`;
+    }
+    function paintMood(k) {
+      const d = moodData();
+      if (d[k] === MOOD_BRUSH) delete d[k]; else d[k] = MOOD_BRUSH;
+      saveState(); renderCurrentView();
+    }
+
+    /* ───────────────────────── NOTES ───────────────────────── */
+    function renderNotesView() {
+      return `
+        <div class="h-full flex flex-col space-y-3">
+          <div class="flex items-center justify-between gap-2 border-b border-stone-200 pb-2">
+            <h2 class="serif-title text-2xl font-bold text-stone-800">${t('notesTitle')}</h2>
+            <span class="text-xs text-stone-400">${t('dotGrid')}</span>
+          </div>
+          <textarea placeholder="${esc(t('notesPh'))}" oninput="state.notesPaper=this.value; saveState();" class="dot-grid flex-1 min-h-[460px] w-full rounded-2xl border border-stone-200 p-5 text-sm leading-7 text-stone-800 focus:outline-none resize-none">${esc(state.notesPaper)}</textarea>
+        </div>
+      `;
+    }
+
+    /* ───────────────────────── STICKERS ───────────────────────── */
+    function stickerLabel(i) { const p = STICKER_PACK[i]; return p ? `${p[0]} ${p[LI + 1]}` : ''; }
+    function toggleStickerModal() {
+      const m = document.getElementById('stickerModal');
+      m.classList.toggle('hidden'); m.classList.toggle('flex');
+    }
+    function renderStickerPalette() {
+      document.getElementById('stickerPalette').innerHTML = STICKER_PACK.map((st, i) => `
+        <button onclick="addStickerToPage(${i})" class="p-2.5 rounded-xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow text-xs font-bold text-stone-700 transition">${esc(stickerLabel(i))}</button>
+      `).join('');
+    }
+    function addStickerToPage(i) {
+      const view = state.currentView;
+      if (!state.stickers[view]) state.stickers[view] = [];
+      state.stickers[view].push(i);
+      saveState(); renderPinnedStickers(); toggleStickerModal();
+    }
+    function removeStickerFromPage(idx) {
+      (state.stickers[state.currentView] || []).splice(idx, 1);
+      saveState(); renderPinnedStickers();
+    }
+    function renderPinnedStickers() {
+      const bar = document.getElementById('pageStickersBar');
+      const list = state.stickers[state.currentView] || [];
+      bar.innerHTML = list.map((st, idx) => `<button onclick="removeStickerFromPage(${idx})" title="${esc(t('removeSticker'))}" class="px-3 py-1 rounded-full bg-amber-100/90 border border-amber-300 text-amber-900 text-xs font-bold shadow-sm hover:bg-rose-100 hover:border-rose-300 transition">${esc(stickerLabel(st))}</button>`).join('');
+    }
+
+    /* ───────────────────────── CALENDAR EXPORT ───────────────────────── */
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg; el.classList.remove('hidden');
+      clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.add('hidden'), 2600);
+    }
+    function addHour(hhmm, n) { const [h, m] = hhmm.split(':').map(Number); const total = Math.min(23 * 60 + 59, h * 60 + m + n * 60); return `${pad(Math.floor(total / 60))}:${pad(total % 60)}`; }
+
+    function calContext() {
+      if (state.currentView === 'daily') return { title: dayR().priorities[0] || '', date: state.dailyDate, start: '09:00', end: '10:00', allDay: false };
+      if (state.currentView === 'monthly') {
+        const today = todayISO();
+        const first = `${state.year}-${pad(state.month + 1)}-01`;
+        return { title: '', date: today.startsWith(first.slice(0, 8)) ? today : first, allDay: true };
+      }
+      return { title: '', date: clampDate(todayISO()), start: '09:00', end: '10:00', allDay: false };
+    }
+    function calFromHour(hr) { openCalModal({ title: dayR().schedule[hr] || '', date: state.dailyDate, start: hr, end: addHour(hr, 1), allDay: false }); }
+    function calFromDay(date, key) { openCalModal({ title: (state.monthEvents[key] || '').split('\n')[0], date, allDay: true }); }
+
+    function openCalModal(p) {
+      p = Object.assign({ title: '', date: clampDate(todayISO()), start: '09:00', end: '10:00', allDay: false }, p || {});
+      const field = 'w-full px-3 py-2 rounded-xl border border-stone-300 bg-white text-xs focus:outline-none';
+      const mLabel = monthTitle(state.year, state.month);
+      document.getElementById('calModalBody').innerHTML = `
+        <div class="flex items-center justify-between pb-3 border-b border-stone-200">
+          <h3 class="font-bold text-stone-800 flex items-center gap-2"><i data-lucide="calendar-plus" class="w-4 h-4 text-blue-600"></i> ${t('calTitle')}</h3>
+          <button onclick="closeCalModal()" class="text-stone-400 hover:text-stone-700">✕</button>
+        </div>
+        <div class="space-y-3 mt-3 text-xs">
+          <label class="block"><span class="font-semibold text-stone-600">${t('calEvent')}</span>
+            <input id="calTitle" type="text" value="${esc(p.title)}" class="${field} mt-1"/></label>
+          <div class="grid grid-cols-2 gap-2 items-end">
+            <label class="block"><span class="font-semibold text-stone-600">${t('calDate')}</span>
+              <input id="calDate" type="date" value="${esc(p.date)}" class="${field} mt-1"/></label>
+            <label class="flex items-center gap-2 pb-2"><input id="calAllDay" type="checkbox" ${p.allDay ? 'checked' : ''} onchange="document.getElementById('calTimes').classList.toggle('hidden', this.checked)" class="w-4 h-4"/> <span class="font-semibold text-stone-600">${t('calAllDay')}</span></label>
+          </div>
+          <div id="calTimes" class="grid grid-cols-2 gap-2 ${p.allDay ? 'hidden' : ''}">
+            <label class="block"><span class="font-semibold text-stone-600">${t('calStart')}</span><input id="calStart" type="time" value="${esc(p.start)}" class="${field} mt-1"/></label>
+            <label class="block"><span class="font-semibold text-stone-600">${t('calEnd')}</span><input id="calEnd" type="time" value="${esc(p.end)}" class="${field} mt-1"/></label>
+          </div>
+          <div class="grid grid-cols-1 gap-2 pt-1">
+            <button onclick="calSend('google')" class="w-full py-2 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 flex items-center justify-center gap-1.5"><i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> ${t('calGoogle')}</button>
+            <button onclick="calSend('ics')" class="w-full py-2 rounded-xl bg-stone-900 text-white font-bold hover:bg-stone-700 flex items-center justify-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> ${t('calApple')}</button>
+          </div>
+          <div class="border-t border-stone-200 pt-3">
+            <button onclick="exportMonthICS()" class="w-full py-2 rounded-xl bg-white border border-stone-300 text-stone-700 font-bold hover:bg-stone-50">${t('calMonth', { m: esc(mLabel) })}</button>
+          </div>
+        </div>`;
+      const m = document.getElementById('calModal');
+      m.classList.remove('hidden'); m.classList.add('flex');
+      lucide.createIcons();
+    }
+    function closeCalModal() { const m = document.getElementById('calModal'); m.classList.add('hidden'); m.classList.remove('flex'); }
+
+    function ymd(s) { return s.replace(/-/g, ''); }
+    function calEventFromForm() {
+      const title = document.getElementById('calTitle').value.trim();
+      const date = document.getElementById('calDate').value;
+      const allDay = document.getElementById('calAllDay').checked;
+      let start = document.getElementById('calStart').value || '09:00';
+      let end = document.getElementById('calEnd').value || addHour(start, 1);
+      if (end <= start) end = addHour(start, 1);
+      return { title, date, allDay, start, end };
+    }
+    function calSend(target) {
+      const ev = calEventFromForm();
+      if (!ev.title) { toast(t('calNeedTitle')); document.getElementById('calTitle').focus(); return; }
+      if (!validISO(ev.date)) return;
+      if (target === 'google') {
+        const dates = ev.allDay
+          ? `${ymd(ev.date)}/${ymd(addDays(ev.date, 1))}`
+          : `${ymd(ev.date)}T${ev.start.replace(':', '')}00/${ymd(ev.date)}T${ev.end.replace(':', '')}00`;
+        const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(ev.title)}&dates=${dates}&details=${encodeURIComponent(t('calFrom'))}`;
+        window.open(url, '_blank', 'noopener');
+      } else {
+        downloadFile(buildICS([ev]), 'planner-event.ics', 'text/calendar;charset=utf-8');
+        toast(t('calDone'));
+      }
+      closeCalModal();
+    }
+    function exportMonthICS() {
+      const y = state.year, m = state.month;
+      const events = [];
+      const n = new Date(y, m + 1, 0).getDate();
+      for (let d = 1; d <= n; d++) {
+        const txt = (state.monthEvents[`${y}_${m}_${d}`] || '').trim();
+        if (!txt) continue;
+        txt.split('\n').map(s => s.trim()).filter(Boolean).forEach(line => events.push({ title: line, date: `${y}-${pad(m + 1)}-${pad(d)}`, allDay: true }));
+      }
+      const label = monthTitle(y, m);
+      if (!events.length) { toast(t('calNoEvents', { m: label })); return; }
+      downloadFile(buildICS(events), `planner-${y}-${pad(m + 1)}.ics`, 'text/calendar;charset=utf-8');
+      toast(t('calDone')); closeCalModal();
+    }
+    function icsText(s) { return String(s).replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;'); }
+    function buildICS(events) {
+      const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//All-In-One Digital Planner//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+      events.forEach((ev, i) => {
+        lines.push('BEGIN:VEVENT', `UID:${Date.now()}-${i}-${Math.random().toString(36).slice(2, 8)}@all-in-one-planner`, `DTSTAMP:${stamp}`);
+        if (ev.allDay) lines.push(`DTSTART;VALUE=DATE:${ymd(ev.date)}`, `DTEND;VALUE=DATE:${ymd(addDays(ev.date, 1))}`);
+        else lines.push(`DTSTART:${ymd(ev.date)}T${ev.start.replace(':', '')}00`, `DTEND:${ymd(ev.date)}T${ev.end.replace(':', '')}00`);
+        lines.push(`SUMMARY:${icsText(ev.title)}`, `DESCRIPTION:${icsText(t('calFrom'))}`, 'END:VEVENT');
+      });
+      lines.push('END:VCALENDAR');
+      return lines.join('\r\n');
+    }
+
+    /* ───────────────────────── BACKUP / RESTORE ───────────────────────── */
+    function downloadFile(content, name, type) {
+      const blob = new Blob([content], { type });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = name;
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 4000);
+    }
+    function exportBackup() {
+      const data = Object.assign({ app: 'all-in-one-planner', exportedAt: new Date().toISOString() }, state);
+      downloadFile(JSON.stringify(data, null, 2), `all-in-one-planner-backup-${todayISO()}.json`, 'application/json');
+    }
+    function importBackup(input) {
+      const file = input.files && input.files[0];
+      input.value = '';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        let obj = null;
+        try { obj = JSON.parse(reader.result); } catch (e) { obj = null; }
+        const ok = obj && typeof obj === 'object' && !Array.isArray(obj) && (obj.app === 'all-in-one-planner' || 'templateEntries' in obj || 'monthEvents' in obj || 'days' in obj || 'todos' in obj);
+        if (!ok) { toast(t('restoreBad')); return; }
+        if (!confirm(t('restoreConfirm'))) return;
+        delete obj.app; delete obj.exportedAt;
+        state = migrate(obj);
+        saveState();
+        document.getElementById('yearSelect').value = state.year;
+        document.getElementById('langSelect').value = state.lang;
+        applyLanguageAttributes(); renderSideTabs(); renderStickerPalette(); renderCurrentView();
+        toast(t('restoreOk'));
+      };
+      reader.readAsText(file);
+    }
+
+    /* ───────────────────────── PWA ───────────────────────── */
+    function registerPWA() {
+      if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        DEFERRED_PROMPT = e;
+        const btn = document.getElementById('installPwaBtn');
+        btn.classList.remove('hidden');
+        btn.classList.add('inline-flex');
+        btn.onclick = installApp;
+      });
+    }
+    let DEFERRED_PROMPT = null;
+    async function installApp() {
+      if (!DEFERRED_PROMPT) return;
+      DEFERRED_PROMPT.prompt();
+      await DEFERRED_PROMPT.userChoice;
+      DEFERRED_PROMPT = null;
+      const btn = document.getElementById('installPwaBtn');
+      btn.classList.add('hidden'); btn.classList.remove('inline-flex');
+      closeMenu();
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "All-In-One Digital Planner (2026-2030)",
+  "short_name": "LifePlanner",
+  "description": "All-In-One Digital Planner with 10 Custom Life Sections, 86 Templates & Offline Support",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fdfbf7",
+  "theme_color": "#272422",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
