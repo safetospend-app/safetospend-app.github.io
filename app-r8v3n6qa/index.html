@@ -57,6 +57,8 @@
     .side-tab {
       writing-mode: vertical-rl;
       text-orientation: mixed;
+      white-space: nowrap;
+      flex-shrink: 0;
       transition: all 0.2s ease;
     }
     .side-tab:hover, .side-tab.active {
@@ -269,7 +271,7 @@
       <nav id="bottomNav" class="hidden grid-cols-5 md:px-[12%] border-t border-[#e6dfd5] bg-[#f8f4ec] safe-bottom"></nav>
     </div>
 
-    <div class="flex flex-col gap-1 sm:gap-1.5 pt-5 sm:pt-6 ps-0.5 sm:ps-1 z-10 shrink-0 max-h-[86vh] overflow-y-auto no-scrollbar" id="rightSectionTabs"></div>
+    <div class="flex flex-col gap-1 pt-5 sm:pt-6 ps-0.5 sm:ps-1 z-10 shrink-0 max-h-[86vh] overflow-y-auto no-scrollbar" id="rightSectionTabs"></div>
   </div>
 
   <!-- Sticker Modal -->
@@ -1147,11 +1149,35 @@
       const rightContainer = document.getElementById('rightSectionTabs');
       rightContainer.innerHTML = LIFE_SECTIONS.map(sec => `
         <button onclick="switchView('section', '${sec.id}')" style="background:${sec.color}"
-          class="side-tab keep-ink px-1 sm:px-1.5 py-2 sm:py-3 rounded-e-lg text-[9px] sm:text-[10px] text-stone-800 border border-s-0 border-stone-300 ${state.currentView === 'section' && state.activeSectionId === sec.id ? 'active font-bold' : 'opacity-90'}">
+          class="side-tab keep-ink px-1 sm:px-1.5 py-2 sm:py-2.5 rounded-e-lg text-[9px] sm:text-[10px] text-stone-800 border border-s-0 border-stone-300 ${state.currentView === 'section' && state.activeSectionId === sec.id ? 'active font-bold' : 'opacity-90'}">
           ${esc(secName(sec))}
         </button>
       `).join('');
+      fitTabs();
     }
+
+    // Shrink side tabs just enough so every tab stays visible on short screens
+    function fitTabs() {
+      ['leftMonthTabs', 'rightSectionTabs'].forEach(id => {
+        const box = document.getElementById(id); if (!box) return;
+        const tabs = [...box.querySelectorAll('.side-tab')];
+        tabs.forEach(b => { b.style.fontSize = ''; b.style.paddingTop = ''; b.style.paddingBottom = ''; });
+        box.style.gap = '';
+        if (!tabs.length || box.clientHeight === 0) return;
+        let fs = parseFloat(getComputedStyle(tabs[0]).fontSize);
+        let py = parseFloat(getComputedStyle(tabs[0]).paddingTop);
+        let gap = parseFloat(getComputedStyle(box).rowGap) || 4;
+        let guard = 0;
+        while (box.scrollHeight > box.clientHeight && guard++ < 40) {
+          if (py > 3) py -= 1; else if (gap > 2) gap -= 1; else if (fs > 7) fs -= 0.5; else break;
+          box.style.gap = gap + 'px';
+          tabs.forEach(b => { b.style.fontSize = fs + 'px'; b.style.paddingTop = py + 'px'; b.style.paddingBottom = py + 'px'; });
+        }
+      });
+    }
+    let fitTimer = null;
+    window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitTabs, 120); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitTabs());
 
     function selectMonth(idx) { state.month = idx; state.currentView = 'monthly'; saveState(); renderSideTabs(); renderCurrentView(); }
 

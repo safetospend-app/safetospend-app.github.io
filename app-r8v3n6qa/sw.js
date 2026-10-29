@@ -1,4 +1,4 @@
-const CACHE_NAME = 'all-in-one-planner-pwa-v4';
+const CACHE_NAME = 'all-in-one-planner-pwa-v5';
 const ASSETS = [
   './',
   './index.html',
