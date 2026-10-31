@@ -430,7 +430,7 @@ de:{
  safeTitle:'Sicher ausgeben — heute', safeSub:'Pro Tag bis zum {date}. Alles, was hier steht, ist schon <b>nach</b> Rechnungen, Umschlägen und Zielen übrig.',
  safeNeg:'Diesen Monat fehlt Geld. Schau bei den Muss-Zahlungen, was verschoben werden kann.',
  tillPay:'bis Zahltag in {n} Tagen', tillPay1:'Zahltag ist morgen', tillPay0:'Heute ist Zahltag',
- balance:'Kontostand', openMonth:'Noch offen diesen Monat', nextPay:'Nächster Zahltag',
+ balance:'Kontostand', openMonth:'Noch offen bis Zahltag', nextDue:'Als Nächstes fällig', debtFreeBy:'Schuldenfrei ab', nMonths:'{n} Monate', nextPay:'Nächster Zahltag',
  lgBills:'Muss-Zahlungen', lgEnv:'Umschläge', lgGoals:'Ziele', lgFree:'Frei',
  nowTitle:'Genau jetzt', nowSteps:'{a} von {b} Schritten', nowNothing:'Nichts zu tun — genieß den Tag.',
  nowNothingSub:'Keine Rechnung ist fällig. Du bist auf Kurs.',
@@ -543,7 +543,7 @@ fr:{
  safeTitle:'Reste à dépenser — aujourd’hui', safeSub:'Par jour jusqu’au {date}. Ce montant est déjà <b>net</b> de factures, enveloppes et objectifs.',
  safeNeg:'Il manque de l’argent ce mois-ci. Regarde ce qui peut être décalé dans « À payer ».',
  tillPay:'paie dans {n} jours', tillPay1:'paie demain', tillPay0:'c’est le jour de paie',
- balance:'Solde du compte', openMonth:'Encore dû ce mois-ci', nextPay:'Prochaine paie',
+ balance:'Solde du compte', openMonth:'Encore dû avant la paie', nextDue:'Prochain paiement', debtFreeBy:'Sans dette en', nMonths:'{n} mois', nextPay:'Prochaine paie',
  lgBills:'À payer', lgEnv:'Enveloppes', lgGoals:'Objectifs', lgFree:'Libre',
  nowTitle:'Maintenant', nowSteps:'{a} sur {b} étapes', nowNothing:'Rien à faire — profite.',
  nowNothingSub:'Aucune facture à échéance. Tu es sur la bonne voie.',
@@ -644,7 +644,7 @@ en:{
  safeTitle:'Safe to spend — today', safeSub:'Per day until {date}. This is what’s left <b>after</b> bills, envelopes and goals.',
  safeNeg:'You’re short this month. Check Must-Pays for anything you can move.',
  tillPay:'payday in {n} days', tillPay1:'payday is tomorrow', tillPay0:'today is payday',
- balance:'Account balance', openMonth:'Still owed this month', nextPay:'Next payday',
+ balance:'Account balance', openMonth:'Still owed until payday', nextDue:'Next due', debtFreeBy:'Debt-free by', nMonths:'{n} months', nextPay:'Next payday',
  lgBills:'Must-Pays', lgEnv:'Envelopes', lgGoals:'Goals', lgFree:'Free',
  nowTitle:'Right now', nowSteps:'{a} of {b} steps', nowNothing:'Nothing to do — enjoy your day.',
  nowNothingSub:'No bill is due. You’re on track.',
@@ -1284,7 +1284,7 @@ function goalRow(g, compact){
   return '<div class="goal"><div class="gt"><span>'+(g.emoji||'🎯')+' '+esc(g.name)+'</span><b>'+p+' %</b></div>'
    + '<div class="gtrack"><i style="width:'+p+'%;background:var(--'+col+')"></i></div>'
    + '<div class="gsub"><span>'+money(g.saved)+' '+t('of')+' '+money(g.target)+'</span>'
-   + (p>=100? '<span class="tagx g">'+t('goalDone')+'</span>' : (months? '<span>· '+t('goalLeftMonths',{n:months})+'</span>':''))
+   + (p>=100? '<span class="tagx g">'+t('goalDone')+'</span>' : (months? '<span>'+t('goalLeftMonths',{n:months})+'</span>':''))
    + (compact? '' : '<span style="margin-left:auto"><button class="mini" data-a="fundGoal" data-i="'+g.id+'">'+svg('plus',14,2.4)+'</button>'
      + '<button class="mini" data-a="editGoal" data-i="'+g.id+'">'+svg('pen',14)+'</button></span>')
    + '</div></div>';
@@ -1312,7 +1312,7 @@ function vBills(){
   const monthTotal = S.bills.reduce((a,b)=> a + occurrences(b, monthStart(c.mk), monthEnd(c.mk)).length*(+b.amount||0),0);
   return kpis([
     [t('openMonth'), money(c.billsDue), 'r'],
-    [t('total')+' · '+dMonLong(monthStart(c.mk)), money(monthTotal), ''],
+    [openL.length? t('nextDue')+' · '+esc(openL.find(x=>x.date>=today())?.name||openL[0].name) : t('nextDue'), openL.length? dMed((openL.find(x=>x.date>=today())||openL[0]).date) : '—', ''],
     [t('nextPay'), dMed(c.pay), 'g']
   ])
   + '<div class="grid2"><div class="card"><div class="ch"><div class="chi" style="background:var(--rose-s);color:var(--rose)">'+svg('bills',14,2.2)+'</div>'
@@ -1407,7 +1407,7 @@ function vDebts(){
   const pay = S.debts.reduce((a,d)=>a+(+d.min||0),0);
   const months = pay>0? Math.ceil(tot/pay) : 0;
   return kpis([[t('debtTotal'), money(tot),'r'],[t('monthly'), money(pay),''],
-               [t('debtFree',{n:months}).toUpperCase(), months? months+' M':'—','g']])
+               [months? t('debtFreeBy')+' · ~'+t('nMonths',{n:months}) : t('debtFreeBy'), months? dMonLong((()=>{const z=dt(today()); z.setDate(1); z.setMonth(z.getMonth()+months); return iso(z);})()):'—','g']])
   + '<div class="card"><div class="ch"><div class="chi" style="background:var(--rose-s);color:var(--rose)">'+svg('debts',14,2.2)+'</div>'
   + '<h3>'+t('nav_debts')+'</h3><span class="cnt"><button data-a="newDebt">+ '+t('add')+'</button></span></div>'
   + (S.debts.length? S.debts.map(d=>{
