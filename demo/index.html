@@ -382,7 +382,7 @@ html[data-theme="dark"] .demobar .btn{color:#141232}
   .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
 }
 @media print{.rail,.top-actions,.mobnav,.fab{display:none}main{padding:0}.card{break-inside:avoid;box-shadow:none}}
-</style>
+/* mobile: never wider than the screen */.grid>*,.grid2>*,.kpi>*{min-width:0}@media(max-width:520px){.bars{gap:3px}.bar{min-width:8px}}.rowli>div:not([class]){min-width:0;flex:1 1 auto}.rowli .nm{overflow-wrap:anywhere}@media(max-width:360px){.rowli{gap:8px}.rowact{margin-left:4px;gap:5px}.mini{width:34px;height:34px;flex:0 0 34px}}</style>
 </head>
 <body>
 <div class="app">
