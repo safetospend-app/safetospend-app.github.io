@@ -2,6 +2,7 @@
 <html lang="de" data-theme="light">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#8A6A4B">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -131,9 +132,9 @@ html[data-theme="dark"] .mrail{background-image:linear-gradient(to left,rgba(0,0
 .nav a.on svg{opacity:1;color:var(--accent)}
 .nav .badge{margin-left:auto;font-size:9px;font-weight:400;letter-spacing:.1em;background:none;color:var(--rose);border:1px solid var(--rose-b);padding:1px 6px}
 .rail-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
-.focus{display:flex;align-items:center;gap:9px;border:1px solid var(--line2);padding:10px 11px;width:100%;text-align:left}
-.focus .t{font-size:10px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2)}
-.focus .s{font-size:9.5px;color:var(--muted);letter-spacing:.04em}
+button.focus{display:flex;align-items:center;gap:9px;border:1px solid var(--line2);padding:10px 11px;width:100%;text-align:left}
+button.focus .t{font-size:10px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2)}
+button.focus .s{font-size:9.5px;color:var(--muted);letter-spacing:.04em}
 .sw{margin-left:auto;width:32px;height:18px;border-radius:20px;background:var(--line);position:relative;flex:0 0 32px;transition:.2s}
 .sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--surface);transition:.2s}
 .sw.on{background:var(--accent)}
@@ -452,6 +453,22 @@ html[data-theme="dark"] .demobar .btn:not(.ghost){color:var(--on-dark)}
     <div id="view"></div>
   </main>
 </div>
+<style>
+.morelist{display:flex;flex-direction:column;margin:2px 0 4px}
+.moreit{display:flex;align-items:center;gap:12px;width:100%;padding:13px 4px;background:none;border:0;border-bottom:1px solid var(--line2);
+  font:inherit;font-size:15px;font-weight:600;color:var(--ink);text-align:left;cursor:pointer}
+.moreit:last-child{border-bottom:0}
+.moreit .mi{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--green-s);color:var(--green);flex:none}
+.moreit .ml{flex:1}
+.moreit > svg{color:var(--muted)}
+.moreit.on .ml{color:var(--green)}
+.morefoot{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.morefoot .focus{padding:12px 13px}
+.morefoot .focus .s{font-size:11.5px;color:var(--muted)}
+.mobnav a[role=button]{cursor:pointer}
+/* phones: never let the month strip widen the page (seen in Focus mode) */
+@media(max-width:640px){.app{min-width:0}.rail{min-width:0;max-width:100%}.rail>div{min-width:0;max-width:100%}.months{min-width:0;max-width:100%}}
+</style>
 <nav class="mobnav" id="mobnav"></nav>
 <button class="fab" id="fab" aria-label="+">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -1146,10 +1163,14 @@ function renderRail(){
    + '<div class="railsettings"><a href="#set" data-a="go" data-i="set">'+t('nav_set')+'</a></div>'
    + '</div>';
 }
+const MOB4 = ['dash','bills','cal','goals'];
+function moreLabel(){ return ({de:'Mehr',fr:'Plus',en:'More'})[S.lang]||'More'; }
 function renderMobnav(){
-  const items = [['dash','dash'],['bills','bills'],['cal','cal'],['goals','goals'],['set','set']];
+  const items = [['dash','dash'],['bills','bills'],['cal','cal'],['goals','goals']];
+  const moreOn = MOB4.indexOf(VIEW)<0;
   $('#mobnav').innerHTML = items.map(([id,ic])=>
-    '<a href="#'+id+'" class="'+(VIEW===id?'on':'')+'" data-a="go" data-i="'+id+'">'+svg(ic,19)+'<span>'+t('nav_'+id)+'</span></a>').join('');
+    '<a href="#'+id+'" class="'+(VIEW===id?'on':'')+'" data-a="go" data-i="'+id+'">'+svg(ic,19)+'<span>'+t('nav_'+id)+'</span></a>').join('')
+    + '<a role="button" class="'+(moreOn?'on':'')+'" data-a="more" aria-label="'+moreLabel()+'">'+svg('list',19)+'<span>'+moreLabel()+'</span></a>';
 }
 
 /* ---------------- topbar ---------------- */
@@ -1741,6 +1762,21 @@ const ACT = {
   theme(){ const cur = document.documentElement.getAttribute('data-theme'); S.theme = cur==='dark'?'light':'dark'; save(); render(); },
   setTheme(i){ S.theme=i; save(); render(); },
   toggleFocus(){ S.focus=!S.focus; save(); render(); },
+  more(){
+    const list = NAVITEMS().filter(([id])=>MOB4.indexOf(id)<0).concat([['set','set']]);
+    modal(mhead(moreLabel())
+      + '<div class="morelist">'+list.map(([id,ic])=>'<button class="moreit'+(VIEW===id?' on':'')+'" data-a="goMore" data-i="'+id+'">'
+          + '<span class="mi">'+svg(ic,17)+'</span><span class="ml">'+t('nav_'+id)+'</span>'+svg('right',14,2.2)+'</button>').join('')+'</div>'
+      + '<div class="morefoot">'
+      + '<button class="focus" data-a="moreFocus"><span style="color:var(--lilac)">'+svg('bolt',16)+'</span>'
+      + '<div><div class="t">'+t('focusMode')+'</div><div class="s">'+t('focusSub')+'</div></div><span class="sw '+(S.focus?'on':'')+'"></span></button>'
+      + '<button class="focus" style="background:var(--inset)" data-a="moreSimple"><span style="color:var(--muted)">'+svg('list',16)+'</span>'
+      + '<div><div class="t" style="color:var(--ink2)">'+t('simpleMode')+'</div><div class="s">'+t('simpleSub')+'</div></div><span class="sw '+(S.simple?'on':'')+'"></span></button>'
+      + '</div>', {nofocus:true});
+  },
+  goMore(i){ closeModal(); ACT.go(i); window.scrollTo(0,0); },
+  moreFocus(){ S.focus=!S.focus; save(); render(); ACT.more(); },
+  moreSimple(){ S.simple=!S.simple; save(); render(); ACT.more(); },
   toggleSimple(){ S.simple=!S.simple; save(); render(); },
   close(){ closeModal(); },
   closeOv(i,e){ if(e.target.classList.contains('ov')) closeModal(); },

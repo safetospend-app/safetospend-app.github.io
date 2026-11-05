@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /app-
+Disallow: /everyday/preview-
+Disallow: /cover-builder/
+Sitemap: https://safetospend-app.github.io/sitemap.xml

@@ -7,8 +7,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="description" content="Sicher Ausgeben — ADHD-friendly budget planner. Works offline, no account.">
-<title>Safe to Spend</title>
+<meta name="description" content="Free demo of Safe to Spend, an ADHD-friendly budget planner app: one safe-to-spend number for today, paycheck budget (weekly, biweekly, monthly), bill tracker, debt payoff and savings goals. Works on iPhone, iPad, Android and PC. No bank login, no subscription.">
+<title>Safe to Spend — Free ADHD Budget Planner App Demo</title>
+<link rel="canonical" href="https://safetospend-app.github.io/blush/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Safe to Spend — the ADHD budget app that gives you ONE number">
+<meta property="og:description" content="Try the free demo: see what you can safely spend today, with bills and goals already taken out. No bank login, no subscription.">
+<meta property="og:url" content="https://safetospend-app.github.io/blush/">
+<meta property="og:image" content="https://safetospend-app.github.io/blush/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Safe to Spend","applicationCategory":"FinanceApplication","operatingSystem":"iOS, iPadOS, Android, Windows, macOS (web app)","description":"ADHD-friendly budget planner app with a daily safe-to-spend number, paycheck budgeting, bill tracker, debt payoff tracker and savings goals.","url":"https://safetospend-app.github.io/blush/","image":"https://safetospend-app.github.io/blush/og.jpg"}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23B4446C'/%3E%3Cpath d='M16 6.5 8.5 9.7v4.6c0 4.2 2.9 7.7 7.5 8.7 4.6-1 7.5-4.5 7.5-8.7V9.7L16 6.5Z' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='m12.8 15.6 2.2 2.2 4.2-4.4' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 :root{
@@ -89,9 +97,9 @@ a{color:inherit}
 .nav a.on svg{opacity:1;color:var(--green)}
 .nav .badge{margin-left:auto;font-size:9.5px;font-weight:700;background:var(--rose-s);color:var(--rose);padding:1px 6px;border-radius:20px}
 .rail-foot{margin-top:auto;border-top:1px solid var(--line2);padding-top:13px;display:flex;flex-direction:column;gap:9px}
-.focus{display:flex;align-items:center;gap:9px;background:var(--lilac-s);border-radius:12px;padding:9px 11px;width:100%;text-align:left}
-.focus .t{font-size:11.5px;font-weight:500;color:var(--lilac)}
-.focus .s{font-size:9.5px;color:var(--muted)}
+button.focus{display:flex;align-items:center;gap:9px;background:var(--lilac-s);border-radius:12px;padding:9px 11px;width:100%;text-align:left}
+button.focus .t{font-size:11.5px;font-weight:500;color:var(--lilac)}
+button.focus .s{font-size:9.5px;color:var(--muted)}
 .sw{margin-left:auto;width:32px;height:18px;border-radius:20px;background:var(--line);position:relative;flex:0 0 32px;transition:.2s}
 .sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .sw.on{background:var(--lilac)}
@@ -577,6 +585,22 @@ html[data-theme="dark"] .demobar .btn.ghost{color:var(--lilac);border-color:var(
     <div id="view"></div>
   </main>
 </div>
+<style>
+.morelist{display:flex;flex-direction:column;margin:2px 0 4px}
+.moreit{display:flex;align-items:center;gap:12px;width:100%;padding:13px 4px;background:none;border:0;border-bottom:1px solid var(--line2);
+  font:inherit;font-size:15px;font-weight:600;color:var(--ink);text-align:left;cursor:pointer}
+.moreit:last-child{border-bottom:0}
+.moreit .mi{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--green-s);color:var(--green);flex:none}
+.moreit .ml{flex:1}
+.moreit > svg{color:var(--muted)}
+.moreit.on .ml{color:var(--green)}
+.morefoot{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.morefoot .focus{padding:12px 13px}
+.morefoot .focus .s{font-size:11.5px;color:var(--muted)}
+.mobnav a[role=button]{cursor:pointer}
+/* phones: never let the month strip widen the page (seen in Focus mode) */
+@media(max-width:640px){.app{min-width:0}.rail{min-width:0;max-width:100%}.rail>div{min-width:0;max-width:100%}.months{min-width:0;max-width:100%}}
+</style>
 <nav class="mobnav" id="mobnav"></nav>
 <button class="fab" id="fab" aria-label="+">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -1232,7 +1256,7 @@ function appTitle(){ return S.title && S.title.trim() ? S.title.trim() : t('appN
 function render(){
   applyTheme();
   document.documentElement.lang = S.lang;
-  document.title = appTitle();
+  document.title = appTitle() + (DEMO ? ({de:' — Gratis Demo · ADHS Budgetplaner App',fr:' — Démo gratuite · Budget TDAH',en:' — Free ADHD Budget Planner App Demo'})[S.lang]||'' : '');
   document.body.classList.toggle('focus', !!S.focus && VIEW==='dash');
   renderRail(); renderTop(); renderMobnav();
   const v = $('#view');
@@ -1299,10 +1323,14 @@ function syncTabMonths(){
   const box=tm.querySelector('.months'), a=box&&box.querySelector('.m.active');
   if(a&&box.clientWidth){ box.scrollLeft += (a.getBoundingClientRect().left-box.getBoundingClientRect().left) - box.clientWidth/2 + a.clientWidth/2; }
 }
+const MOB4 = ['dash','bills','cal','goals'];
+function moreLabel(){ return ({de:'Mehr',fr:'Plus',en:'More'})[S.lang]||'More'; }
 function renderMobnav(){
-  const items = [['dash','dash'],['bills','bills'],['cal','cal'],['goals','goals'],['set','set']];
+  const items = [['dash','dash'],['bills','bills'],['cal','cal'],['goals','goals']];
+  const moreOn = MOB4.indexOf(VIEW)<0;
   $('#mobnav').innerHTML = items.map(([id,ic])=>
-    '<a href="#'+id+'" class="'+(VIEW===id?'on':'')+'" data-a="go" data-i="'+id+'">'+svg(ic,19)+'<span>'+t('nav_'+id)+'</span></a>').join('');
+    '<a href="#'+id+'" class="'+(VIEW===id?'on':'')+'" data-a="go" data-i="'+id+'">'+svg(ic,19)+'<span>'+t('nav_'+id)+'</span></a>').join('')
+    + '<a role="button" class="'+(moreOn?'on':'')+'" data-a="more" aria-label="'+moreLabel()+'">'+svg('list',19)+'<span>'+moreLabel()+'</span></a>';
 }
 
 
@@ -1928,6 +1956,21 @@ const ACT = {
   theme(){ const cur = document.documentElement.getAttribute('data-theme'); S.theme = cur==='dark'?'light':'dark'; save(); render(); },
   setTheme(i){ S.theme=i; save(); render(); },
   toggleFocus(){ S.focus=!S.focus; save(); render(); },
+  more(){
+    const list = NAVITEMS().filter(([id])=>MOB4.indexOf(id)<0).concat([['set','set']]);
+    modal(mhead(moreLabel())
+      + '<div class="morelist">'+list.map(([id,ic])=>'<button class="moreit'+(VIEW===id?' on':'')+'" data-a="goMore" data-i="'+id+'">'
+          + '<span class="mi">'+svg(ic,17)+'</span><span class="ml">'+t('nav_'+id)+'</span>'+svg('right',14,2.2)+'</button>').join('')+'</div>'
+      + '<div class="morefoot">'
+      + '<button class="focus" data-a="moreFocus"><span style="color:var(--lilac)">'+svg('bolt',16)+'</span>'
+      + '<div><div class="t">'+t('focusMode')+'</div><div class="s">'+t('focusSub')+'</div></div><span class="sw '+(S.focus?'on':'')+'"></span></button>'
+      + '<button class="focus" style="background:var(--inset)" data-a="moreSimple"><span style="color:var(--muted)">'+svg('list',16)+'</span>'
+      + '<div><div class="t" style="color:var(--ink2)">'+t('simpleMode')+'</div><div class="s">'+t('simpleSub')+'</div></div><span class="sw '+(S.simple?'on':'')+'"></span></button>'
+      + '</div>', {nofocus:true});
+  },
+  goMore(i){ closeModal(); ACT.go(i); window.scrollTo(0,0); },
+  moreFocus(){ S.focus=!S.focus; save(); render(); ACT.more(); },
+  moreSimple(){ S.simple=!S.simple; save(); render(); ACT.more(); },
   toggleSimple(){ S.simple=!S.simple; save(); render(); },
   close(){ closeModal(); },
   closeOv(i,e){ if(e.target.classList.contains('ov')) closeModal(); },
