@@ -424,7 +424,8 @@ html[data-theme="dark"] .demobar .btn:not(.ghost){color:var(--on-dark)}
   .mrail .m.active{box-shadow:inset 0 -3px 0 var(--accent);margin-left:0;background:var(--surface)}
   .mrail .m .ms{position:static;transform:none;opacity:1;background:none;border:0;padding:0;
     color:var(--muted);writing-mode:horizontal-tb}
-  main{padding:18px 16px 100px}
+  main{padding:18px 16px calc(150px + env(safe-area-inset-bottom))}
+  .addbtn{display:none!important}
   .top{flex-wrap:wrap}
   .hi{font-size:13px}
   .big{font-size:50px}
@@ -486,7 +487,7 @@ de:{
  /* dashboard */
  hello:'Hallo', helloNo:'Willkommen zurück',
  stGood:'alles im grünen Bereich.', stWarn:'es wird etwas eng.', stBad:'aufgepasst diesen Monat.',
- safeTitle:'Sicher ausgeben — heute', safeSub:'Pro Tag bis zum {date}. Alles, was hier steht, ist schon <b>nach</b> Rechnungen, Umschlägen und Zielen übrig.',
+ safeTitle:'Sicher ausgeben — heute', safeSub:'Pro Tag bis zum {date}. Rechnungen und Ziele sind schon <b>abgezogen</b> — deine Umschläge sind hier mit drin.',
  safeNeg:'Diesen Monat fehlt Geld. Schau bei den Muss-Zahlungen, was verschoben werden kann.',
  tillPay:'bis Zahltag in {n} Tagen', tillPay1:'Zahltag ist morgen', tillPay0:'Heute ist Zahltag',
  balance:'Kontostand', openMonth:'Noch offen bis Zahltag', nextDue:'Als Nächstes fällig', debtFreeBy:'Schuldenfrei ab', nMonths:'{n} Monate', nextPay:'Nächster Zahltag',
@@ -593,7 +594,7 @@ fr:{
  rep_monthly:'Chaque mois', rep_quarterly:'Chaque trimestre', rep_yearly:'Chaque année',
  hello:'Bonjour', helloNo:'Bon retour',
  stGood:'tout va bien.', stWarn:'ça devient serré.', stBad:'attention ce mois-ci.',
- safeTitle:'Reste à dépenser — aujourd’hui', safeSub:'Par jour jusqu’au {date}. Ce montant est déjà <b>net</b> de factures, enveloppes et objectifs.',
+ safeTitle:'Reste à dépenser — aujourd’hui', safeSub:'Par jour jusqu’au {date}. Factures et objectifs sont déjà <b>retirés</b> — tes enveloppes sont comprises dedans.',
  safeNeg:'Il manque de l’argent ce mois-ci. Regarde ce qui peut être décalé dans « À payer ».',
  tillPay:'paie dans {n} jours', tillPay1:'paie demain', tillPay0:'c’est le jour de paie',
  balance:'Solde du compte', openMonth:'Encore dû avant la paie', nextDue:'Prochain paiement', debtFreeBy:'Sans dette en', nMonths:'{n} mois', nextPay:'Prochaine paie',
@@ -688,7 +689,7 @@ en:{
  rep_monthly:'Monthly', rep_quarterly:'Quarterly', rep_yearly:'Yearly',
  hello:'Hi', helloNo:'Welcome back',
  stGood:'you’re in the clear.', stWarn:'it’s getting tight.', stBad:'heads up this month.',
- safeTitle:'Safe to spend — today', safeSub:'Per day until {date}. This is what’s left <b>after</b> bills, envelopes and goals.',
+ safeTitle:'Safe to spend — today', safeSub:'Per day until {date}. Bills and goals are already <b>taken out</b> — your envelopes are included.',
  safeNeg:'You’re short this month. Check Must-Pays for anything you can move.',
  tillPay:'payday in {n} days', tillPay1:'payday is tomorrow', tillPay0:'today is payday',
  balance:'Account balance', openMonth:'Still owed until payday', nextDue:'Next due', debtFreeBy:'Debt-free by', nMonths:'{n} months', nextPay:'Next payday',
@@ -784,7 +785,7 @@ const CURRENCIES = ['EUR','USD','GBP','CHF','CAD','AUD','NZD','SEK','NOK','DKK',
 /* ============================================================
    Core — state, storage, math
    ============================================================ */
-const KEY = (typeof __DEMO__ !== 'undefined' && __DEMO__) ? 'sza.demo.v1' : 'sza.v1';
+const KEY = (typeof __DEMO__ !== 'undefined' && __DEMO__) ? 'sza.demo.v2' : 'sza.v1';
 const $ = (s,r)=> (r||document).querySelector(s);
 const $$ = (s,r)=> Array.from((r||document).querySelectorAll(s));
 const uid = ()=> Math.random().toString(36).slice(2,10);
@@ -995,8 +996,9 @@ function calc(){
   S.envelopes.forEach(e=>{ envRes += Math.max(0, (+e.limit||0) - envSpent(e, mk)); });
 
   const available = (+S.balance||0) + incomeSoon - billsDue - goalsRes;
-  const perDay = available/days;
   const spentToday = S.spends.filter(s=>s.date===now).reduce((a,b)=>a+(+b.amount||0),0);
+  /* per-day amount is based on the start-of-day balance, so today's spends are counted once */
+  const perDay = (available + spentToday)/days;
   const safeToday = perDay - spentToday;
   const free = Math.max(0, available - envRes);
 
@@ -1250,11 +1252,11 @@ function vDash(){
   const maxv = Math.max(...fc.map(f=>Math.abs(f.v)), 1);
   const bars = fc.map(f=>{
     const h = clamp(Math.round(Math.abs(f.v)/maxv*100), 3, 100);
-    const cls = f.pay? 'pay' : f.v<0? 'b' : f.v < c.perDay*0.6 ? 'w' : '';
+    const cls = f.pay? 'pay' : f.v<0? 'b' : '';
     return '<div class="bar '+cls+' '+(f.date===today()?'today':'')+'" title="'+dShort(f.date)+' · '+money(f.v)+'">'
       + '<i style="height:'+h+'%"></i><u>'+dayOf(f.date)+'</u></div>';
   }).join('');
-  const tight = fc.filter(f=>!f.pay && f.v < c.perDay*0.6).map(f=> dayOf(f.date)).slice(0,4);
+  const tight = fc.filter(f=>!f.pay && f.v < 0).map(f=> dayOf(f.date)).slice(0,4);
   const forecastCard = '<div class="card"><div class="ch"><div class="chi" style="background:var(--lilac-s);color:var(--lilac)">'+svg('chart',14,2.2)+'</div>'
    + '<h3>'+t('fcTitle')+'</h3><span class="cnt">'+t('fcDays',{n:c.days})+'</span></div>'
    + '<div class="bars">'+bars+'</div>'
@@ -1290,13 +1292,16 @@ function stat(ic,color,label,val,cls,act,arg){
    + '<div><div class="lbl">'+label+'</div><div class="val '+(cls||'')+'">'+val+'</div></div></button>';
 }
 function forecast(c){
-  const out=[]; let d = today();
+  /* projected account balance at the end of each day until payday:
+     bills on their due day, income on its day, and the daily safe amount spent each day */
+  const out=[]; let run = +S.balance||0;
   for(let i=0;i<=c.days;i++){
     const day = addDays(today(), i);
     const isPay = day===c.pay;
-    let billsToday = 0;
-    c.dueList.forEach(b=>{ if(b.date===day) billsToday += b.amount; });
-    out.push({date:day, v: isPay ? c.perDay*1.35 : c.perDay - billsToday, pay:isPay});
+    c.dueList.forEach(b=>{ if(b.date===day) run -= b.amount; });
+    if(i>0) S.income.forEach(x=>{ if(occurrences(x, day, day).length) run += +x.amount||0; });
+    if(!isPay) run -= (i===0 ? Math.max(0, c.safeToday) : Math.max(0, c.perDay));
+    out.push({date:day, v: Math.round(run*100)/100, pay:isPay});
     if(isPay) break;
   }
   return out;
@@ -2012,7 +2017,9 @@ function demoSeed(){
   const usd = S.lang==='en';
   const k = usd? 1.1 : 1;
   const r = n=> Math.round(n*k*100)/100;
-  S.name = L.name; S.balance = r(2084); S.payDay = 25; S.payCycle='monthly';
+  S.name = L.name; S.balance = r(2084); S.payCycle='monthly';
+  /* demo payday ~2 weeks ahead (day 1-28), salary lands ON payday */
+  { let pn=16; while(+d(pn).slice(8,10)>28) pn--; S.payDay = +d(pn).slice(8,10); }
   S.bills = [
     {id:'b1', name:L.bills[1], amount:r(78.4),  due:d(2),  repeat:'monthly', note:''},
     {id:'b2', name:L.bills[2], amount:r(29.99), due:d(6),  repeat:'monthly', note:''},
@@ -2020,7 +2027,7 @@ function demoSeed(){
     {id:'b4', name:L.bills[4], amount:r(24.9),  due:d(14), repeat:'monthly', note:''},
     {id:'b5', name:L.bills[0], amount:r(720),   due:d(22), repeat:'monthly', note:''}
   ];
-  S.income = [{id:'i1', name:L.inc, amount:r(2450), date:d(16), repeat:'monthly', payday:true, emoji:'💶'}];
+  S.income = [{id:'i1', name:L.inc, amount:r(2450), date:nextPayday(today()), repeat:'monthly', payday:true, emoji:'💶'}];
   S.spends = [
     {id:'s1', amount:r(12.4), cat:'groceries', date:d(-1), note:''},
     {id:'s2', amount:r(3.8),  cat:'coffee',    date:d(0),  note:''},

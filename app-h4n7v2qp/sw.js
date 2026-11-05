@@ -1,5 +1,5 @@
 /* Monatsheft — offline service worker */
-const V = 'heft-v1';
+const V = 'heft-v2';
 const ASSETS = ['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-512-maskable.png'];
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(V).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
