@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lehrerheft – Digitaler Lehrerplaner 2026/27 als App</title>
+<meta name="description" content="Lehrerplaner-App für 2026/27: Stundenplanung, Klassen, Noten mit automatischem Durchschnitt, Sitzplan, Konferenzen, Notizbücher. Ferien aller 16 Bundesländer eingetragen. iPad, Android & PC – ohne Abo.">
+<meta name="theme-color" content="#1F2A44">
+<link rel="icon" href="demo/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1F2A44;--ink2:#4A5168;--mute:#8A8F9C;--paper:#FBF8F2;--desk:#EFE8DC;--line:#E4DED3;--acc:#E07A5F;--card:#fff;
+  --c1:#F2A65A;--c2:#E3B23C;--c3:#E07A5F;--c4:#B5838D;--c5:#5B8DB8;--c6:#5FA8A0;--c7:#A78BC9;--c8:#7DB563}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.55;font-size:16px;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+.serif{font-family:'Fraunces',Georgia,serif}
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:14px;height:64px}
+.logo{font-family:'Fraunces',serif;font-weight:600;font-size:24px;letter-spacing:-.5px}
+.logo em{font-style:italic;font-weight:400;color:var(--acc)}
+.sp{flex:1}
+.lang{display:flex;background:#F1EBE0;border-radius:999px;padding:3px}
+.lang button{border:0;background:none;font:inherit;font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;cursor:pointer;color:var(--ink2)}
+.lang button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font-weight:700;font-size:15px;border:1.5px solid var(--ink);transition:transform .1s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--ink);color:var(--paper)}
+.btn.acc{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.sm{padding:8px 15px;font-size:14px;white-space:nowrap}
+.hero{padding:64px 0 40px;display:grid;grid-template-columns:1fr 1.25fr;gap:44px;align-items:center}
+.kicker{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--acc);margin-bottom:16px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(38px,5vw,60px);line-height:1.04;letter-spacing:-1.5px}
+h1 em{font-style:italic;font-weight:400;color:var(--acc)}
+.lead{font-size:19px;color:var(--ink2);margin:18px 0 26px;max-width:520px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.note{font-size:13.5px;color:var(--mute);margin-top:14px}
+.dots{display:flex;gap:7px;margin-top:22px}.dots i{width:12px;height:12px;border-radius:50%}
+.shot{border-radius:18px;overflow:hidden;box-shadow:0 30px 60px -25px rgba(31,42,68,.45),0 0 0 1px rgba(0,0,0,.05);background:#fff}
+.shot img{display:block;width:100%;height:auto}
+.hero-img{position:relative}
+.hero-img .phone{position:absolute;right:-14px;bottom:-30px;width:26%;border-radius:22px;border:5px solid var(--ink);box-shadow:0 20px 40px -15px rgba(0,0,0,.5)}
+.strip{display:flex;flex-wrap:wrap;gap:10px 28px;justify-content:center;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:40px 0 0;font-weight:600;color:var(--ink2);font-size:15px}
+.strip span:before{content:"✓ ";color:var(--c8);font-weight:700}
+section{padding:72px 0 0}
+h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,3.6vw,42px);letter-spacing:-.8px;line-height:1.1;text-align:center}
+.sub{text-align:center;color:var(--ink2);max-width:640px;margin:12px auto 36px;font-size:17px}
+.feats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.feat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;border-top:5px solid var(--c)}
+.feat b{display:block;font-size:16.5px;margin:10px 0 5px}
+.feat p{font-size:14.5px;color:var(--ink2)}
+.feat .i{font-size:26px}
+.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.gal figure{margin:0}
+.gal figcaption{font-weight:700;margin-top:10px;font-size:15px}
+.gal figcaption span{display:block;font-weight:400;color:var(--ink2);font-size:14px}
+.cmp{max-width:820px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.cmp table{width:100%;border-collapse:collapse;font-size:15px}
+.cmp th,.cmp td{padding:13px 16px;border-bottom:1px solid var(--line);text-align:left}
+.cmp th{background:#F4EFE6;font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2)}
+.cmp td:nth-child(2),.cmp td:nth-child(3),.cmp th:nth-child(2),.cmp th:nth-child(3){text-align:center;width:150px}
+.cmp tr:last-child td{border-bottom:0}
+.y{color:var(--c8);font-weight:700}.n{color:#C9C2B4}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
+.step .no{font-family:'Fraunces',serif;font-size:40px;color:var(--acc);line-height:1}
+.step b{display:block;margin:10px 0 6px;font-size:17px}
+.step p{color:var(--ink2);font-size:15px}
+.faq{max-width:780px;margin:0 auto}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:10px}
+.faq summary{font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.faq summary:after{content:"+";font-size:22px;line-height:1;color:var(--acc)}
+.faq details[open] summary:after{content:"–"}
+.faq p{margin-top:10px;color:var(--ink2)}
+.final{margin:80px 0 0;background:var(--ink);color:var(--paper);border-radius:28px;padding:56px 28px;text-align:center}
+.final h2{color:var(--paper)}
+.final p{opacity:.8;margin:12px auto 26px;max-width:560px}
+.final .btn{border-color:var(--paper)}
+.final .btn.pri{background:var(--paper);color:var(--ink)}
+.final .btn:not(.pri){color:var(--paper)}
+footer{padding:40px 0;text-align:center;color:var(--mute);font-size:13.5px}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding-top:36px}
+  .feats{grid-template-columns:repeat(2,1fr)}
+  .gal,.steps{grid-template-columns:1fr}
+  .hero-img .phone{right:-6px;width:30%}
+}
+@media (max-width:560px){
+  .nav .btn.ghost{display:none}
+  .nav{gap:8px}.logo{font-size:20px}.nav .btn.sm{padding:7px 12px;font-size:13px}
+  .feats{grid-template-columns:1fr}
+  .cmp td:nth-child(2),.cmp td:nth-child(3),.cmp th:nth-child(2),.cmp th:nth-child(3){width:78px;padding:12px 6px}
+  .cmp th,.cmp td{padding:12px 10px;font-size:14px}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="logo" href="#"><span data-i="b1">Lehrer</span><em data-i="b2">heft</em></a>
+  <span class="sp"></span>
+  <div class="lang"><button data-l="de">DE</button><button data-l="en">EN</button><button data-l="fr">FR</button></div>
+  <a class="btn sm ghost demo-link" href="demo/" data-i="demo">Demo</a>
+  <a class="btn sm acc buy" href="#" target="_blank" rel="noopener" data-i="buy">Vollversion</a>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <div class="kicker" data-i="kicker">Schuljahr 2026/27 · App für alle Geräte</div>
+      <h1 data-i="h1">Dein Lehrerplaner. <em>Endlich als App.</em></h1>
+      <p class="lead" data-i="lead">Stundenplanung, Klassen, Noten, Sitzplan, Konferenzen und Notizbücher – alles an einem Ort. Ferien & Feiertage aller 16 Bundesländer sind schon eingetragen.</p>
+      <div class="ctas"><a class="btn pri demo-link" href="demo/" data-i="tryDemo">Kostenlose Demo testen</a><a class="btn buy" href="#" target="_blank" rel="noopener" data-i="buy2">Vollversion holen</a></div>
+      <p class="note" data-i="note">Einmal kaufen · kein Abo · kein Konto · funktioniert offline</p>
+      <div class="dots"><i style="background:var(--c1)"></i><i style="background:var(--c2)"></i><i style="background:var(--c3)"></i><i style="background:var(--c4)"></i><i style="background:var(--c5)"></i><i style="background:var(--c6)"></i><i style="background:var(--c7)"></i><i style="background:var(--c8)"></i></div>
+    </div>
+    <div class="hero-img"><div class="shot"><img src="img/week.jpg" alt="Wochenansicht" width="2388" height="1668"></div><img class="phone" src="img/mobile.jpg" alt="Smartphone"></div>
+  </div>
+  <div class="strip"><span data-i="s1">iPad & Apple Pencil</span><span data-i="s2">Android & Samsung</span><span data-i="s3">PC & Mac</span><span data-i="s4">Deutsch · English · Français</span><span data-i="s5">Hell & Dunkel</span></div>
+
+  <section>
+    <h2 data-i="fH">Alles, was dein Schuljahr braucht</h2>
+    <p class="sub" data-i="fS">Wie ein Papier-Lehrerplaner mit Reitern – nur dass er rechnet, erinnert und mitdenkt.</p>
+    <div class="feats">
+      <div class="feat" style="--c:var(--c3)"><span class="i">📘</span><b data-i="f1">Stundenplanung</b><p data-i="f1p">Jede Stunde der Woche öffnet ihre eigene Planung: Lernziele, Material, Verlaufsplan, Hausaufgaben, Reflexion.</p></div>
+      <div class="feat" style="--c:var(--c1)"><span class="i">🏖️</span><b data-i="f2">Ferien eingetragen</b><p data-i="f2p">Alle 16 Bundesländer 2026/27 nach KMK – plus eigene bewegliche Ferientage.</p></div>
+      <div class="feat" style="--c:var(--c2)"><span class="i">🕘</span><b data-i="f3">Stundenplan automatisch</b><p data-i="f3p">Einmal für beide Halbjahre eintragen – erscheint in jeder Woche von selbst.</p></div>
+      <div class="feat" style="--c:var(--c6)"><span class="i">🧮</span><b data-i="f4">Noten rechnen selbst</b><p data-i="f4p">Gewichtung schriftlich/mündlich, Ø und Zeugnisnote automatisch. 1–6, Punkte, /20 oder %.</p></div>
+      <div class="feat" style="--c:var(--c5)"><span class="i">🪑</span><b data-i="f5">Sitzplan</b><p data-i="f5p">Antippen, platzieren, tauschen – oder zufällig verteilen.</p></div>
+      <div class="feat" style="--c:var(--c4)"><span class="i">📝</span><b data-i="f6">Klassenarbeiten</b><p data-i="f6p">Termine im Kalender, Notenspalte automatisch, Notenspiegel auf einen Blick.</p></div>
+      <div class="feat" style="--c:var(--c7)"><span class="i">💬</span><b data-i="f7">Konferenzen</b><p data-i="f7p">Tagesordnung, Protokoll und Aufgaben – unbegrenzt viele.</p></div>
+      <div class="feat" style="--c:var(--c8)"><span class="i">✏️</span><b data-i="f8">Notizbücher</b><p data-i="f8p">Tippen oder mit Apple Pencil / Stift schreiben – 10 Papiersorten.</p></div>
+      <div class="feat" style="--c:var(--c6)"><span class="i">👥</span><b data-i="f9">Unbegrenzt Klassen</b><p data-i="f9p">Schülerlisten (auch per Copy & Paste), Beobachtungen, Elterngespräche, 4 Checklisten pro Klasse.</p></div>
+      <div class="feat" style="--c:var(--c3)"><span class="i">✨</span><b data-i="f10">KI-Ideen</b><p data-i="f10p">Ein Tipp öffnet ChatGPT mit Klasse, Fach und Thema – für Stundenideen und Arbeitsblätter.</p></div>
+      <div class="feat" style="--c:var(--c2)"><span class="i">🗂️</span><b data-i="f11">13 Orga-Listen</b><p data-i="f11p">To-do, Vertretung, Überstunden, Geburtstage, Pinnwand, Kopierliste, Ausleihe, Logins …</p></div>
+      <div class="feat" style="--c:var(--c5)"><span class="i">🔒</span><b data-i="f12">Privat & offline</b><p data-i="f12p">Alle Daten bleiben auf deinem Gerät. Backup per Klick – auch für den Gerätewechsel.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i="gH">So sieht dein Schuljahr aus</h2>
+    <p class="sub" data-i="gS">Bunte Monatsreiter, klare Wochen, alles mit einem Tipp erreichbar.</p>
+    <div class="gal">
+      <figure><div class="shot"><img src="img/lesson.jpg" alt="" loading="lazy"></div><figcaption data-i="g1">Stundenplanung<span>Verlaufsplan mit Phasen-Vorlage und „Letzte Stunde“-Hinweis</span></figcaption></figure>
+      <figure><div class="shot"><img src="img/grades.jpg" alt="" loading="lazy"></div><figcaption data-i="g2">Notenübersicht<span>Gewichteter Durchschnitt und Zeugnisnote – automatisch</span></figcaption></figure>
+      <figure><div class="shot"><img src="img/year.jpg" alt="" loading="lazy"></div><figcaption data-i="g3">Schuljahr 2026/27<span>Ferien & Feiertage deines Bundeslandes</span></figcaption></figure>
+      <figure><div class="shot"><img src="img/seating.jpg" alt="" loading="lazy"></div><figcaption data-i="g4">Sitzplan<span>Platzieren, tauschen, zufällig verteilen</span></figcaption></figure>
+      <figure><div class="shot"><img src="img/month.jpg" alt="" loading="lazy"></div><figcaption data-i="g5">Monatsübersicht<span>Termine, Arbeiten, Geburtstage, Sticker</span></figcaption></figure>
+      <figure><div class="shot"><img src="img/dark.jpg" alt="" loading="lazy"></div><figcaption data-i="g6">Dunkelmodus<span>Und 6 Farbthemen zur Auswahl</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i="cH">PDF-Planer oder App?</h2>
+    <p class="sub" data-i="cS">Ein PDF ist schön – aber es rechnet nicht mit.</p>
+    <div class="cmp"><table>
+      <tr><th></th><th data-i="cA">PDF-Planer</th><th data-i="cB">Lehrerheft</th></tr>
+      <tr><td data-i="c1">Stundenplanung pro Stunde</td><td class="y">✓</td><td class="y">✓</td></tr>
+      <tr><td data-i="c2">Stundenplan erscheint automatisch jede Woche</td><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><td data-i="c3">Notendurchschnitt & Gewichtung automatisch</td><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><td data-i="c4">Ferien deines Bundeslandes</td><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><td data-i="c5">Suche über alle Notizen & Schüler</td><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><td data-i="c6">iPad, Android-Tablet, Handy & PC</td><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><td data-i="c7">Unbegrenzt Klassen, Konferenzen & Seiten</td><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><td data-i="c8">Mit Stift schreiben</td><td class="y">✓</td><td class="y">✓</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2 data-i="sH">In 3 Schritten startklar</h2>
+    <div class="steps" style="margin-top:32px">
+      <div class="step"><div class="no">1</div><b data-i="st1">Kaufen & Link öffnen</b><p data-i="st1p">Nach dem Kauf erhältst du ein PDF mit deinem persönlichen App-Link.</p></div>
+      <div class="step"><div class="no">2</div><b data-i="st2">Zum Home-Bildschirm</b><p data-i="st2p">Mit einem Tipp installieren – öffnet sich danach wie eine echte App, auch offline.</p></div>
+      <div class="step"><div class="no">3</div><b data-i="st3">Bundesland wählen & los</b><p data-i="st3p">Ferien sind sofort da. Klassen anlegen, Stundenplan eintragen – fertig.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i="qH">Häufige Fragen</h2>
+    <div class="faq" style="margin-top:30px">
+      <details><summary data-i="q1">Ist das ein Abo?</summary><p data-i="a1">Nein. Du zahlst einmal und nutzt das Lehrerheft ohne monatliche Kosten.</p></details>
+      <details><summary data-i="q2">Wo werden meine Daten gespeichert?</summary><p data-i="a2">Nur lokal auf deinem Gerät – es gibt kein Konto und keine Cloud. Mit „Backup herunterladen“ sicherst du alles in einer Datei.</p></details>
+      <details><summary data-i="q3">Kann ich es auf mehreren Geräten nutzen?</summary><p data-i="a3">Ja, die App läuft auf iPad, iPhone, Android, Windows und Mac. Zwischen Geräten ziehst du per Backup-Datei um.</p></details>
+      <details><summary data-i="q4">Brauche ich GoodNotes oder eine andere App?</summary><p data-i="a4">Nein. Das Lehrerheft läuft direkt im Browser und lässt sich wie eine App auf den Home-Bildschirm legen.</p></details>
+      <details><summary data-i="q5">Ich unterrichte nicht in Deutschland.</summary><p data-i="a5">Kein Problem: Wähle „eigene Ferien“, trage deine Ferien ein und stelle Sprache (DE/EN/FR) und Notensystem (1–6, 0–15, /20, %) passend ein.</p></details>
+      <details><summary data-i="q6">Was kann die Demo?</summary><p data-i="a6">Die Demo zeigt alle Funktionen mit Beispielklassen. Eigene Klassen und Backups gibt es in der Vollversion.</p></details>
+    </div>
+  </section>
+
+  <div class="final">
+    <h2 data-i="fH2">Bereit für ein entspanntes Schuljahr?</h2>
+    <p data-i="fP">Teste die Demo in 10 Sekunden – ohne Anmeldung.</p>
+    <div class="ctas" style="justify-content:center"><a class="btn pri demo-link" href="demo/" data-i="tryDemo">Kostenlose Demo testen</a><a class="btn buy" href="#" target="_blank" rel="noopener" data-i="buy2">Vollversion holen</a></div>
+  </div>
+</main>
+<footer>Lehrerheft · ThePetalo · <span data-i="foot">Mit Liebe für Lehrkräfte gemacht</span></footer>
+
+<script>
+const BUY_URL = 'https://thepetalo.etsy.com';
+const T = {
+en: { b1: 'Teacher', b2: 'book', demo: 'Demo', buy: 'Full version', kicker: 'School year 2026/27 · app for every device', h1: 'Your teacher planner. <em>Finally an app.</em>',
+  lead: 'Lesson plans, classes, grades, seating charts, meetings and notebooks – all in one place. Works on iPad, Android and PC.',
+  tryDemo: 'Try the free demo', buy2: 'Get the full version', note: 'One-time purchase · no subscription · no account · works offline',
+  s1: 'iPad & Apple Pencil', s2: 'Android & Samsung', s3: 'PC & Mac', s4: 'English · Deutsch · Français', s5: 'Light & dark',
+  fH: 'Everything your school year needs', fS: 'Like a paper planner with tabs – except it calculates, reminds and thinks along.',
+  f1: 'Lesson planning', f1p: 'Every lesson in your week opens its own plan: objectives, materials, lesson flow, homework, reflection.',
+  f2: 'Holidays built in', f2p: 'All German states pre-filled – or add your own school breaks in seconds.',
+  f3: 'Automatic timetable', f3p: 'Enter it once for both terms – it shows up in every week by itself.',
+  f4: 'Grades calculate themselves', f4p: 'Weighted written/oral averages and final grade automatically. %, /20, 0–15 or 1–6.',
+  f5: 'Seating chart', f5p: 'Tap, place, swap – or shuffle randomly.', f6: 'Tests & exams', f6p: 'Dates in your calendar, grade column created automatically, grade distribution at a glance.',
+  f7: 'Meetings', f7p: 'Agenda, minutes and tasks – unlimited.', f8: 'Notebooks', f8p: 'Type or write with Apple Pencil / stylus – 10 paper types.',
+  f9: 'Unlimited classes', f9p: 'Student lists (copy & paste too), observations, parent contacts, 4 checklists per class.',
+  f10: 'AI ideas', f10p: 'One tap opens ChatGPT with class, subject and topic – for lesson ideas and worksheets.',
+  f11: '13 organizer lists', f11p: 'To-do, cover lessons, extra hours, birthdays, pinboard, copy list, loans, logins …', f12: 'Private & offline', f12p: 'All data stays on your device. One-click backup – also for moving to a new device.',
+  gH: 'This is what your school year looks like', gS: 'Colourful month tabs, clear weeks, everything one tap away.',
+  g1: 'Lesson plan<span>Lesson flow with phase template and “last lesson” reminder</span>', g2: 'Gradebook<span>Weighted average and final grade – automatic</span>', g3: 'School year 2026/27<span>Holidays and days off at a glance</span>',
+  g4: 'Seating chart<span>Place, swap, shuffle</span>', g5: 'Monthly overview<span>Events, tests, birthdays, stickers</span>', g6: 'Dark mode<span>Plus 6 colour themes</span>',
+  cH: 'PDF planner or app?', cS: 'A PDF is pretty – but it doesn’t do the maths.', cA: 'PDF planner', cB: 'Teacherbook',
+  c1: 'Lesson planning per lesson', c2: 'Timetable appears in every week automatically', c3: 'Weighted grade averages automatically', c4: 'Your school holidays', c5: 'Search across all notes & students', c6: 'iPad, Android tablet, phone & PC', c7: 'Unlimited classes, meetings & pages', c8: 'Write with a stylus',
+  sH: 'Ready in 3 steps', st1: 'Buy & open the link', st1p: 'After purchase you receive a PDF with your personal app link.', st2: 'Add to home screen', st2p: 'Install with one tap – then it opens like a real app, even offline.', st3: 'Pick your holidays & go', st3p: 'Add classes, fill in your timetable – done.',
+  qH: 'FAQ', q1: 'Is it a subscription?', a1: 'No. You pay once and use it without monthly fees.', q2: 'Where is my data stored?', a2: 'Only on your device – no account, no cloud. “Download backup” saves everything in one file.',
+  q3: 'Can I use it on several devices?', a3: 'Yes – iPad, iPhone, Android, Windows and Mac. Move between devices with a backup file.', q4: 'Do I need GoodNotes or another app?', a4: 'No. It runs in your browser and installs to your home screen like an app.',
+  q5: 'I don’t teach in Germany.', a5: 'No problem: choose “my own holidays”, add your breaks and set language (EN/DE/FR) and grading (%, /20, 0–15, 1–6).', q6: 'What can the demo do?', a6: 'The demo shows every feature with sample classes. Your own classes and backups come with the full version.',
+  fH2: 'Ready for a calmer school year?', fP: 'Try the demo in 10 seconds – no sign-up.', foot: 'Made with love for teachers' },
+fr: { b1: 'Cahier ', b2: 'du prof', demo: 'Démo', buy: 'Version complète', kicker: 'Année scolaire 2026/27 · app pour tous les appareils', h1: 'Ton agenda d’enseignant. <em>Enfin en app.</em>',
+  lead: 'Fiches de séance, classes, notes, plan de classe, réunions et carnets – tout au même endroit. Sur iPad, Android et PC.',
+  tryDemo: 'Essayer la démo gratuite', buy2: 'Obtenir la version complète', note: 'Achat unique · sans abonnement · sans compte · hors ligne',
+  s1: 'iPad & Apple Pencil', s2: 'Android & Samsung', s3: 'PC & Mac', s4: 'Français · English · Deutsch', s5: 'Clair & sombre',
+  fH: 'Tout ce dont ton année a besoin', fS: 'Comme un agenda papier à onglets – mais qui calcule, rappelle et réfléchit avec toi.',
+  f1: 'Fiches de séance', f1p: 'Chaque cours de la semaine ouvre sa fiche : objectifs, matériel, déroulé, devoirs, bilan.',
+  f2: 'Vacances intégrées', f2p: 'Ajoute tes vacances (zone A/B/C ou autre) en quelques secondes.',
+  f3: 'Emploi du temps automatique', f3p: 'Saisi une fois pour les deux semestres – il apparaît chaque semaine.',
+  f4: 'Les moyennes se calculent seules', f4p: 'Coefficients écrit/oral, moyenne et note finale automatiques. /20, %, 0–15 ou 1–6.',
+  f5: 'Plan de classe', f5p: 'Touche, place, échange – ou répartition aléatoire.', f6: 'Évaluations', f6p: 'Dates dans le calendrier, colonne de notes créée automatiquement, répartition en un coup d’œil.',
+  f7: 'Réunions', f7p: 'Ordre du jour, compte rendu et tâches – illimité.', f8: 'Carnets', f8p: 'Écris au clavier ou à l’Apple Pencil / stylet – 10 types de papier.',
+  f9: 'Classes illimitées', f9p: 'Listes d’élèves (copier-coller), observations, contacts parents, 4 checklists par classe.',
+  f10: 'Idées IA', f10p: 'Un tap ouvre ChatGPT avec classe, matière et thème – pour des idées de séance et des fiches.',
+  f11: '13 listes d’organisation', f11p: 'À faire, remplacements, heures sup., anniversaires, post-it, photocopies, prêts, identifiants …', f12: 'Privé & hors ligne', f12p: 'Tout reste sur ton appareil. Sauvegarde en un clic – aussi pour changer d’appareil.',
+  gH: 'Voilà ton année scolaire', gS: 'Onglets colorés, semaines claires, tout à portée de doigt.',
+  g1: 'Fiche de séance<span>Déroulé avec modèle de phases et rappel de la séance précédente</span>', g2: 'Carnet de notes<span>Moyenne pondérée et note finale – automatiques</span>', g3: 'Année 2026/27<span>Vacances et jours fériés d’un coup d’œil</span>',
+  g4: 'Plan de classe<span>Placer, échanger, mélanger</span>', g5: 'Vue mensuelle<span>Rendez-vous, évaluations, anniversaires, stickers</span>', g6: 'Mode sombre<span>Et 6 thèmes de couleur</span>',
+  cH: 'Agenda PDF ou app ?', cS: 'Un PDF, c’est joli – mais ça ne calcule pas.', cA: 'Agenda PDF', cB: 'Cahier du prof',
+  c1: 'Fiche pour chaque séance', c2: 'Emploi du temps automatique chaque semaine', c3: 'Moyennes pondérées automatiques', c4: 'Tes vacances scolaires', c5: 'Recherche dans toutes les notes & élèves', c6: 'iPad, tablette Android, téléphone & PC', c7: 'Classes, réunions & pages illimitées', c8: 'Écrire au stylet',
+  sH: 'Prêt en 3 étapes', st1: 'Acheter & ouvrir le lien', st1p: 'Après l’achat, tu reçois un PDF avec ton lien personnel.', st2: 'Sur l’écran d’accueil', st2p: 'Installe en un tap – elle s’ouvre ensuite comme une vraie app, même hors ligne.', st3: 'Ajoute tes vacances & c’est parti', st3p: 'Crée tes classes, remplis l’emploi du temps – terminé.',
+  qH: 'Questions fréquentes', q1: 'C’est un abonnement ?', a1: 'Non. Tu paies une fois, sans frais mensuels.', q2: 'Où sont mes données ?', a2: 'Uniquement sur ton appareil – sans compte ni cloud. « Télécharger une sauvegarde » enregistre tout dans un fichier.',
+  q3: 'Plusieurs appareils ?', a3: 'Oui – iPad, iPhone, Android, Windows et Mac. Change d’appareil grâce au fichier de sauvegarde.', q4: 'Faut-il GoodNotes ou une autre app ?', a4: 'Non. Elle fonctionne dans le navigateur et s’installe sur l’écran d’accueil comme une app.',
+  q5: 'Je n’enseigne pas en Allemagne.', a5: 'Aucun problème : choisis « mes propres vacances », ajoute-les et règle la langue (FR/EN/DE) et le système de notes (/20, %, 0–15, 1–6).', q6: 'Que permet la démo ?', a6: 'La démo montre toutes les fonctions avec des classes d’exemple. Tes propres classes et sauvegardes sont dans la version complète.',
+  fH2: 'Prêt pour une année plus sereine ?', fP: 'Teste la démo en 10 secondes – sans inscription.', foot: 'Fait avec amour pour les enseignants' }
+};
+const DE = {}; document.querySelectorAll('[data-i]').forEach(el => DE[el.dataset.i] = el.innerHTML); T.de = DE;
+function setLang(l) {
+  if (!T[l]) l = 'de';
+  document.querySelectorAll('[data-i]').forEach(el => { const v = T[l][el.dataset.i]; if (v != null) el.innerHTML = v; });
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === l));
+  document.querySelectorAll('a.demo-link').forEach(a => a.setAttribute('href', 'demo/?lang=' + l));
+  document.documentElement.lang = l; try { localStorage.setItem('lh-sales-lang', l); } catch (e) {}
+}
+document.querySelectorAll('.buy').forEach(a => a.href = BUY_URL);
+document.querySelectorAll('.lang button').forEach(b => b.onclick = () => setLang(b.dataset.l));
+let start = new URLSearchParams(location.search).get('lang');
+try { start = start || localStorage.getItem('lh-sales-lang'); } catch (e) {}
+setLang(start || ((navigator.language || 'de').slice(0, 2) === 'fr' ? 'fr' : (navigator.language || 'de').startsWith('en') ? 'en' : 'de'));
+</script>
+</body>
+</html>
