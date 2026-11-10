@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fresh Start Planner Builder</title>
+<meta name="robots" content="noindex">
+<style>
+@font-face{font-family:PFSerif;src:url(fonts/InstrumentSerif-Regular.sub.ttf)}
+@font-face{font-family:PFSerifI;src:url(fonts/InstrumentSerif-Italic.sub.ttf)}
+@font-face{font-family:PFSans;src:url(fonts/DMSans-Regular.sub.ttf)}
+@font-face{font-family:PFSansM;src:url(fonts/DMSans-Medium.sub.ttf)}
+@font-face{font-family:PFSansL;src:url(fonts/DMSans-Light.sub.ttf)}
+:root{--bg:#F6F1EA;--card:#FFFFFF;--ink:#2F2B27;--soft:#857D74;--line:#E5DDD2;--fill:#F1EBE2;--accent:#A08066;--accent-ink:#FFFFFF;--shadow:0 1px 2px rgba(47,43,39,.06),0 8px 28px rgba(47,43,39,.07)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:PFSans,system-ui,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 28px;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:baseline;gap:12px;min-width:0}
+.brand b{font-family:PFSerif;font-weight:400;font-size:26px;letter-spacing:-.01em;white-space:nowrap}
+.brand span{font-family:PFSansM;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);white-space:nowrap}
+.status{font-size:13px;color:var(--soft);white-space:nowrap}
+.status.ok{color:#5D7A55}
+main{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:28px;max-width:1360px;margin:0 auto;padding:28px}
+.panel{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:20px 20px 22px}
+.card h2{font-family:PFSerif;font-weight:400;font-size:24px;margin:0 0 2px;display:flex;align-items:baseline;gap:10px}
+.card h2 i{font-family:PFSansM;font-style:normal;font-size:11px;color:var(--accent);letter-spacing:.12em}
+.card p.hint{margin:0 0 14px;color:var(--soft);font-size:13px}
+.lbl{font-family:PFSansM;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin:16px 0 8px}
+.lbl:first-of-type{margin-top:4px}
+.seg{display:flex;background:var(--fill);border-radius:12px;padding:4px;gap:4px;flex-wrap:wrap}
+.seg button{flex:1 1 0;min-width:0;border:0;background:transparent;border-radius:9px;padding:9px 8px;cursor:pointer;font-size:14px;white-space:nowrap}
+.seg button[aria-pressed=true]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.08);font-family:PFSansM}
+.months{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.months button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 0;cursor:pointer;font-size:14px}
+.months button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opts.two{grid-template-columns:repeat(2,1fr)}
+.opt{border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:10px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:6px;min-width:0}
+.opt svg{width:100%;height:auto;display:block}
+.opt b{font-family:PFSansM;font-weight:400;font-size:13px}
+.opt small{color:var(--soft);font-size:12px;line-height:1.3}
+.opt[aria-pressed=true]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+select,input[type=text]{width:100%;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px;font-size:14px}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{border:2px solid transparent;border-radius:12px;padding:3px;background:none;cursor:pointer;display:flex;gap:0}
+.sw span{display:block;width:12px;height:26px}
+.sw span:first-child{border-radius:7px 0 0 7px}.sw span:last-child{border-radius:0 7px 7px 0}
+.sw.single span{width:26px;border-radius:7px!important}
+.sw[aria-pressed=true]{border-color:var(--ink)}
+.covers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:320px;overflow:auto;padding:2px}
+.covers button{border:2px solid transparent;border-radius:10px;padding:2px;background:none;cursor:pointer;line-height:0}
+.covers canvas{width:100%;height:auto;border-radius:7px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.covers button[aria-pressed=true]{border-color:var(--ink)}
+.go{position:sticky;bottom:16px;background:var(--ink);color:#fff;border-radius:18px;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 12px 30px rgba(47,43,39,.25)}
+.go .sum{flex:1;min-width:0;font-size:13px;color:#D9D1C7}
+.go .sum b{display:block;color:#fff;font-family:PFSansM;font-weight:400;font-size:15px}
+.btn{border:0;border-radius:12px;padding:12px 18px;background:#fff;color:var(--ink);font-family:PFSansM;cursor:pointer;white-space:nowrap}
+.btn:disabled{opacity:.6;cursor:wait}
+.bar{height:4px;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:8px;display:none}
+.bar i{display:block;height:100%;width:0;background:#fff;transition:width .2s}
+.preview{position:sticky;top:96px;align-self:start}
+.ptabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.ptabs button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-size:13px;cursor:pointer}
+.ptabs button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.device{background:#1D1B19;border-radius:34px;padding:18px;box-shadow:0 30px 60px rgba(47,43,39,.22);margin:0 auto;max-width:100%}
+.device canvas{display:block;width:100%;height:auto;border-radius:16px;background:#fff}
+.pnote{text-align:center;color:var(--soft);font-size:13px;margin:14px 0 0}
+.modal{position:fixed;inset:0;background:rgba(30,27,24,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.on{display:flex}
+.modal .card{max-width:420px;width:100%}
+.modal .err{color:#B0574A;font-size:13px;min-height:18px;margin:6px 0 0}
+.modal .acts{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.ghost{background:var(--fill)}
+.done{display:none;margin-top:10px;font-size:13px;color:#D9D1C7}
+.done a{color:#fff}
+@media (max-width:960px){main{grid-template-columns:1fr;padding:16px;gap:18px}.preview{position:static;order:-1}header{padding:14px 16px}.brand span{display:none}.device{padding:10px;border-radius:22px}.device canvas{border-radius:12px}}
+@media (max-width:420px){.opts{grid-template-columns:repeat(3,1fr);gap:6px}.opt{padding:7px}.opt small{display:none}.covers{grid-template-columns:repeat(3,1fr)}.go{flex-wrap:wrap}.go .btn{width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><b>The Fresh Start Planner</b><span>Planner builder</span></div>
+  <div class="status" id="status">Preview mode</div>
+</header>
+<main>
+  <section class="panel">
+    <div class="card">
+      <h2><i>01</i>When do you start?</h2>
+      <p class="hint">Pick any month. You get 12 dated months from there.</p>
+      <div class="lbl">Start month</div>
+      <div class="months" id="months"></div>
+      <div class="lbl">Year</div>
+      <div class="seg" id="years"></div>
+    </div>
+
+    <div class="card">
+      <h2><i>02</i>Layout</h2>
+      <p class="hint">Choose how your pages are set up.</p>
+      <div class="lbl">Orientation</div>
+      <div class="seg" data-k="orientation"><button data-v="portrait">Portrait</button><button data-v="landscape">Landscape</button></div>
+      <div class="lbl">Week starts on</div>
+      <div class="seg" data-k="weekStart"><button data-v="1">Monday</button><button data-v="0">Sunday</button></div>
+      <div class="lbl">Weekly pages</div>
+      <div class="opts" data-k="weekly">
+        <button class="opt" data-v="boxes"><svg viewBox="0 0 60 40"><rect x="1" y="1" width="58" height="38" rx="4" fill="#F6F1EA"/><g fill="#fff" stroke="#D6CCBF"><rect x="5" y="6" width="11" height="13" rx="2"/><rect x="19" y="6" width="11" height="13" rx="2"/><rect x="33" y="6" width="11" height="13" rx="2"/><rect x="47" y="6" width="9" height="13" rx="2"/><rect x="5" y="22" width="11" height="13" rx="2"/><rect x="19" y="22" width="11" height="13" rx="2"/><rect x="33" y="22" width="11" height="13" rx="2"/><rect x="47" y="22" width="9" height="13" rx="2"/></g></svg><b>Boxes</b><small>7 days + to-do</small></button>
+        <button class="opt" data-v="vertical"><svg viewBox="0 0 60 40"><rect x="1" y="1" width="58" height="38" rx="4" fill="#F6F1EA"/><g stroke="#D6CCBF"><line x1="5" y1="9" x2="36" y2="9"/><line x1="5" y1="14" x2="36" y2="14"/><line x1="5" y1="19" x2="36" y2="19"/><line x1="5" y1="24" x2="36" y2="24"/><line x1="5" y1="29" x2="36" y2="29"/><line x1="5" y1="34" x2="36" y2="34"/></g><rect x="40" y="6" width="16" height="29" rx="2" fill="#fff" stroke="#D6CCBF"/></svg><b>List</b><small>days down + side panel</small></button>
+        <button class="opt" data-v="columns"><svg viewBox="0 0 60 40"><rect x="1" y="1" width="58" height="38" rx="4" fill="#F6F1EA"/><g fill="#fff" stroke="#D6CCBF"><rect x="4" y="5" width="6" height="22" rx="1.5"/><rect x="11.5" y="5" width="6" height="22" rx="1.5"/><rect x="19" y="5" width="6" height="22" rx="1.5"/><rect x="26.5" y="5" width="6" height="22" rx="1.5"/><rect x="34" y="5" width="6" height="22" rx="1.5"/><rect x="41.5" y="5" width="6" height="22" rx="1.5"/><rect x="49" y="5" width="7" height="22" rx="1.5"/><rect x="4" y="29" width="52" height="7" rx="1.5"/></g></svg><b>Columns</b><small>7 columns + notes</small></button>
+      </div>
+      <div class="lbl">Daily pages</div>
+      <div class="opts two" data-k="daily">
+        <button class="opt" data-v="classic"><svg viewBox="0 0 60 40"><rect x="1" y="1" width="58" height="38" rx="4" fill="#F6F1EA"/><g stroke="#D6CCBF"><line x1="5" y1="8" x2="29" y2="8"/><line x1="5" y1="13" x2="29" y2="13"/><line x1="5" y1="18" x2="29" y2="18"/><line x1="5" y1="23" x2="29" y2="23"/><line x1="5" y1="28" x2="29" y2="28"/><line x1="5" y1="33" x2="29" y2="33"/></g><rect x="33" y="6" width="23" height="12" rx="2" fill="#fff" stroke="#D6CCBF"/><rect x="33" y="21" width="23" height="14" rx="2" fill="#fff" stroke="#D6CCBF"/></svg><b>Classic schedule</b><small>hourly plan, top 3, to-do</small></button>
+        <button class="opt" data-v="focus"><svg viewBox="0 0 60 40"><rect x="1" y="1" width="58" height="38" rx="4" fill="#F6F1EA"/><rect x="5" y="5" width="24" height="6" rx="2" fill="#E8DCCB"/><g fill="#fff" stroke="#D6CCBF"><rect x="5" y="14" width="24" height="6" rx="2"/><rect x="5" y="23" width="24" height="5" rx="2"/><rect x="5" y="30" width="24" height="5" rx="2"/><rect x="33" y="5" width="23" height="14" rx="2"/><rect x="33" y="22" width="23" height="13" rx="2"/></g></svg><b>Focus (ADHD-friendly)</b><small>one thing, energy, brain dump, done list</small></button>
+      </div>
+      <div class="row2" style="margin-top:6px">
+        <div><div class="lbl">Day starts at</div><select id="dayStart"></select></div>
+        <div><div class="lbl">Clock</div><div class="seg" data-k="clock"><button data-v="12h">12h</button><button data-v="24h">24h</button></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><i>03</i>Look &amp; feel</h2>
+      <p class="hint">Paper, tab colors and your cover.</p>
+      <div class="lbl">Paper</div>
+      <div class="seg" data-k="paper"><button data-v="white">White</button><button data-v="cream">Cream</button><button data-v="dark">Dark mode</button></div>
+      <div class="lbl">Tab colors</div>
+      <div class="swatches" id="pals"></div>
+      <div class="swatches" id="singles" style="margin-top:8px"></div>
+      <div class="lbl">Cover <span id="coverName" style="text-transform:none;letter-spacing:0;font-family:PFSans;color:var(--ink)"></span></div>
+      <div class="covers" id="covers"></div>
+      <div class="lbl">Your name on the cover (optional)</div>
+      <input type="text" id="name" maxlength="40" placeholder="e.g. Sarah's planner" autocomplete="off">
+    </div>
+
+    <div class="card">
+      <h2><i>04</i>Holidays</h2>
+      <p class="hint">Printed on your monthly, weekly and daily pages.</p>
+      <div class="seg" data-k="holidays"><button data-v="none">None</button><button data-v="US">US</button><button data-v="UK">UK</button><button data-v="CA">Canada</button><button data-v="AU">Australia</button></div>
+    </div>
+
+    <div class="go">
+      <div class="sum"><b id="sumTitle">January 2027 – December 2027</b><span id="sumSub">Portrait · Monday start</span>
+        <div class="bar" id="bar"><i></i></div>
+        <div class="done" id="done"></div>
+      </div>
+      <button class="btn" id="gen">Create my planner</button>
+    </div>
+  </section>
+
+  <section class="preview">
+    <div class="ptabs" id="ptabs"></div>
+    <div class="device" id="device"><canvas id="cv" width="834" height="1194"></canvas></div>
+    <p class="pnote">Live preview. Every change you make shows here instantly.</p>
+  </section>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+  <div class="card">
+    <h2 id="mt">Unlock your download</h2>
+    <p class="hint">Enter the access code from your Etsy download (the START HERE file). You only need to do this once on this device.</p>
+    <input type="text" id="code" placeholder="Access code" autocomplete="off" autocapitalize="characters">
+    <div class="err" id="err"></div>
+    <div class="acts"><button class="btn ghost" id="cancel">Cancel</button><button class="btn dark" id="unlock">Unlock</button></div>
+  </div>
+</div>
+
+<script src="lib/pdf-lib.min.js"></script>
+<script src="lib/fontkit.umd.min.js"></script>
+<script src="engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  const E = window.PlannerEngine;
+  const HASHES = ['97861faaee25283ef77bee37c1112c304c201e2eb55f021bc6aaa560bbd7d449'];
+  const $ = id => document.getElementById(id);
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
+
+  const thisYear = new Date().getFullYear();
+  const o = { startYear: 2027, startMonth: 0, weekStart: 1, orientation: 'portrait', weekly: 'boxes', daily: 'classic', dayStart: 7, clock: '12h', paper: 'white', holidays: 'US', cover: 0, name: '', tabs: { mode: 'palette', palette: 'Neutral' } };
+  try { const saved = JSON.parse(store.get('fsp_opts') || 'null'); if (saved) Object.assign(o, E.normalize(saved)); } catch (e) { }
+  let view = 'cover', unlocked = store.get('fsp_ok') === '1';
+
+  // ---------- controls ----------
+  const MONTHS = E.MONTHS;
+  MONTHS.forEach((m, i) => { const b = document.createElement('button'); b.textContent = m.slice(0, 3); b.dataset.v = i; b.onclick = () => set({ startMonth: i }); $('months').appendChild(b); });
+  [thisYear, thisYear + 1, thisYear + 2].forEach(y => { const b = document.createElement('button'); b.textContent = y; b.dataset.v = y; b.onclick = () => set({ startYear: y }); $('years').appendChild(b); });
+  if (o.startYear < thisYear || o.startYear > thisYear + 2) o.startYear = Math.max(thisYear, Math.min(thisYear + 2, o.startYear));
+  for (let h = 5; h <= 10; h++) { const op = document.createElement('option'); op.value = h; op.textContent = h + ':00 AM'; $('dayStart').appendChild(op); }
+  $('dayStart').onchange = e => set({ dayStart: +e.target.value });
+  document.querySelectorAll('[data-k]').forEach(g => g.querySelectorAll('button').forEach(b => b.onclick = () => { const k = g.dataset.k; let v = b.dataset.v; if (k === 'weekStart') v = +v; set({ [k]: v }); }));
+  Object.entries(E.TAB_PALETTES).forEach(([name, cols]) => { const b = document.createElement('button'); b.className = 'sw'; b.title = name; b.setAttribute('aria-label', name + ' tabs'); b.dataset.p = name; cols.forEach(c => { const s = document.createElement('span'); s.style.background = c; b.appendChild(s); }); b.onclick = () => set({ tabs: { mode: 'palette', palette: name } }); $('pals').appendChild(b); });
+  E.TAB_SINGLES.forEach(c => { const b = document.createElement('button'); b.className = 'sw single'; b.title = c; b.setAttribute('aria-label', 'Single color ' + c); b.dataset.c = c; const s = document.createElement('span'); s.style.background = c; b.appendChild(s); b.onclick = () => set({ tabs: { mode: 'single', color: c } }); $('singles').appendChild(b); });
+  $('name').value = o.name;
+  let nameT; $('name').oninput = e => { clearTimeout(nameT); nameT = setTimeout(() => { set({ name: E.cleanName(e.target.value) }); }, 250); };
+
+  const VIEWS = [['cover', 'Cover'], ['home', 'Home'], ['year', 'Year'], ['month', 'Month'], ['week', 'Week'], ['day', 'Day'], ['tplIndex', 'Templates'], ['stickers', 'Stickers']];
+  VIEWS.forEach(([k, l]) => { const b = document.createElement('button'); b.textContent = l; b.dataset.v = k; b.onclick = () => { view = k; render(); }; $('ptabs').appendChild(b); });
+
+  // covers grid
+  const coverBtns = E.COVERS.map((c, i) => { const b = document.createElement('button'); b.setAttribute('aria-label', 'Cover ' + (i + 1)); const cv = document.createElement('canvas'); b.appendChild(cv); b.onclick = () => { set({ cover: i }); view = 'cover'; render(); }; $('covers').appendChild(b); return cv; });
+  let coverKey = '';
+  function drawCovers() {
+    const key = [o.orientation, o.startYear, o.startMonth, o.name].join('|'); if (key === coverKey) return; coverKey = key;
+    coverBtns.forEach((cv, i) => E.renderPreview(cv, Object.assign({}, o, { cover: i }), 'cover', 0.16));
+  }
+
+  function press(sel, fn) { document.querySelectorAll(sel).forEach(b => b.setAttribute('aria-pressed', fn(b) ? 'true' : 'false')); }
+  function sync() {
+    press('#months button', b => +b.dataset.v === o.startMonth);
+    press('#years button', b => +b.dataset.v === o.startYear);
+    document.querySelectorAll('[data-k]').forEach(g => { const k = g.dataset.k; g.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v) === String(o[k]) ? 'true' : 'false')); });
+    press('#pals .sw', b => o.tabs.mode === 'palette' && o.tabs.palette === b.dataset.p);
+    press('#singles .sw', b => o.tabs.mode === 'single' && o.tabs.color === b.dataset.c);
+    press('#covers button', (b) => [...$('covers').children].indexOf(b) === o.cover);
+    press('#ptabs button', b => b.dataset.v === view);
+    $('dayStart').value = o.dayStart;
+    $('coverName').textContent = '· ' + (o.cover + 1) + ' of ' + E.COVERS.length;
+    const S = E.buildPlan(o), last = S.months[11];
+    $('sumTitle').textContent = MONTHS[o.startMonth] + ' ' + o.startYear + ' – ' + MONTHS[last.m] + ' ' + last.y;
+    $('sumSub').textContent = [o.orientation === 'portrait' ? 'Portrait' : 'Landscape', (o.weekStart ? 'Monday' : 'Sunday') + ' start', S.pages.length + ' linked pages'].join(' · ');
+    $('gen').textContent = unlocked ? 'Create my planner' : 'Unlock & create';
+    $('status').textContent = unlocked ? 'Unlocked · unlimited downloads' : 'Preview mode';
+    $('status').className = 'status' + (unlocked ? ' ok' : '');
+  }
+  function set(p) { Object.assign(o, p); Object.assign(o, E.normalize(o)); store.set('fsp_opts', JSON.stringify(o)); $('done').style.display = 'none'; render(); }
+
+  let raf = 0;
+  function render() { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => {
+    sync();
+    const cv = $('cv'), dev = $('device');
+    const land = o.orientation === 'landscape';
+    const maxH = window.innerWidth > 960 ? window.innerHeight - 200 : Math.max(360, window.innerHeight * 0.58);
+    const ratio = land ? 834 / 1194 : 1194 / 834;
+    let w = dev.parentElement.clientWidth; if (w * ratio + 36 > maxH) w = Math.max(280, (maxH - 36) / ratio);
+    dev.style.width = Math.round(w) + 'px';
+    const cssW = w - (window.innerWidth > 960 ? 36 : 20);
+    const s = cssW * (window.devicePixelRatio || 1) / (land ? 1194 : 834);
+    E.renderPreview(cv, o, view, s);
+    drawCovers();
+  }); }
+  window.addEventListener('resize', render);
+
+  // ---------- unlock ----------
+  async function sha(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+  async function tryCode(c) { c = String(c || '').trim().toUpperCase().replace(/\s+/g, ''); if (!c) return false; const h = await sha(c); if (HASHES.includes(h)) { unlocked = true; store.set('fsp_ok', '1'); sync(); return true; } return false; }
+  const qp = new URLSearchParams(location.search).get('code');
+  if (qp) tryCode(qp).then(ok => { if (ok) history.replaceState(null, '', location.pathname); });
+  function openModal() { $('modal').classList.add('on'); $('err').textContent = ''; $('code').value = ''; setTimeout(() => $('code').focus(), 30); }
+  $('cancel').onclick = () => $('modal').classList.remove('on');
+  $('unlock').onclick = async () => { if (await tryCode($('code').value)) { $('modal').classList.remove('on'); build(); } else $('err').textContent = 'That code does not match. Check the START HERE file from your order.'; };
+  $('code').onkeydown = e => { if (e.key === 'Enter') $('unlock').click(); };
+
+  // ---------- build ----------
+  let fontBytes = null;
+  async function loadFonts() {
+    if (fontBytes) return fontBytes;
+    const files = { serif: 'InstrumentSerif-Regular.sub.ttf', serifI: 'InstrumentSerif-Italic.sub.ttf', sans: 'DMSans-Regular.sub.ttf', sansM: 'DMSans-Medium.sub.ttf', sansL: 'DMSans-Light.sub.ttf' };
+    const out = {}; await Promise.all(Object.entries(files).map(async ([k, f]) => { const r = await fetch('fonts/' + f); if (!r.ok) throw new Error('font ' + f); out[k] = new Uint8Array(await r.arrayBuffer()); }));
+    return (fontBytes = out);
+  }
+  let lastUrl = null;
+  async function build() {
+    if (!unlocked) return openModal();
+    const btn = $('gen'), bar = $('bar'), fill = bar.firstElementChild;
+    btn.disabled = true; btn.textContent = 'Creating…'; bar.style.display = 'block'; fill.style.width = '2%'; $('done').style.display = 'none';
+    try {
+      const fb = await loadFonts();
+      const res = await E.generatePdf(o, fb, window.PDFLib, window.fontkit, p => { fill.style.width = Math.max(2, Math.round(p * 100)) + '%'; });
+      const blob = new Blob([res.bytes], { type: 'application/pdf' });
+      if (lastUrl) URL.revokeObjectURL(lastUrl);
+      lastUrl = URL.createObjectURL(blob);
+      const fname = 'Fresh-Start-Planner_' + MONTHS[o.startMonth].slice(0, 3) + o.startYear + '_' + o.orientation + '_' + (o.paper === 'dark' ? 'dark' : 'light') + '.pdf';
+      const a = document.createElement('a'); a.href = lastUrl; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+      $('done').innerHTML = 'Done! ' + res.pages + ' pages, ' + (res.bytes.length / 1048576).toFixed(1) + ' MB. Download did not start? <a href="' + lastUrl + '" download="' + fname + '">Tap here</a>.';
+      $('done').style.display = 'block';
+    } catch (e) {
+      $('done').textContent = 'Something went wrong. Please refresh the page and try again. (' + (e && e.message || e) + ')'; $('done').style.display = 'block';
+    }
+    btn.disabled = false; bar.style.display = 'none'; sync();
+  }
+  $('gen').onclick = build;
+
+  document.fonts.ready.then(() => Promise.all(['PFSerif', 'PFSerifI', 'PFSans', 'PFSansM', 'PFSansL'].map(f => document.fonts.load('20px ' + f)))).then(render, render);
+  render();
+})();
+</script>
+</body>
+</html>
