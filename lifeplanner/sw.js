@@ -1,4 +1,4 @@
-const CACHE_NAME = 'all-in-one-planner-demo-v6';
+const CACHE_NAME = 'all-in-one-planner-demo-v7';
 const ASSETS = [
   './',
   './index.html',
