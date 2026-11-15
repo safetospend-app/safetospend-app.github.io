@@ -818,7 +818,7 @@ const fmtLong = s => cap(new Intl.DateTimeFormat(loc(), { weekday: 'long', day: 
 const fmtNum = (n, d = 2) => new Intl.NumberFormat(loc(), { minimumFractionDigits: d, maximumFractionDigits: d }).format(n);
 
 /* ================= state ================= */
-const MODE = 'full', BUY_URL = 'https://thepetalo.etsy.com', DEMO = MODE === 'demo', PRODUCT = 'lessonbook';
+const MODE = 'full', BUY_URL = 'https://thepetalo.etsy.com/listing/4617799946', DEMO = MODE === 'demo', PRODUCT = 'lessonbook';
 const PROD = PRODUCT === 'lessonbook' ? { key: 'lessonbook', name: 'The Lesson Book', b1: 'The Lesson ', b2: 'Book', def: 'en' } : { key: 'lehrerheft', name: 'Lehrerheft', b1: null, b2: null, def: null };
 const KEY = PROD.key + (DEMO ? '.demo' : '') + '.v1';
 let S;

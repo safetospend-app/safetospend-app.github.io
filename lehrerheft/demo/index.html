@@ -578,7 +578,7 @@ de: {
   backup: 'Backup herunterladen', restore: 'Backup laden', loadDemo: 'Beispieldaten laden', wipe: 'Alles löschen', lastBackup: 'Letztes Backup',
   demoConfirm: 'Beispieldaten laden? Deine aktuellen Klassen und Termine werden ersetzt.', wipeConfirm: 'Wirklich ALLE Daten löschen? Das kann nicht rückgängig gemacht werden.',
   restoreConfirm: 'Backup laden? Alle aktuellen Daten werden ersetzt.', restored: 'Backup geladen ✓', restoreErr: 'Diese Datei ist kein gültiges Backup.', saveErr: 'Speicher voll – bitte Backup erstellen und alte Notizbuchseiten löschen.',
-  install: 'Als App installieren', installHint: '<b>iPad/iPhone:</b> In Safari auf „Teilen“ → „Zum Home-Bildschirm“. <b>Android:</b> Chrome-Menü ⋮ → „App installieren“. <b>PC/Mac:</b> Installieren-Symbol in der Adressleiste. Danach funktioniert das Lehrerheft auch offline.',
+  install: 'Als App installieren', installHint: '<b>iPad/iPhone:</b> In Safari auf „Teilen“ → „Zum Home-Bildschirm“. <b>Android:</b> Chrome-Menü ⋮ → „App installieren“. <b>PC/Mac:</b> Installieren-Symbol in der Adressleiste. Danach funktioniert die App auch offline.',
   fer_summer: 'Sommerferien', fer_autumn: 'Herbstferien', fer_xmas: 'Weihnachtsferien', fer_winter: 'Winterferien', fer_spring: 'Frühjahrsferien', fer_easter: 'Osterferien', fer_whit: 'Pfingstferien', fer_single: 'Ferientag',
   h_newyear: 'Neujahr', h_epiphany: 'Heilige Drei Könige', h_womensday: 'Frauentag', h_goodfriday: 'Karfreitag', h_eastermonday: 'Ostermontag', h_labour: 'Tag der Arbeit', h_ascension: 'Christi Himmelfahrt', h_whitmonday: 'Pfingstmontag', h_corpus: 'Fronleichnam', h_assumption: 'Mariä Himmelfahrt', h_childrensday: 'Weltkindertag', h_unity: 'Tag der Dt. Einheit', h_reformation: 'Reformationstag', h_allsaints: 'Allerheiligen', h_penance: 'Buß- und Bettag', h_xmas1: '1. Weihnachtstag', h_xmas2: '2. Weihnachtstag',
   ai_lesson: 'Du bist eine erfahrene Lehrkraft. Plane eine {min}-minütige Unterrichtsstunde für die Klasse {cls} im Fach {subj} zum Thema „{topic}“. Gib mir: 1) Lernziele, 2) benötigtes Material, 3) einen Verlaufsplan als Tabelle (Zeit, Phase, Inhalt, Sozialform, Medien) mit Einstieg, Erarbeitung, Sicherung, 4) eine passende Hausaufgabe und 5) eine Differenzierungsidee.',
@@ -818,11 +818,12 @@ const fmtLong = s => cap(new Intl.DateTimeFormat(loc(), { weekday: 'long', day: 
 const fmtNum = (n, d = 2) => new Intl.NumberFormat(loc(), { minimumFractionDigits: d, maximumFractionDigits: d }).format(n);
 
 /* ================= state ================= */
-const MODE = 'demo', BUY_URL = 'https://thepetalo.etsy.com', DEMO = MODE === 'demo';
-const KEY = DEMO ? 'lehrerheft.demo.v1' : 'lehrerheft.v1';
+const MODE = 'demo', BUY_URL = 'https://thepetalo.etsy.com/listing/4617799946', DEMO = MODE === 'demo', PRODUCT = 'lehrerheft';
+const PROD = PRODUCT === 'lessonbook' ? { key: 'lessonbook', name: 'The Lesson Book', b1: 'The Lesson ', b2: 'Book', def: 'en' } : { key: 'lehrerheft', name: 'Lehrerheft', b1: null, b2: null, def: null };
+const KEY = PROD.key + (DEMO ? '.demo' : '') + '.v1';
 let S;
 function defPeriods() { return [['08:00', '08:45'], ['08:50', '09:35'], ['09:55', '10:40'], ['10:45', '11:30'], ['11:50', '12:35'], ['12:40', '13:25'], ['13:45', '14:30'], ['14:35', '15:20']].map(([s, e]) => ({ s, e })); }
-function detectLang() { const n = (navigator.language || 'de').slice(0, 2); return ['de', 'en', 'fr'].includes(n) ? n : 'de'; }
+function detectLang() { const n = (navigator.language || 'de').slice(0, 2); if (PROD.def) return ['de', 'fr'].includes(n) ? n : PROD.def; return ['de', 'en', 'fr'].includes(n) ? n : 'de'; }
 function defNotebooks() { return Array.from({ length: 12 }, (_, i) => ({ id: uid(), name: '', color: CCOL[i % CCOL.length], pages: [] })); }
 function defaults() {
   const lg = detectLang();
@@ -849,7 +850,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) saveN
 /* ink storage (IndexedDB) */
 const IDB = {
   p: null,
-  open() { return this.p || (this.p = new Promise((res, rej) => { const r = indexedDB.open(DEMO ? 'lehrerheft-demo' : 'lehrerheft', 1); r.onupgradeneeded = () => r.result.createObjectStore('ink'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })); },
+  open() { return this.p || (this.p = new Promise((res, rej) => { const r = indexedDB.open(PROD.key + (DEMO ? '-demo' : ''), 1); r.onupgradeneeded = () => r.result.createObjectStore('ink'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); })); },
   async tx(mode, fn) { const db = await this.open(); return new Promise((res) => { const tr = db.transaction('ink', mode); const st = tr.objectStore('ink'); const q = fn(st); tr.oncomplete = () => res(q && q.result); tr.onerror = () => res(null); }); },
   get(k) { return this.tx('readonly', s => s.get(k)); },
   set(k, v) { return this.tx('readwrite', s => s.put(v, k)); },
@@ -990,7 +991,7 @@ function ics(ev) {
   const start = tm ? `DTSTART:${dt}T${tm}` : `DTSTART;VALUE=DATE:${dt}`;
   const endD = tm ? `DTEND:${dt}T${pad(Math.min(23, +ev.time.slice(0, 2) + 1))}${ev.time.slice(3, 5)}00` : `DTEND;VALUE=DATE:${iso(addD(P(ev.date || todayISO()), 1)).replace(/-/g, '')}`;
   const alarm = `BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${(ev.title || '').replace(/[,;\n]/g, ' ')}\r\nTRIGGER:${tm ? '-PT15M' : 'PT8H'}\r\nEND:VALARM`;
-  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Lehrerheft//DE\r\nBEGIN:VEVENT\r\nUID:${ev.id || uid()}@lehrerheft\r\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z\r\n${start}\r\n${endD}\r\nSUMMARY:${(ev.title || '').replace(/[,;\n]/g, ' ')}\r\nDESCRIPTION:${(ev.note || '').replace(/\n/g, '\\n').replace(/[,;]/g, ' ')}\r\n${alarm}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//${PROD.name}//EN\r\nBEGIN:VEVENT\r\nUID:${ev.id || uid()}@${PROD.key}\r\nDTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z\r\n${start}\r\n${endD}\r\nSUMMARY:${(ev.title || '').replace(/[,;\n]/g, ' ')}\r\nDESCRIPTION:${(ev.note || '').replace(/\n/g, '\\n').replace(/[,;]/g, ' ')}\r\n${alarm}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
 }
 const notified = new Set();
 function checkReminders() {
@@ -1001,7 +1002,7 @@ function checkReminders() {
     if (em - m <= 15 && em - m >= -1) {
       notified.add(e.id);
       const msg = (e.time ? e.time + ' · ' : '') + (e.title || t('untitled'));
-      if ('Notification' in window && Notification.permission === 'granted') { try { new Notification('Lehrerheft', { body: msg }); } catch (er) { toast('⏰ ' + msg); } } else toast('⏰ ' + msg);
+      if ('Notification' in window && Notification.permission === 'granted') { try { new Notification(PROD.name, { body: msg }); } catch (er) { toast('⏰ ' + msg); } } else toast('⏰ ' + msg);
     }
   });
 }
@@ -1041,7 +1042,7 @@ function render() {
   app.innerHTML = `<div class="book">${topTabs(TABMAP[key] || 'heute')}${sideTabs(sy, v.side)}<main class="page" style="--c:${v.c || 'var(--acc)'}">${DEMO ? `<div class="demo-bar no-print"><span>✨ ${t('demoBar')}</span><a class="btn acc sm" href="${BUY_URL}" target="_blank" rel="noopener">${t('demoBuy')} →</a></div>` : ''}${head(v)}${v.html}</main></div>`;
   const r = location.hash;
   if (r !== lastRoute) { window.scrollTo(0, 0); lastRoute = r; }
-  document.title = (v.doc || stripTags(v.title)) + ' · Lehrerheft';
+  document.title = (v.doc || stripTags(v.title)) + ' · ' + PROD.name;
   v.after && v.after();
 }
 const stripTags = s => String(s || '').replace(/<[^>]+>/g, '');
@@ -1065,7 +1066,7 @@ function vWelcome() {
   const st = S.settings;
   return `<div class="welcome"><div class="wcard">
 <div class="langs">${['de', 'en', 'fr'].map(l => `<button class="${st.lang === l ? 'on' : ''}" data-a="lang" data-l="${l}">${{ de: 'Deutsch', en: 'English', fr: 'Français' }[l]}</button>`).join('')}</div>
-<div class="logo">${t('brand1')}<em>${t('brand2')}</em></div>
+<div class="logo">${PROD.b1 || t('brand1')}<em>${PROD.b2 || t('brand2')}</em></div>
 <div class="muted" style="margin-top:6px">${t('tagline')}</div>
 <div class="dots">${Object.values(MCOL).map(c => `<i style="--c:${c}"></i>`).join('')}</div>
 <label class="f"><span>${t('yourName')}</span><input ${b(st, 'name')} value="${esc(st.name)}" placeholder="${t('namePh')}"></label>
@@ -1138,7 +1139,7 @@ function vYear(syA) {
   const html = `<div class="yr"><div><div class="ygrid">${syMonths(sy).map(([y, m]) => miniMonth(y, m, idx, td)).join('')}</div>
 <div class="legend"><span><i style="background:color-mix(in srgb,#E3B23C 35%,#fff)"></i>${t('holidays')}</span><span><i style="background:var(--bad)"></i>${t('publicHoliday')}</span><span><i style="background:var(--ink);border-radius:50%;width:6px;height:6px;vertical-align:1px"></i> ${t('entries')}</span></div>
 <div class="halves">${hc(t('half1'), a, iso(addD(P(h2), -1)))}${hc(t('half2'), h2, z)}</div></div>
-<aside><div class="card"><div class="lab">${t('holidays')} · ${esc(STATES[S.settings.region] || t('regionCustom'))}</div>
+<aside><div class="card"><div class="lab">${STATES[S.settings.region] ? t('holidays') + ' · ' + esc(STATES[S.settings.region]) : t('holidays')}</div>
 ${fl.filter(f => f.to >= a && f.from <= z).length < 3 ? `<div class="banner small" style="margin-bottom:8px">${t('noHolidaysYet')}</div>` : ''}<ul class="fl">${fl.filter(f => f.to >= a && f.from <= z).map(f => `<li><b>${esc(f.n)}</b><span>${fmtD(f.from)}${f.to !== f.from ? ' – ' + fmtD(f.to) : ''}</span></li>`).join('') || `<li class="muted">${t('noHolidays')}</li>`}</ul>
 <div class="lab" style="margin-top:14px">${t('publicHolidays')}</div><ul class="fl">${fts.map(([d, h]) => `<li><b>${esc(h.ft)}</b><span>${fmtD(d)}</span></li>`).join('')}</ul>
 <a class="btn sm" style="margin-top:12px" href="#/einstellungen">${t('editHolidays')}</a></div></aside></div>`;
@@ -1786,7 +1787,7 @@ function vSettings() {
 <button class="btn" data-a="demo">${t('loadDemo')}</button><button class="btn danger" data-a="wipe">${ic('trash', 14)} ${t('wipe')}</button></div>
 <p class="small muted" style="margin-top:10px">${t('lastBackup')}: ${S.ui.lastBackup ? fmtD(S.ui.lastBackup, { day: 'numeric', month: 'long', year: 'numeric' }) : '–'}</p></div>
 <div class="set-sec"><div class="h2">${t('install')}</div><p class="small">${t('installHint')}</p></div>
-<div class="set-sec" style="border:0"><p class="small muted">Lehrerheft · v1.0${DEMO ? ' · Demo' : ''}</p></div></div>`;
+<div class="set-sec" style="border:0"><p class="small muted">${PROD.name} · v1.0${DEMO ? ' · Demo' : ''}</p></div></div>`;
   return { title: t('settings'), html, c: 'var(--ink2)' };
 }
 A.perAdd = () => { const ps = S.settings.periods, l = ps[ps.length - 1]; const s = l ? l.e : '08:00'; const e = (() => { const m = mins(s) + 5 + S.settings.lessonMin; return pad(Math.floor(m / 60) % 24) + ':' + pad(m % 60); })(); const s2 = (() => { const m = mins(s) + 5; return pad(Math.floor(m / 60) % 24) + ':' + pad(m % 60); })(); ps.push({ s: s2, e }); save(); render(); };
@@ -1883,6 +1884,11 @@ function loadDemo() {
   const fn = ['Emma', 'Noah', 'Mia', 'Leon', 'Lina', 'Elias', 'Hannah', 'Paul', 'Lea', 'Ben', 'Sofia', 'Finn', 'Clara', 'Jonas', 'Amira', 'Luis', 'Ella', 'Milan', 'Ida', 'Yusuf', 'Marie', 'Theo', 'Nora', 'Karim', 'Frieda', 'Anton'];
   const ln = ['Becker', 'Schulz', 'Wagner', 'Hoffmann', 'Koch', 'Richter', 'Klein', 'Wolf', 'Neumann', 'Braun', 'Krüger', 'Hartmann', 'Lange', 'Werner', 'Yilmaz', 'Schmitz', 'Krause', 'Meier', 'Lehmann', 'Kaya', 'Fuchs', 'Vogel', 'Roth', 'Haas', 'Graf', 'Jung'];
   const de = S.settings.lang === 'de', en = S.settings.lang === 'en';
+  const lnEN = ['Miller', 'Johnson', 'Brown', 'Davis', 'Wilson', 'Taylor', 'Clark', 'Lewis', 'Walker', 'Hall', 'Young', 'King', 'Wright', 'Scott', 'Green', 'Baker', 'Adams', 'Nelson', 'Hill', 'Moore', 'Carter', 'Mitchell', 'Turner', 'Parker', 'Evans', 'Collins'];
+  const fnEN = ['Emma', 'Noah', 'Olivia', 'Liam', 'Ava', 'Ethan', 'Sophia', 'Lucas', 'Mia', 'Mason', 'Isla', 'Leo', 'Grace', 'Jack', 'Amelia', 'Henry', 'Lily', 'Owen', 'Chloe', 'Caleb', 'Zoe', 'Theo', 'Ruby', 'Isaac', 'Nora', 'Max'];
+  if (en) { fn.splice(0, fn.length, ...fnEN); ln.splice(0, ln.length, ...lnEN); }
+  if (!de) { const y = 2026; S.customHolidays = (en ? [['Labor Day', '2026-09-07', '2026-09-07', 'ft'], ['Fall break', '2026-10-12', '2026-10-16', 'fe'], ['Thanksgiving break', '2026-11-25', '2026-11-27', 'fe'], ['Winter break', '2026-12-21', '2027-01-01', 'fe'], ['MLK Day', '2027-01-18', '2027-01-18', 'ft'], ['Presidents Day', '2027-02-15', '2027-02-15', 'ft'], ['Spring break', '2027-03-22', '2027-03-26', 'fe'], ['Memorial Day', '2027-05-31', '2027-05-31', 'ft'], ['Summer break', '2027-06-14', '2027-08-13', 'fe']]
+    : [['Toussaint', '2026-10-17', '2026-11-02', 'fe'], ['Noël', '2026-12-19', '2027-01-04', 'fe'], ['Hiver', '2027-02-13', '2027-03-01', 'fe'], ['Printemps', '2027-04-10', '2027-04-26', 'fe'], ['Été', '2027-07-03', '2027-08-31', 'fe']]).map(([name, from, to, type]) => ({ name, from, to, type })); void y; }
   const sub = de ? ['Deutsch', 'Englisch'] : en ? ['English', 'History'] : ['Français', 'Histoire'];
   const mk = (name, subj, color, n, off) => { const c = newClass({ name, subj, color }); for (let i = 0; i < n; i++) c.students.push({ id: uid(), first: fn[(i + off) % fn.length], last: ln[(i * 3 + off) % ln.length], bday: `201${3 + (i % 3)}-${pad(1 + (i * 5 + off) % 12)}-${pad(1 + (i * 7 + off) % 28)}`, parents: '', phone: '', email: '', support: '', notes: [] }); return c; };
   const c1 = mk('5a', sub[0], CCOL[0], 26, 0), c2 = mk('7b', sub[1], CCOL[1], 24, 5), c3 = mk('8c', sub[0], CCOL[3], 27, 9), c4 = mk('10a', sub[1], CCOL[4], 22, 13);
@@ -1905,16 +1911,16 @@ function loadDemo() {
   const ex = { id: uid(), date: d(-6), cls: c1.id, type: 'ka', title: de ? '1. Klassenarbeit' : en ? 'Test 1' : 'Contrôle 1', status: 'corrected' };
   const ex2 = { id: uid(), date: d(8), cls: c2.id, type: 'test', title: de ? 'Vokabeltest Unit 2' : en ? 'Quiz unit 2' : 'Interro 2', status: 'plan' };
   S.exams = [ex, ex2];
-  [c1, c2, c3, c4].forEach((c, ci) => { const h = half(todayISO()); const cols = [{ id: uid(), name: ex.title, cat: 'w', weight: 1, date: ex.date, exam: ci === 0 ? ex.id : undefined }, { id: uid(), name: t('cat3_m') + ' 1', cat: 'm', weight: 1, date: d(-3) }, { id: uid(), name: 'HA', cat: 's', weight: 0.5, date: d(-2) }];
+  [c1, c2, c3, c4].forEach((c, ci) => { const h = half(todayISO()); const cols = [{ id: uid(), name: ex.title, cat: 'w', weight: 1, date: ex.date, exam: ci === 0 ? ex.id : undefined }, { id: uid(), name: t('cat3_m') + ' 1', cat: 'm', weight: 1, date: d(-3) }, { id: uid(), name: de ? 'HA' : en ? 'Homework' : 'Devoirs', cat: 's', weight: 0.5, date: d(-2) }];
     c.grades[h].cols = cols; c.w = { w: 50, m: 40, s: 10 };
-    const vals = c.gs === 'de' ? ['1', '2+', '2', '2-', '3+', '3', '3-', '4', '2', '3', '1-', '5'] : ['15', '12', '10', '8', '14', '9'];
+    const vals = { de: ['1', '2+', '2', '2-', '3+', '3', '3-', '4', '2', '3', '1-', '5'], pct: ['94', '86', '78', '91', '83', '72', '88', '97', '65', '81'], f20: ['15', '12', '14', '17', '11', '16', '13', '9'], p15: ['12', '10', '14', '9', '13', '11'] }[c.gs] || ['2'];
     c.students.forEach((s, i) => cols.forEach((col, j) => { (c.gv[col.id] = c.gv[col.id] || {})[s.id] = vals[(i * 3 + j * 5 + ci) % vals.length]; }));
     c.lists[0].cols = ['KW ' + isoWeek(addD(new Date(), -7)), 'KW ' + isoWeek(new Date())]; c.students.forEach((s, i) => c.lists[0].v[s.id] = { 0: i % 5 !== 0, 1: i % 3 !== 0 });
     c.plan = [{ from: 'KW 36', to: 'KW 40', topic: topics[ci], goals: '', done: true }, { from: 'KW 41', to: 'KW 47', topic: topics[ci + 3], goals: '', done: false }];
   });
   { const st = c1.seat, ids = c1.students.map(s => s.id); let n = 0; for (let r = 0; r < st.rows; r++) for (let k = 0; k < st.cols; k++) if (ids[n]) st.map[r + '-' + k] = ids[n++]; }
   c1.students[0].notes = [{ id: uid(), type: 'praise', date: d(-2), text: de ? 'Sehr engagiert in der Gruppenarbeit.' : en ? 'Great teamwork.' : 'Très investie.' }, { id: uid(), type: 'parent', date: d(-10), text: de ? 'Gespräch mit Mutter, alles gut.' : en ? 'Call with mum – all fine.' : 'Appel avec la mère.' }];
-  S.confs = [{ id: uid(), date: d(6), time: '14:30', type: 'fach', title: de ? 'Fachkonferenz ' + sub[0] : en ? 'Department meeting' : 'Conseil pédagogique', room: 'Lehrerzimmer', people: '', agenda: 'TOP 1 …\nTOP 2 …', protocol: '', tasks: [{ t: de ? 'Lektüreliste vorbereiten' : en ? 'Prepare reading list' : 'Liste de lectures', d: false }] }];
+  S.confs = [{ id: uid(), date: d(6), time: '14:30', type: 'fach', title: de ? 'Fachkonferenz ' + sub[0] : en ? 'Department meeting' : 'Conseil pédagogique', room: de ? 'Lehrerzimmer' : en ? 'Staff room' : 'Salle des profs', people: '', agenda: 'TOP 1 …\nTOP 2 …', protocol: '', tasks: [{ t: de ? 'Lektüreliste vorbereiten' : en ? 'Prepare reading list' : 'Liste de lectures', d: false }] }];
   S.todos = [{ id: uid(), t: de ? 'Kopien für 5a (AB Märchen)' : en ? 'Copies for 5a' : 'Photocopies 5a', d: false, due: d(1) }, { id: uid(), t: de ? 'Klassenarbeit 7b erstellen' : en ? 'Write quiz 7b' : 'Préparer interro 7b', d: false, due: d(5) }, { id: uid(), t: de ? 'Elternbrief Wandertag' : en ? 'Letter to parents' : 'Lettre aux parents', d: true, due: '' }];
   S.orga = { ueberstunden: [{ id: uid(), date: d(-8), min: 45, reason: de ? 'Vertretung 8c' : 'Cover 8c' }, { id: uid(), date: d(-3), min: 90, reason: de ? 'Elternabend' : 'Parents\' evening' }],
     pinnwand: [{ id: uid(), t: de ? 'Kopierer 2. OG klemmt 🙃' : en ? 'Copier on floor 2 jams 🙃' : 'Photocopieuse en panne 🙃' }, { id: uid(), t: de ? 'Lesewettbewerb: Anmeldung bis Freitag' : en ? 'Reading contest sign-up by Friday' : 'Concours de lecture : vendredi' }],
