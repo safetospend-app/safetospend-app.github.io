@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+<script src="/demo-guard.js" data-buy="https://thepetalo.etsy.com/listing/4582148138"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Everyday — Free Demo</title>
 <meta name="description" content="The Everyday: an ADHD-friendly life planner app — tasks, routines, calendar, goals, habits, budget, debt, savings, meals, grocery list and fitness in one calm place.">
 <meta name="theme-color" content="#F6F2F8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Everyday">
-<link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>/* ============ The Everyday — styles ============ */
@@ -954,7 +952,7 @@ function tabbarHtml() {
   return b('dashboard', 'Today', 'home') + b('calendar', 'Calendar', 'calendar') + `<button class="plus" data-a="quickAdd" aria-label="Quick add">${ico('plus')}</button>` + b('tasks', 'Tasks', 'check') + `<button data-a="openNav">${ico('menu')}<span>More</span></button>`;
 }
 function demoBar() {
-  return DEMO ? `<div class="demo-bar">${ico('spark', 'sm')}<span class="grow">Free demo — play with it! Your changes stay in this browser.</span><a href="${esc(BUY_URL)}" target="_blank" rel="noopener">Get the full app</a></div>` : '';
+  return DEMO ? `<div class="demo-bar">${ico('spark', 'sm')}<span class="grow">Free demo — play with it! Changes reset when you close this tab.</span><a href="${esc(BUY_URL)}" target="_blank" rel="noopener">Get the full app</a></div>` : '';
 }
 
 function render() {
@@ -2298,7 +2296,7 @@ VR.settings = () => {
     <div>
       <div class="card sec"><div class="card-h">${ico('download', 'sm')}<h3>Your data</h3></div>
         <p class="small muted" style="margin:0 0 12px;font-weight:600">Everything lives in this browser — no account, no cloud, nothing sent anywhere. Keep a backup file somewhere safe, and use it to move to a new phone or computer.</p>
-        ${DEMO ? `<div class="card flat t-sun" style="background:var(--sun-soft);border:0"><b class="small">Backups are part of the full app.</b><div class="xs muted b" style="margin-top:4px">This demo keeps your changes in this browser only.</div>
+        ${DEMO ? `<div class="card flat t-sun" style="background:var(--sun-soft);border:0"><b class="small">Backups are part of the full app.</b><div class="xs muted b" style="margin-top:4px">This demo doesn't keep your changes — they reset when you close this tab.</div>
           <button class="btn pri sm" data-a="buy" style="margin-top:10px">Get the full app ${ico('arrow', 'sm')}</button></div>`
       : `<div class="row wrap"><button class="btn" data-a="exportData">${ico('download', 'sm')} Download backup</button>
           <button class="btn" data-a="importData">${ico('upload', 'sm')} Restore from file</button></div>

@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="/demo-guard.js" data-buy="https://www.etsy.com/listing/4589878831/family-calendar-app-for-tablet-chore"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>The Family Wall — Free Demo</title>
@@ -641,7 +642,7 @@ function renderHead() {
     const ts = tasksOn(ds, p.id), done = ts.filter(x => isDone(x, ds)).length;
     return `<button class="ppill ${ui.filter.has(p.id) ? 'off' : ''}" style="--pc:${p.color}" data-act="headprof" data-pid="${p.id}" title="Show / hide ${esc(p.name)}">${avatar(p, 's')}<span class="nm">${esc(p.name)}</span><span class="ct">${ts.length ? done + '/' + ts.length : ''}</span></button>`;
   }).join('');
-  $('#head').innerHTML = (DEMO ? `<div class="demo-bar"><span class="grow">✨ <b>Free demo</b> — play with it! Your changes stay in this browser.</span><a href="${esc(BUY_URL)}" target="_blank" rel="noopener">Get the full app</a></div>` : '') + `
+  $('#head').innerHTML = (DEMO ? `<div class="demo-bar"><span class="grow">✨ <b>Free demo</b> — play with it! Changes reset when you close this tab.</span><a href="${esc(BUY_URL)}" target="_blank" rel="noopener">Get the full app</a></div>` : '') + `
     <div class="hd-top"><div class="hd-date"><span class="dt"><span class="dl">${DAYS[now.getDay()]}, </span>${MONTHS[now.getMonth()]} ${now.getDate()}</span><span class="bar"></span><span class="tm" id="clk">${t}</span></div>
       <span class="sp"></span>${S().lat != null ? `<span class="hd-wx">${weatherHTML()}</span>` : ''}
       <button class="iconbtn" data-act="fullscreen" title="Full screen">${ic('expand')}</button></div>
