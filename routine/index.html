@@ -558,7 +558,7 @@ if(firstRun){
   const today=now.getDate();
   sample.forEach(([n,c,g],i)=>{
     const id=uid(); M.daily.push({id,name:n,cat:c,goal:Math.min(g,dim)});
-    const days=[]; for(let d=1;d<today;d++){ if(((d*7+i*13)%10)<6+(i%3)) days.push(d); } M.dchk[id]=days;
+    const days=[]; for(let d=1;d<today;d++){ if(((d*7+i*13)%10)<6+(i%3)&&days.length<Math.min(g,dim)) days.push(d); } M.dchk[id]=days;
   });
   const wn=['Deep clean the house','Meal prep','Long walk outside','Date night / friends','Review my goals'];
   weeks(curY,curM).forEach((w,wi)=>{ M.wk[wi]=wn.map((n,i)=>({id:uid(),name:n,done:w[w.length-1]<today&&((i+wi)%4)!==0})); });
